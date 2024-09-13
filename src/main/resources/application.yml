@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: web-sell-spring-mvc
+  profiles:
+    default: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3306/ltw
+
+  main:
+    allow-bean-definition-overriding: true
