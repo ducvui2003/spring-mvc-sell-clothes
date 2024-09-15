@@ -25,7 +25,7 @@ public class SearchFilterOrderAdmin extends HttpServlet {
         String start = request.getParameter("start");
         String length = request.getParameter("length");
 
-        String[] arrCheckedDeliveryMethods = request.getParameterValues("deliveryMethod[]");
+//        String[] arrCheckedDeliveryMethods = request.getParameterValues("deliveryMethod[]");
         String[] arrCheckedPaymentMethods = request.getParameterValues("paymentMethod[]");
         String[] arrCheckedOrderStatus = request.getParameterValues("orderStatus[]");
         String[] arrCheckedTransactionStatus = request.getParameterValues("transactionStatus[]");
@@ -42,29 +42,33 @@ public class SearchFilterOrderAdmin extends HttpServlet {
 //
 //        request.setAttribute("queryStringFilter", queryStringFilter);
 
-        if (arrCheckedDeliveryMethods != null) {
-            List<String> listCheckedDeliveryMethods = new ArrayList<>(Arrays.asList(arrCheckedDeliveryMethods));
-            mapOrderFilter.put(new DeliveryMethod(), listCheckedDeliveryMethods);
-        }
+//        if (arrCheckedDeliveryMethods != null) {
+//            List<String> listCheckedDeliveryMethods = new ArrayList<>(Arrays.asList(arrCheckedDeliveryMethods));
+//            mapOrderFilter.put(new DeliveryMethod(), listCheckedDeliveryMethods);
+//        }
 
-        if (arrCheckedPaymentMethods != null) {
-            List<String> listCheckedPaymentMethods = new ArrayList<>(Arrays.asList(arrCheckedPaymentMethods));
-            mapOrderFilter.put(new PaymentMethod(), listCheckedPaymentMethods);
-        }
+//        if (arrCheckedPaymentMethods != null) {
 
-        if (arrCheckedOrderStatus != null) {
-            List<String> listCheckedOrderStatus = new ArrayList<>(Arrays.asList(arrCheckedOrderStatus));
-            mapOrderFilter.put(new OrderStatus(), listCheckedOrderStatus);
-        }
+//            List<String> listCheckedPaymentMethods = new ArrayList<>(Arrays.asList(arrCheckedPaymentMethods));
+//            mapOrderFilter.put(new PaymentMethod(), listCheckedPaymentMethods);
+//        }
 
-        if (arrCheckedTransactionStatus != null) {
-            List<String> listCheckedTransactionStatus = new ArrayList<>(Arrays.asList(arrCheckedTransactionStatus));
-            mapOrderFilter.put(new TransactionStatus(), listCheckedTransactionStatus);
-        }
+//        if (arrCheckedOrderStatus != null) {
+//            List<String> listCheckedOrderStatus = new ArrayList<>(Arrays.asList(arrCheckedOrderStatus));
+//            mapOrderFilter.put(new OrderStatus(), listCheckedOrderStatus);
+//        }
+
+//        if (arrCheckedTransactionStatus != null) {
+//            List<String> listCheckedTransactionStatus = new ArrayList<>(Arrays.asList(arrCheckedTransactionStatus));
+//            mapOrderFilter.put(new TransactionStatus(), listCheckedTransactionStatus);
+//        }
 
         request.setAttribute("searchSelect", searchSelect);
         request.setAttribute("contentSearch", (contentSearch == null) ? "" : contentSearch);
-        request.setAttribute("mapOrderFilter", mapOrderFilter);
+//        request.setAttribute("mapOrderFilter", mapOrderFilter);
+        request.setAttribute("CheckedPaymentMethods", arrCheckedPaymentMethods);
+        request.setAttribute("CheckedOrderStatus", arrCheckedOrderStatus);
+        request.setAttribute("CheckedTransactionStatus", arrCheckedTransactionStatus);
         request.setAttribute("startDateFilter", startDateFilter);
         request.setAttribute("endDateFilter", endDateFilter);
         request.setAttribute("servletProcess", getServletName());

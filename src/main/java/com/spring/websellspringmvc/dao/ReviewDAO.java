@@ -2,111 +2,110 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Review;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class ReviewDAO {
-    public List<Review> checkReview(int userId, int orderProductIdRequest) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT orders.id ")
-                .append("FROM orders JOIN order_details ON orders.id = order_details.orderId  ")
-                .append("WHERE orders.userId = ? AND order_details.id = ? AND order_details.id IN (SELECT orderDetailId FROM reviews)");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, userId, orderProductIdRequest);
-    }
+@Repository
+@RegisterBeanMapper(Review.class)
+public interface ReviewDAO {
 
-    public List<Product> getNameProduct(int orderProductId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT products.`name` ")
-                .append("FROM order_details JOIN products ON order_details.productId = products.id ")
-                .append("WHERE order_details.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, orderProductId);
-    }
+    @SqlQuery("""
+            SELECT orders.id 
+            FROM orders JOIN order_details ON orders.id = order_details.orderId 
+            WHERE orders.userId = :userId AND order_details.id = :orderProductIdRequest AND order_details.id IN (SELECT orderDetailId FROM reviews)
+            """)
+    public List<Review> checkReview(@Bind("userId") int userId, @Bind("orderProductIdRequest") int orderProductIdRequest);
 
-    public List<Review> getReviewStar(int productId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT ratingStar ")
-                .append("FROM products JOIN (order_details JOIN reviews ON order_details.id = reviews.orderDetailId) ON products.id = order_details.productId ")
-                .append("WHERE products.id = ? AND reviews.visibility = true");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, productId);
-    }
+    @SqlQuery(
+            """
+                    SELECT name 
+                    FROM order_details JOIN products ON order_details.productId = products.id 
+                    WHERE order_details.id = :orderProductId
+                    """
+    )
+    public List<Product> getNameProduct(@Bind("orderProductId") int orderProductId);
 
-    public List<Review> getReviewByProductId(int productId, boolean visibility) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT reviews.orderDetailId, reviews.ratingStar, reviews.feedback, reviews.reviewDate ")
-                .append("FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id ")
-                .append("WHERE order_details.productId = ? AND reviews.visibility = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, productId, visibility);
-    }
+    @SqlQuery(
+            """
+                    SELECT ratingStar 
+                    FROM products JOIN (order_details JOIN reviews ON order_details.id = reviews.orderDetailId) ON products.id = order_details.productId 
+                    WHERE products.id = :productId AND reviews.visibility = true
+                    """
+    )
+    public List<Review> getReviewStar(@Bind("productId") int productId);
 
-    public List<Review> getReviewByOrderDetailId(int orderDetailId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT order_details.productId AS orderDetailId ")
-                .append("FROM order_details JOIN reviews ON reviews.orderDetailId = order_details.id ")
-                .append("WHERE order_details.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, orderDetailId);
-    }
+    @SqlQuery(
+            """
+                    SELECT reviews.orderDetailId, reviews.ratingStar, reviews.feedback, reviews.reviewDate 
+                    FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id 
+                    WHERE order_details.productId = :productId AND reviews.visibility = :visibility
+                    """
+    )
+    public List<Review> getReviewByProductId(int productId, boolean visibility);
 
-    public void createReview(Review review) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO reviews (orderDetailId, ratingStar, feedback, reviewDate) ")
-                .append("VALUES (?,?,?,?)");
-        GeneralDAO.executeAllTypeUpdate(sql.toString(), review.getOrderDetailId(), review.getRatingStar(), review.getFeedback(), review.getReviewDate());
-    }
+    @SqlQuery(
+            """
+                    SELECT order_details.productId AS orderDetailId 
+                    FROM order_details JOIN reviews ON reviews.orderDetailId = order_details.id 
+                    WHERE order_details.id = :orderDetailId
+                    """
+    )
+    public List<Review> getReviewByOrderDetailId(@Bind("orderDetailId") int orderDetailId);
 
-    public List<Review> getReviews(int pageNumber, int limit) {
-        int offset = (pageNumber - 1) * limit;
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, orderDetailId, ratingStar, feedback, reviewDate, visibility ")
-                .append("FROM reviews ")
-                .append(" LIMIT ")
-                .append(limit)
-                .append(" OFFSET ")
-                .append(offset);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class);
-    }
+    @SqlUpdate("""
+                        
+            INSERT INTO reviews (orderDetailId, ratingStar, feedback, reviewDate) 
+            VALUES (:orderDetailId, :ratingStar, :feedback, :reviewDate)
+            """)
+    public void createReview(@BindBean Review review);
 
-    public int getQuantityProduct() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id FROM reviews ");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class).size();
-    }
 
-    public List<Product> getNameProductByOrderDetailId(int orderDetailId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT products.name ")
-                .append("FROM products JOIN order_details ON products.id = order_details.productId ")
-                .append("WHERE order_details.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, orderDetailId);
-    }
+    public List<Review> getReviews(int pageNumber, int limit);
+//    {
+//        int offset = (pageNumber - 1) * limit;
+//        StringBuilder sql = new StringBuilder();
+//        sql.append("SELECT id, orderDetailId, ratingStar, feedback, reviewDate, visibility ")
+//                .append("FROM reviews ")
+//                .append(" LIMIT ")
+//                .append(limit)
+//                .append(" OFFSET ")
+//                .append(offset);
+//        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class);
+//    }
 
-    public int getOrderDetailId(int reviewId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT orderDetailId ")
-                .append("FROM reviews ")
-                .append("WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, reviewId).get(0).getOrderDetailId();
-    }
+    @SqlQuery("SELECT COUNT(*) FROM reviews")
+    public int getQuantityProduct();
 
-    public Review getReviewById(int reviewId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT orderDetailId, ratingStar, feedback, reviewDate, visibility ")
-                .append("FROM reviews ")
-                .append("WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, reviewId).get(0);
-    }
+    @SqlQuery("""
+            SELECT products.name 
+            FROM products JOIN order_details ON products.id = order_details.productId 
+            WHERE order_details.id = :orderDetailId
+            """)
+    public List<Product> getNameProductByOrderDetailId(@Bind("orderDetailId") int orderDetailId);
 
-    public void updateVisibility(int reviewId, boolean hideState) {
-        String sql = "UPDATE reviews SET visibility = ? WHERE id = ?";
-        GeneralDAO.executeAllTypeUpdate(sql, hideState, reviewId);
-    }
+    @SqlQuery("""
+            SELECT orderDetailId 
+            FROM reviews 
+            WHERE id = :reviewId
+            """)
+    public int getOrderDetailId(@Bind("reviewId") int reviewId);
 
-    public List<Review> isVisibility(int id) {
-        StringBuilder sql = new StringBuilder("SELECT visibility FROM reviews WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Review.class, id);
-    }
+    @SqlQuery("""
+            SELECT orderDetailId, ratingStar, feedback, reviewDate, visibility 
+            FROM reviews 
+            WHERE id = :reviewId
+            """)
+    public Review getReviewById(@Bind("reviewId") int reviewId);
 
-    public List<Review> getAll() {
-        String sql = "select id, orderDetailId, ratingStar, feedback, reviewDate from reviews";
-        return GeneralDAO.executeQueryWithSingleTable(sql, Review.class);
-    }
+    @SqlUpdate("UPDATE reviews SET visibility = :state WHERE id = :id")
+    public void updateVisibility(@Bind("id") int id, @Bind("state") boolean state);
+
+    @SqlQuery("SELECT * FROM reviews")
+    public List<Review> getAll();
 }

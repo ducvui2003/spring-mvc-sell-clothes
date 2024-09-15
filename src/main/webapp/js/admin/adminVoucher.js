@@ -325,7 +325,7 @@ $(document).ready(function () {
         function handleUpdate(formData, callback) {
             $.ajax({
                 url: "/api/admin/voucher/update",
-                type: "POST",
+                type: "PUT",
                 data: formData,
                 success: function (response) {
                     callback(response);

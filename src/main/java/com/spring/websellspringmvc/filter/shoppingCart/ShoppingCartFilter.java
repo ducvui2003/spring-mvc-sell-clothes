@@ -12,6 +12,7 @@ import java.util.List;
 
 @WebFilter({"/public/user/shoppingCart.jsp"})
 public class ShoppingCartFilter implements Filter {
+    ShoppingCartServices shoppingCartServices;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -23,7 +24,7 @@ public class ShoppingCartFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        List<Voucher> listVouchers = ShoppingCartServices.getINSTANCE().getListVouchers();
+        List<Voucher> listVouchers = shoppingCartServices.getListVouchers();
         request.setAttribute("listVouchers", listVouchers);
         filterChain.doFilter(request, response);
     }

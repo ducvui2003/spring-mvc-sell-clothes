@@ -1,37 +1,30 @@
 package com.spring.websellspringmvc.config;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.spring.websellspringmvc.dao.AddressDAO;
 import org.jdbi.v3.core.Jdbi;
-import com.spring.websellspringmvc.properties.DatabaseProperties;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.spi.JdbiPlugin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.util.List;
 
-@Slf4j
+
 @Configuration
-@RequiredArgsConstructor
-@Getter
 public class JDBIConfig {
-    DatabaseProperties databaseProperties;
+    @Bean
+    public Jdbi jdbi(DataSource ds, List<JdbiPlugin> plugins, List<RowMapper<?>> mappers) {
+        TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(ds);
+        Jdbi jdbi = Jdbi.create(proxy);
+        plugins.forEach(plugin -> jdbi.installPlugin(plugin));
+        mappers.forEach(mapper -> jdbi.registerRowMapper(mapper));
+        return jdbi;
+    }
 
     @Bean
-    public Jdbi makeConnect() {
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setURL(databaseProperties.getUrl());
-        dataSource.setUser(databaseProperties.getUsername());
-        dataSource.setPassword(databaseProperties.getPassword());
-
-        try {
-            dataSource.setDefaultFetchSize(1000);
-            dataSource.setUseCompression(true);
-            dataSource.setAutoReconnect(true);
-        } catch (SQLException throwables) {
-            log.error("Error when set properties for datasource");
-        }
-        return Jdbi.create(dataSource);
+    public AddressDAO addressDAO(Jdbi jdbi) {
+        return jdbi.onDemand(AddressDAO.class);
     }
 }

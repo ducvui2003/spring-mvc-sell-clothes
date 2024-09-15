@@ -5,7 +5,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-@WebListener
+//@WebListener
 public class ConfigPage implements ServletContextListener {
     public static String DOMAIN;
 
@@ -30,48 +30,48 @@ public class ConfigPage implements ServletContextListener {
     }
 
     private void init() {
-        HOME = "/";
-        CONTACT = "/contact.jsp";
+        HOME = "/index";
+        CONTACT = "/contact";
 //        Config path /public/auth/
-        String folderAuth = "/public/auth/";
-        SIGN_IN = folderAuth + "signIn.jsp";
-        SIGN_UP = folderAuth + "signUp.jsp";
-        RESET_PASSWORD = folderAuth + "resetPassword.jsp";
-        FORGET_PASSWORD = folderAuth + "forgotPassword.jsp";
-        VERIFY = folderAuth + "verifySuccess.jsp";
+        String folderAuth = "";
+        SIGN_IN = folderAuth + "signIn";
+        SIGN_UP = folderAuth + "signUp";
+        RESET_PASSWORD = folderAuth + "resetPassword";
+        FORGET_PASSWORD = folderAuth + "forgotPassword";
+        VERIFY = folderAuth + "verifySuccess";
 
 //        Config path /public/user
-        String folderUser = "/public/user/";
-        USER_ACCOUNT = folderUser + "account.jsp";
-        USER_CHANGE_PASSWORD = folderUser + "changePassword.jsp";
-        USER_PURCHASE_HISTORY = folderUser + "purchaseHistory.jsp";
-        USER_CART = folderUser + "shoppingCart.jsp";
-        USER_CHECKOUT = folderUser + "checkout.jsp";
-        USER_SUCCESS_ORDER = folderUser + "successOrder.jsp";
-        USER_REVIEW = folderUser + "review.jsp";
-        USER_REVIEW_SUCCESS = folderUser + "reviewSuccess.jsp";
+        String folderUser = "/user";
+        USER_ACCOUNT = folderUser + "account";
+        USER_CHANGE_PASSWORD = folderUser + "changePassword";
+        USER_PURCHASE_HISTORY = folderUser + "purchaseHistory";
+        USER_CART = folderUser + "shoppingCart";
+        USER_CHECKOUT = folderUser + "checkout";
+        USER_SUCCESS_ORDER = folderUser + "successOrder";
+        USER_REVIEW = folderUser + "review";
+        USER_REVIEW_SUCCESS = folderUser + "reviewSuccess";
 
 //        Config path /public/product/
-        String folderProduct = "/public/product/";
-        PRODUCT_BUYING = folderProduct + "productBuying.jsp";
-        PRODUCT_DETAIL = folderProduct + "productDetail.jsp";
-        PRODUCT_ORDER = folderProduct + "productOrder.jsp";
-        PRODUCT_TRENDING = folderProduct + "productTrending.jsp";
-        PRODUCT_NEW = folderProduct + "productNew.jsp";
+        String folderProduct = "/product";
+        PRODUCT_BUYING = folderProduct + "productBuying";
+        PRODUCT_DETAIL = folderProduct + "productDetail";
+        PRODUCT_ORDER = folderProduct + "productOrder";
+        PRODUCT_TRENDING = folderProduct + "productTrending";
+        PRODUCT_NEW = folderProduct + "productNew";
 
 //        Config path /public/admin/
 //        Config path /public/admin/product/
-        String folderAdminProduct = "/public/admin/";
-        ADMIN_CATEGORY = folderAdminProduct + "adminCategories.jsp";
-        ADMIN_ORDER = folderAdminProduct + "adminOrders.jsp";
-        ADMIN_PRODUCT = folderAdminProduct + "adminProducts.jsp";
-        ADMIN_REVIEW = folderAdminProduct + "adminReviews.jsp";
-        ADMIN_USER = folderAdminProduct + "adminUsers.jsp";
-        ADMIN_MATERIAL = folderAdminProduct + "adminImportMaterial.jsp";
-        DASHBOARD = folderAdminProduct + "adminDashboard.jsp";
+        String folderAdminProduct = "/admin/product/";
+        ADMIN_CATEGORY = folderAdminProduct + "adminCategories";
+        ADMIN_ORDER = folderAdminProduct + "adminOrders";
+        ADMIN_PRODUCT = folderAdminProduct + "adminProducts";
+        ADMIN_REVIEW = folderAdminProduct + "adminReviews";
+        ADMIN_USER = folderAdminProduct + "adminUsers";
+        ADMIN_MATERIAL = folderAdminProduct + "adminImportMaterial";
+        DASHBOARD = folderAdminProduct + "adminDashboard";
 
-        String folderError = "/public/error/";
-        ERROR_404 = folderError + "error404.jsp";
+        String folderError = "/error/";
+        ERROR_404 = folderError + "error404";
     }
 
 }

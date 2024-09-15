@@ -15,10 +15,10 @@ import java.io.IOException;
 public class FilterProductAdmin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        FilterStrategy filterStrategy = new FilterStrategyAdmin(request, response);
-        if (!filterStrategy.isAllParameterEmpty()) {
-            filterStrategy.doFilter();
-        }
+//        FilterStrategy filterStrategy = new FilterStrategyAdmin(request, response);
+//        if (!filterStrategy.isAllParameterEmpty()) {
+//            filterStrategy.doFilter();
+//        }
     }
 
     @Override

@@ -92,7 +92,7 @@ $(document).ready(function () {
         searching: false,
         ordering: false,
         ajax: {
-            url: "/api/admin/categories",
+            url: "/api/admin/category/datatable",
             dataSrc: "",
             dataType: "json"
         },

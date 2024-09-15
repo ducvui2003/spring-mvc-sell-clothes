@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.controller.web;
 
+import com.spring.websellspringmvc.models.SubjectContact;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.ContactServices;
 import com.spring.websellspringmvc.session.SessionManager;
@@ -8,62 +9,63 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@WebServlet(name = "ContactController", value = "/contact")
-public class ContactController extends HttpServlet implements Serializable {
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        List<SubjectContact> listContactSubjects = ContactServices.getINSTANCE().getListContactSubjects();
+@Controller
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+public class ContactController {
+    ContactServices contactServices;
+//    @Override
+//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        request.setCharacterEncoding("UTF-8");
-//        request.setAttribute("listContactSubjects", listContactSubjects);
-//        RequestDispatcher requestDispatcher = request.getRequestDispatcher(ConfigPage.CONTACT);
-//        requestDispatcher.forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("post contact");
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        String fullName = request.getParameter("fullName");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String subject = request.getParameter("subject");
-        String message = request.getParameter("message");
-        System.out.println("message: " + message);
-        JSONObject jsonObject = new JSONObject();
-        JSONObject errorFields = new JSONObject();
-
-        boolean isContactValid = checkAllValidationContact(errorFields, fullName, email, phone);
-        jsonObject.put("isContactValid", isContactValid);
-        jsonObject.put("errorFields", errorFields);
-
-        if (isContactValid) {
-            int subjectId = ContactServices.getINSTANCE().getIdContactSubjectByName(subject);
-            User user = SessionManager.getInstance(request, response).getUser();
-            Integer userAuthId;
-
-            if (user != null) {
-                userAuthId = user.getId();
-            } else {
-                userAuthId = null;
-            }
-
-            ContactServices.getINSTANCE().addNewRecordUserContact(userAuthId, fullName, phone, email, subjectId, message);
-            String succeedContact = "<p><i class=\"fa-solid fa-circle-check\"></i> Bạn đã gửi liên hệ thành công</p>";
-            request.setAttribute("succeedContact", succeedContact);
-            jsonObject.put("succeedContact", request.getAttribute("succeedContact"));
-        }
-        response.getWriter().print(jsonObject);
-    }
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//
+//        String fullName = request.getParameter("fullName");
+//        String phone = request.getParameter("phone");
+//        String email = request.getParameter("email");
+//        String subject = request.getParameter("subject");
+//        String message = request.getParameter("message");
+//        System.out.println("message: " + message);
+//        JSONObject jsonObject = new JSONObject();
+//        JSONObject errorFields = new JSONObject();
+//
+//        boolean isContactValid = checkAllValidationContact(errorFields, fullName, email, phone);
+//        jsonObject.put("isContactValid", isContactValid);
+//        jsonObject.put("errorFields", errorFields);
+//
+//        if (isContactValid) {
+//            int subjectId = ContactServices.getINSTANCE().getIdContactSubjectByName(subject);
+//            User user = SessionManager.getInstance(request, response).getUser();
+//            Integer userAuthId;
+//
+//            if (user != null) {
+//                userAuthId = user.getId();
+//            } else {
+//                userAuthId = null;
+//            }
+//
+//            ContactServices.getINSTANCE().addNewRecordUserContact(userAuthId, fullName, phone, email, subjectId, message);
+//            String succeedContact = "<p><i class=\"fa-solid fa-circle-check\"></i> Bạn đã gửi liên hệ thành công</p>";
+//            request.setAttribute("succeedContact", succeedContact);
+//            jsonObject.put("succeedContact", request.getAttribute("succeedContact"));
+//        }
+//        response.getWriter().print(jsonObject);
+//    }
 
     public boolean checkAllValidationContact(JSONObject errorFields, String fullName, String email, String phone) {
         boolean isAllValid = true;
@@ -101,5 +103,13 @@ public class ContactController extends HttpServlet implements Serializable {
         Pattern patternPhone = Pattern.compile("^\\+?(?:\\d\\s?){9,13}$");
         Matcher matcherPhone = patternPhone.matcher(phone);
         return matcherPhone.matches();
+    }
+
+    @GetMapping("/contact")
+    public ModelAndView contact() {
+        ModelAndView mav = new ModelAndView("contact");
+        List<SubjectContact> listContactSubjects = contactServices.getListContactSubjects();
+        mav.addObject("listContactSubjects", listContactSubjects);
+        return mav;
     }
 }

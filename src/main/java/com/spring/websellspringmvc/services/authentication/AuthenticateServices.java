@@ -14,6 +14,7 @@ import com.spring.websellspringmvc.utils.ValidatePassword;
 import com.spring.websellspringmvc.utils.Validation;
 
 import jakarta.mail.MessagingException;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,10 +28,8 @@ import java.util.regex.Pattern;
 public class AuthenticateServices {
     private static final String STATE_VERIFY = "1";
     private static AuthenticateServices INSTANCE;
-    UserDAO userDAO = new UserDAO();
+    UserDAO userDAO;
 
-    private AuthenticateServices() {
-    }
 
     public static AuthenticateServices getINSTANCE() {
         if (INSTANCE == null) INSTANCE = new AuthenticateServices();
@@ -70,7 +69,7 @@ public class AuthenticateServices {
         validation.setFieldUsername(username.isBlank() ?
                 "Tên đăng nhập không được để trống" :
                 (
-                        !userDAO.selectByUsername(username, null).isEmpty() ?
+                        !userDAO.selectByUsername(username, true).isEmpty() ?
                                 "Tên đăng nhập đã tồn tại." :
                                 ""
                 )
@@ -83,7 +82,7 @@ public class AuthenticateServices {
         List<User> users = userDAO.selectByEmail(email, STATE_VERIFY);
         if (users.size() != 1) return null;
         User user = users.get(0);
-        return  extractUser(user);
+        return extractUser(user);
     }
 
     //    Kiểm tra đăng nhập bằng username + password
@@ -99,7 +98,7 @@ public class AuthenticateServices {
         }
 
 //        Check user in db
-        List<User> users = userDAO.selectByUsername(username, STATE_VERIFY);
+        List<User> users = userDAO.selectByUsername(username, false);
 
 //        Check username
         if (users.size() != 1) {

@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.services.ProductCardServices;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.StringTokenizer;
 public abstract class FilterStrategy {
     protected HttpServletRequest request;
     protected HttpServletResponse response;
+    ProductCardServices productCardServices;
 
     public FilterStrategy(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
@@ -51,24 +53,25 @@ public abstract class FilterStrategy {
         }
         return countParameterNotBlank == countName;
     }
+
     protected List<Integer> filterByCategory() {
         String[] categoryId = request.getParameterValues("categoryId");
         if (categoryId == null) return new ArrayList<>();
-        List<Integer> listId = ProductCardServices.getINSTANCE().getIdProductFromCategoryId(categoryId);
+        List<Integer> listId = productCardServices.getIdProductFromCategoryId(categoryId);
         return listId;
     }
 
     protected List<Integer> filterByColor() {
         String[] colors = request.getParameterValues("color");
         if (colors == null) return new ArrayList<>();
-        List<Integer> listId = ProductCardServices.getINSTANCE().getIdProductFromColor(colors);
+        List<Integer> listId = productCardServices.getIdProductFromColor(colors);
         return listId;
     }
 
     protected List<Integer> filterBySize() {
         String[] sizes = request.getParameterValues("size");
         if (sizes == null) return new ArrayList<>();
-        List<Integer> listId = ProductCardServices.getINSTANCE().getIdProductFromSize(sizes);
+        List<Integer> listId = productCardServices.getIdProductFromSize(sizes);
         return listId;
     }
 
@@ -86,7 +89,7 @@ public abstract class FilterStrategy {
                 throw new RuntimeException(e);
             }
         }
-        List<Integer> listId = ProductCardServices.getINSTANCE().getIdProductFromMoneyRange(moneyRangeList);
+        List<Integer> listId = productCardServices.getIdProductFromMoneyRange(moneyRangeList);
         return listId;
     }
 
@@ -110,6 +113,7 @@ public abstract class FilterStrategy {
     private void removeListEmpty(List<List<Integer>> lists) {
         lists.removeIf(List::isEmpty);
     }
+
     protected String cutParameterInURL(String queryString, String key) {
         if (queryString != null) {
             String[] params = queryString.split("&");

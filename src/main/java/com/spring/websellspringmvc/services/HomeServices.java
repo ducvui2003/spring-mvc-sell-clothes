@@ -1,23 +1,19 @@
 package com.spring.websellspringmvc.services;
 
-import com.spring.websellspringmvc.dao.HomeDao;
+import com.spring.websellspringmvc.dao.HomeDAO;
 import com.spring.websellspringmvc.models.*;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class HomeServices {
-    private HomeDao homeDao;
-    private static HomeServices INSTANCE;
+    HomeDAO homeDao;
 
-    public HomeServices() {
-        homeDao = new HomeDao();
-    }
-
-    public static HomeServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new HomeServices();
-        return INSTANCE;
-    }
 
 //    public List<Map<String, Object>> getListTrendingProducts(boolean isSeeMore){
 //        return homeDao.getListTrendingProducts(isSeeMore);
@@ -27,15 +23,15 @@ public class HomeServices {
 //        return homeDao.getListNewProducts(isSeeMore);
 //    }
 
-    public List<Product> getListNewProducts(boolean isSeeMore){
-        return homeDao.getListNewProducts(isSeeMore);
+    public List<Product> getListNewProducts(boolean isSeeMore) {
+        return homeDao.getListNewProducts();
     }
 
-    public List<Slider> getListSlideShow(){
+    public List<Slider> getListSlideShow() {
         return homeDao.getListSlideShow();
     }
 
-    public List<Product> getListTrendProducts(boolean isSeeMore){
-        return homeDao.getListTrendProducts(isSeeMore);
+    public List<Product> getListTrendProducts(boolean isSeeMore) {
+        return homeDao.getListTrendProducts();
     }
 }

@@ -1,35 +1,30 @@
 package com.spring.websellspringmvc.services;
 
-import com.spring.websellspringmvc.dao.OrderDaoAdmin;
+import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderDetailDAO;
 import com.spring.websellspringmvc.dao.ReviewDAO;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Review;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewServices {
-    private static ReviewServices INSTANCE;
-    private ReviewDAO reviewDAO;
-    private OrderDaoAdmin orderDAO;
-
-    private OrderDetailDAO orderDetailDAO;
-    private ReviewServices() {
-        reviewDAO = new ReviewDAO();
-        orderDetailDAO = new OrderDetailDAO();
-        orderDAO = new OrderDaoAdmin();
-    }
-    public static ReviewServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new ReviewServices();
-        return INSTANCE;
-    }
+    ReviewDAO reviewDAO;
+    OrderDAO orderDAO;
+    OrderDetailDAO orderDetailDAO;
 
     public boolean canReview(int userId, int orderProductIdRequest) {
         List<Review> listReview = reviewDAO.checkReview(userId, orderProductIdRequest);
-        return listReview.isEmpty() ;
+        return listReview.isEmpty();
     }
 
     public String getNameProduct(int orderProductId) {
@@ -49,7 +44,7 @@ public class ReviewServices {
         return orderDetailDAO.getOrderDetailById(orderDetailId).get(0);
     }
 
-    public void createReview(Review review){
+    public void createReview(Review review) {
         reviewDAO.createReview(review);
     }
 

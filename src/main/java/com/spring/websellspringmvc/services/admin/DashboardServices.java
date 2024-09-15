@@ -2,21 +2,17 @@ package com.spring.websellspringmvc.services.admin;
 
 import com.spring.websellspringmvc.dao.DashboardDAO;
 
-import com.spring.websellspringmvc.dto.DashBoardDetail;
+import com.spring.websellspringmvc.dto.response.DashBoardDetailResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DashboardServices {
-    private static DashboardServices INSTANCE;
     private DashboardDAO dashboardDAO;
-
-    private DashboardServices() {
-        this.dashboardDAO = new DashboardDAO();
-    }
-
-    public static DashboardServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new DashboardServices();
-        return INSTANCE;
-    }
 
     public int countUser() {
         return dashboardDAO.countUser();
@@ -34,18 +30,18 @@ public class DashboardServices {
         return dashboardDAO.countReview();
     }
 
-    public DashBoardDetail getDashBoardDetail(String month, String year) {
-        DashBoardDetail dashBoardDetail = new DashBoardDetail();
+    public DashBoardDetailResponse getDashBoardDetail(String month, String year) {
+        DashBoardDetailResponse dashBoardDetailResponse = new DashBoardDetailResponse();
 //        Các đơn hàng giao thành công trong tháng
-        dashBoardDetail.setOrderFailed(dashboardDAO.quantityOrderSuccess(month, year));
+        dashBoardDetailResponse.setOrderFailed(dashboardDAO.quantityOrderSuccess(month, year));
 //        Các đơn hàng giao thất bại trong tháng
-        dashBoardDetail.setOrderSuccess(dashboardDAO.quantityOrderFailed(month, year));
+        dashBoardDetailResponse.setOrderSuccess(dashboardDAO.quantityOrderFailed(month, year));
 //        Sản phẩm bán chạy nhất trong tháng
-        dashBoardDetail.setProductPopular(dashboardDAO.getListProductPopular(month, year));
+        dashBoardDetailResponse.setProductPopular(dashboardDAO.getListProductPopular(month, year));
 //        Sản phẩm bán chậm nhất trong tháng
-        dashBoardDetail.setProductNotPopular(dashboardDAO.getListProductNotPopular(month, year));
+        dashBoardDetailResponse.setProductNotPopular(dashboardDAO.getListProductNotPopular(month, year));
 //        Doanh thu trong tháng
-        dashBoardDetail.setRevenue(dashboardDAO.getRevenueByMonth(month, year));
-        return dashBoardDetail;
+        dashBoardDetailResponse.setRevenue(dashboardDAO.getRevenueByMonth(month, year));
+        return dashBoardDetailResponse;
     }
 }

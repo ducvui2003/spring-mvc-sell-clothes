@@ -4,296 +4,117 @@ import com.spring.websellspringmvc.models.Category;
 import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.utils.MoneyRange;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.util.List;
 
-public class ProductCardDAO {
-    public List<Product> getProducts(int pageNumber, int limit, boolean visibility) {
-        int offset = (pageNumber - 1) * limit;
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, categoryId, originalPrice, salePrice ")
-                .append("FROM products ")
-                .append("WHERE visibility = ? ")
-                .append("LIMIT ")
-                .append(limit)
-                .append(" OFFSET ")
-                .append(offset);
+@Repository
+public interface ProductCardDAO {
+    @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice FROM products WHERE visibility = :visibility LIMIT :limit OFFSET :offset")
+    public List<Product> getProducts(int pageNumber, int limit, boolean visibility);
+//    {
+//        int offset = (pageNumber - 1) * limit;
+//        StringBuilder sql = new StringBuilder();
+//        sql.append("SELECT id, `name`, categoryId, originalPrice, salePrice ")
+//                .append("FROM products ")
+//                .append("WHERE visibility = ? ")
+//                .append("LIMIT ")
+//                .append(limit)
+//                .append(" OFFSET ")
+//                .append(offset);
+//
+//        List<Product> list = GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, visibility);
+//        return list;
+//    }
 
-        List<Product> list = GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, visibility);
-        return list;
-    }
+    @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice FROM products LIMIT :limit OFFSET :offset")
+    public List<Product> getProducts(int pageNumber, int limit);
+//    {
+//        int offset = (pageNumber - 1) * limit;
+//        StringBuilder sql = new StringBuilder();
+//        sql.append("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility ")
+//                .append("FROM products ")
+//                .append("LIMIT ")
+//                .append(limit)
+//                .append(" OFFSET ")
+//                .append(offset);
+//
+//        List<Product> list = GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
+//        return list;
+//    }
 
-    public List<Product> getProducts(int pageNumber, int limit) {
-        int offset = (pageNumber - 1) * limit;
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility ")
-                .append("FROM products ")
-                .append("LIMIT ")
-                .append(limit)
-                .append(" OFFSET ")
-                .append(offset);
+    @SqlQuery("SELECT COUNT(*) FROM products")
+    public int getQuantityProduct();
 
-        List<Product> list = GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-        return list;
-    }
+    @SqlQuery("SELECT COUNT(*) FROM products WHERE visibility = :visibility")
+    public int getQuantityProduct(@Bind(":visibility") boolean visibility);
 
+    @SqlQuery("SELECT COUNT(*) FROM products WHERE visibility = :visibility AND id IN (<listId>)")
+    public int getQuantityProduct(@BindList("listId") List<Integer> listId, @Bind("visibility") boolean visibility);
 
-    public int getQuantityProduct() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id FROM products ");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class).size();
-    }
+    @SqlQuery("SELECT COUNT(*) FROM products WHERE id IN (<listId>)")
+    public int getQuantityProduct(@BindList("listId") List<Integer> listId);
 
-    public int getQuantityProduct(boolean visibility) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id FROM products where visibility = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, visibility).size();
-    }
+    @SqlQuery("SELECT id, `name`, originalPrice, salePrice, visibility FROM products WHERE id IN (<listId>) LIMIT :limit OFFSET :offset")
+    public List<Product> pagingAndFilter(@Bind("listId") List<Integer> listId, @Bind("offset") int offset, @Bind("limit") int limit);
 
-    public int getQuantityProduct(List<Integer> listId, boolean visibility) {
-        StringBuilder listIdString = new StringBuilder();
-        if (listId != null && !listId.isEmpty()) {
-            listIdString.append(" AND id IN (");
-            for (int i = 0; i < listId.size(); i++) {
-                if (i == 0)
-                    listIdString.append(listId.get(i));
-                listIdString.append(", ").append(listId.get(i));
-            }
-            listIdString.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ")
-                .append("FROM products ")
-                .append("WHERE visibility = ?")
-                .append(listIdString);
+    @SqlQuery("SELECT id, `name`, originalPrice, salePrice FROM products WHERE visibility = :visibility AND id IN (<listId>) LIMIT :limit OFFSET :offset")
+    public List<Product> pagingAndFilter(@BindList("listId") List<Integer> listId, @Bind("offset") int pageNumber, @Bind("limit") int limit, @Bind("visibility") boolean visibility);
 
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, visibility).size();
-    }
+    @SqlQuery("SELECT id FROM products WHERE categoryId IN (<listIdCategory>)")
+    public List<Product> getIdProductByCategoryId(@BindList("listIdCategory") List<String> listIdCategory);
 
-    public int getQuantityProduct(List<Integer> listId) {
-        StringBuilder listIdString = new StringBuilder();
-        if (listId != null && !listId.isEmpty()) {
-            listIdString.append("WHERE id IN (");
-            for (int i = 0; i < listId.size(); i++) {
-                if (i == 0)
-                    listIdString.append(listId.get(i));
-                listIdString.append(", ").append(listId.get(i));
-            }
-            listIdString.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ")
-                .append("FROM products ")
-                .append(listIdString);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class).size();
-    }
+    @SqlQuery("SELECT products.id FROM products JOIN colors ON products.id = colors.productId WHERE colors.codeColor IN (<listCodeColor>)")
+    public List<Product> getIdProductByColor(@BindList("listCodeColor") List<String> listCodeColor);
 
-    public List<Product> pagingAndFilter(List<Integer> listId, int pageNumber, int limit) {
-        int offset = (pageNumber - 1) * limit;
-        StringBuilder listIdString = new StringBuilder();
-        if (listId != null && !listId.isEmpty()) {
-            listIdString.append("WHERE id IN (");
-            for (int i = 0; i < listId.size(); i++) {
-                if (i == 0)
-                    listIdString.append(listId.get(i));
-                listIdString.append(", ").append(listId.get(i));
-            }
-            listIdString.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, originalPrice, salePrice, visibility ")
-                .append("FROM products ")
-                .append(listIdString)
-                .append(" LIMIT ")
-                .append(limit)
-                .append(" OFFSET ")
-                .append(offset);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("SELECT products.id FROM products JOIN sizes ON products.id = sizes.productId WHERE sizes.nameSize IN (<listSize>)")
+    public List<Product> getIdProductBySize(@Bind("listSize") List<String> listSize);
 
-    public List<Product> pagingAndFilter(List<Integer> listId, int pageNumber, int limit, boolean visibility) {
-        int offset = (pageNumber - 1) * limit;
-        StringBuilder listIdString = new StringBuilder();
-        if (listId != null && !listId.isEmpty()) {
-            listIdString.append("AND id IN (");
-            for (int i = 0; i < listId.size(); i++) {
-                if (i == 0)
-                    listIdString.append(listId.get(i));
-                listIdString.append(", ").append(listId.get(i));
-            }
-            listIdString.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, originalPrice, salePrice ")
-                .append("FROM products ")
-                .append("WHERE visibility = ? ")
-                .append(listIdString)
-                .append(" LIMIT ")
-                .append(limit)
-                .append(" OFFSET ")
-                .append(offset);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, visibility);
-    }
+    @SqlQuery("SELECT id FROM products WHERE originalPrice BETWEEN :from AND :to")
+    public List<Product> getIdProductByMoneyRange(@BindBean List<MoneyRange> moneyRangeList);
 
-    public List<Product> getIdProductByCategoryId(List<String> listIdCategory) {
-        StringBuilder categoryIdQuery = new StringBuilder();
-        if (!listIdCategory.isEmpty()) {
-            categoryIdQuery.append(" categoryId IN (");
-            for (int i = 0; i < listIdCategory.size(); i++) {
-                if (i != 0) {
-                    categoryIdQuery.append(", ");
-                }
-                categoryIdQuery.append(listIdCategory.get(i));
-            }
-            categoryIdQuery.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ")
-                .append("FROM products  ")
-                .append("WHERE ")
-                .append(categoryIdQuery);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("SELECT id, `name`, originalPrice, salePrice FROM products WHERE categoryId = :categoryId")
+    public List<Product> getProductByCategoryId(@Bind("categoryId") int categoryId);
 
-    public List<Product> getIdProductByColor(List<String> listCodeColor) {
-        StringBuilder colorQuery = new StringBuilder();
-        if (!listCodeColor.isEmpty()) {
-            colorQuery.append(" colors.codeColor IN (");
-            for (int i = 0; i < listCodeColor.size(); i++) {
-                if (i != 0) {
-                    colorQuery.append(", ");
-                }
-                colorQuery.append("\'")
-                        .append(listCodeColor.get(i))
-                        .append("\'");
-            }
-            colorQuery.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT products.id ")
-                .append("FROM products JOIN colors ON products.id = colors.productId ")
-                .append("WHERE ")
-                .append(colorQuery);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("SELECT id FROM products WHERE name LIKE %:name%")
+    public List<Product> getIdProductByName(@Bind("name") String name);
 
-    public List<Product> getIdProductBySize(List<String> listSize) {
-        StringBuilder sizeQuery = new StringBuilder();
-        if (!listSize.isEmpty()) {
-            sizeQuery.append(" sizes.nameSize IN (");
-            for (int i = 0; i < listSize.size(); i++) {
-                if (i != 0) {
-                    sizeQuery.append(", ");
-                }
-                sizeQuery.append("\'")
-                        .append(listSize.get(i))
-                        .append("\'");
-            }
-            sizeQuery.append(")");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT products.id ")
-                .append("FROM products JOIN sizes ON products.id = sizes.productId ")
-                .append("WHERE ")
-                .append(sizeQuery);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("SELECT id FROM products WHERE createAt BETWEEN :dateBegin AND :dateEnd")
+    public List<Product> getProductByTimeCreated(@Bind("dateBegin") Date dateBegin, @Bind("dataEnd") Date dateEnd);
 
+    @SqlQuery("""
+            SELECT categories.nameType 
+            FROM products JOIN categories ON products.categoryId = categories.id 
+            WHERE products.id = :id
+            """)
+    public List<Category> getNameCategoryById(@Bind("id") int id);
 
-    public List<Product> getIdProductByMoneyRange(List<MoneyRange> moneyRangeList) {
-        StringBuilder moneyRangeQuery = new StringBuilder();
-        for (int i = 0; i < moneyRangeList.size(); i++) {
-            if (i != 0) {
-                moneyRangeQuery.append(" OR ");
-            }
-            moneyRangeQuery.append("( originalPrice BETWEEN ")
-                    .append(moneyRangeList.get(i).getFrom()).
-                    append(" AND ").append(moneyRangeList.get(i).getTo())
-                    .append(" )");
-        }
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ")
-                .append("FROM products ")
-                .append("WHERE ")
-                .append(moneyRangeQuery);
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("""
+            SELECT categories.nameType, categories.sizeTableImage 
+            FROM categories JOIN products ON products.categoryId = categories.id 
+            WHERE products.id = :id
+            """)
+    public List<Category> getCategoryByProductId(@Bind("id") int id);
 
-    public List<Product> getProductByCategoryId(int categoryId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, originalPrice, salePrice ")
-                .append("FROM products  ")
-                .append("WHERE categoryId = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, categoryId);
-    }
+    @SqlQuery("""
+            SELECT parameters.name, parameters.minValue, parameters.maxValue, parameters.unit, parameters.guideImg 
+            FROM products JOIN (parameters JOIN categories ON parameters.categoryId = categories.id) ON products.categoryId = categories.id 
+            WHERE products.id = :id
+            """)
+    public List<Parameter> getParametersByProductId(@Bind("id") int id);
 
-    public List<Product> getIdProductByName(String name) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ").append("FROM products ").append("WHERE name LIKE ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, name + "%");
-    }
+    @SqlQuery("SELECT name FROM products WHERE id = :id")
+    public List<Product> getNameProductById(@Bind("id") int id);
 
-    public List<Product> getProductByTimeCreated(Date dateBegin, Date dateEnd) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id ").append("FROM products ").append("WHERE createAt BETWEEN ? AND ? ");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, dateBegin, dateEnd);
-    }
+    @SqlUpdate("UPDATE products SET visibility = :visibility WHERE id = :id")
+    public void updateVisibility(@Bind("id") int productId, @Bind("visibility") String visibility);
 
-    public List<Category> getNameCategoryById(int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT categories.nameType ").append("FROM products JOIN categories ON products.categoryId = categories.id ")
-                .append("WHERE products.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Category.class, id);
-    }
-
-    public List<Category> getCategoryByProductId(int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT nameType, sizeTableImage ")
-                .append("FROM categories JOIN products ON products.categoryId = categories.id ")
-                .append("WHERE products.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Category.class, id);
-    }
-
-    public List<Parameter> getParametersByProductId(int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT parameters.name, parameters.minValue, parameters.maxValue, parameters.unit, parameters.guideImg ")
-                .append("FROM products JOIN (parameters JOIN categories ON parameters.categoryId = categories.id) ON products.categoryId = categories.id ")
-                .append("WHERE products.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Parameter.class, id);
-    }
-
-    public List<Product> getNameProductById(int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT name ")
-                .append("FROM products ")
-                .append("WHERE products.id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, id);
-    }
-
-    public List<Product> isVisibility(int id) {
-        StringBuilder sql = new StringBuilder("SELECT visibility FROM products WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, id);
-    }
-
-    public void updateVisibility(int productId, String visibility) {
-        String sql = "UPDATE products SET visibility = " + visibility + " WHERE id = ?";
-        GeneralDAO.executeAllTypeUpdate(sql, productId);
-    }
-
-    public List<Product> getNameProductByIdOrderDetail(int orderDetailId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT productName AS name ")
-                .append("FROM order_details ")
-                .append("WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, orderDetailId);
-    }
-
-    //    Sử dụng để lấy ra danh sách tên sản phẩm và id của sản phẩm (sử dụng đưa vào select)
-    public List<Product> getProduct() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility ")
-                .append("FROM products ");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class);
-    }
+    @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility FROM products")
+    public List<Product> getProduct();
 }

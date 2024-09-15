@@ -2,32 +2,24 @@ package com.spring.websellspringmvc.services;
 
 import com.spring.websellspringmvc.dao.*;
 import com.spring.websellspringmvc.models.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductServices {
 
-    private ProductDao productDao;
-    private ImageDAO imageDAO;
-    private ColorDAO colorDAO;
-    private SizeDAO sizeDAO;
+    ProductDAO productDao;
+    ImageDAO imageDAO;
+    ColorDAO colorDAO;
+    SizeDAO sizeDAO;
 
-    private ProductCardDAO productCardDAO;
-    private static ProductServices INSTANCE;
-
-    public ProductServices() {
-        productDao = new ProductDao();
-        imageDAO = new ImageDAO();
-        colorDAO = new ColorDAO();
-        sizeDAO = new SizeDAO();
-        productCardDAO = new ProductCardDAO();
-    }
-
-    public static ProductServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new ProductServices();
-        return INSTANCE;
-    }
+    ProductCardDAO productCardDAO;
 
     public List<Image> getListImagesByProductId(int productId) {
         return productDao.getListImagesByProductId(productId);
@@ -49,10 +41,6 @@ public class ProductServices {
         return productDao.getSizeByNameSizeWithProductId(nameSize, productId);
     }
 
-    public Image getImageByNameImageWithProductId(String nameImage, int productId) {
-        return productDao.getImageByNameImageWithProductId(nameImage, productId);
-    }
-
 
     public Product getProductByProductId(int productId) {
         return productDao.getProductByProductId(productId);
@@ -60,14 +48,6 @@ public class ProductServices {
 
     public Color getColorByCodeColorWithProductId(String codeColor, int productId) {
         return productDao.getColorByCodeColorWithProductId(codeColor, productId);
-    }
-
-    public Product getMaxId() {
-        return productDao.getMaxId();
-    }
-
-    public Product getProductByMultipleParam(String name, int categoryId, String des, double originalPrice, double salePrice) {
-        return productDao.getProductByMultipleParam(name, categoryId, des, originalPrice, salePrice);
     }
 
     public List<Product> getAllProductSelect() {

@@ -1,40 +1,28 @@
 package com.spring.websellspringmvc.services.admin;
 
+import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderDetailDAO;
-import com.spring.websellspringmvc.dao.OrderDaoAdmin;
-import com.spring.websellspringmvc.dao.OrderStatusDao;
-import com.spring.websellspringmvc.dao.TransactionStatusDao;
+import com.spring.websellspringmvc.dao.OrderStatusDAO;
+import com.spring.websellspringmvc.dao.TransactionStatusDAO;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.state.OrderState;
 import com.spring.websellspringmvc.services.state.TransactionState;
 import com.spring.websellspringmvc.utils.FormatCurrency;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminOrderServices {
-
-    private final OrderDaoAdmin orderDao;
-    private final OrderStatusDao orderStatusDao;
-    private final TransactionStatusDao transactionStatusDao;
-
-    private final OrderDetailDAO orderDetailDAO;
-
-    private static AdminOrderServices INSTANCE;
-
-    public AdminOrderServices() {
-        orderDao = new OrderDaoAdmin();
-        orderStatusDao = new OrderStatusDao();
-        transactionStatusDao = new TransactionStatusDao();
-        orderDetailDAO = new OrderDetailDAO();
-    }
-
-    public static AdminOrderServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new AdminOrderServices();
-        return INSTANCE;
-    }
+    OrderDAO orderDAO;
+    OrderStatusDAO orderStatusDao;
+    TransactionStatusDAO transactionStatusDao;
+    OrderDetailDAO orderDetailDAO;
 
     public List<OrderStatus> getListAllOrderStatus() {
         return orderStatusDao.getListAllOrderStatus();
@@ -53,27 +41,27 @@ public class AdminOrderServices {
     }
 
     public List<Order> getListAllOrders() {
-        return orderDao.getListAllOrders();
+        return orderDAO.getListAllOrders();
     }
 
-    public List<Order> getListOrdersBySearchFilter(Map<Object, List<String>> mapFilterSectionOrders, String contentSearch, String searchSelect, String startDate, String endDate) {
-        return orderDao.getListOrdersBySearchFilter(mapFilterSectionOrders, contentSearch, searchSelect, startDate, endDate);
+    public List<Order> getListOrdersBySearchFilter(String[] paymentMethod, String[] orderStatus, String[] transactionStatus, String contentSearch, String searchSelect, String startDate, String endDate) {
+        return orderDAO.getListOrdersBySearchFilter(paymentMethod, orderStatus, transactionStatus, contentSearch, searchSelect, startDate, endDate);
     }
 
     public List<PaymentMethod> getListAllPaymentMethodManage() {
-        return orderDao.getListAllPaymentMethodManage();
+        return orderDAO.getListAllPaymentMethodManage();
     }
 
     public List<DeliveryMethod> getListAllDeliveryMethodManage() {
-        return orderDao.getListAllDeliveryMethodManage();
+        return orderDAO.getListAllDeliveryMethodManage();
     }
 
     public PaymentMethod getPaymentMethodMangeById(int id) {
-        return orderDao.getPaymentMethodMangeById(id);
+        return orderDAO.getPaymentMethodMangeById(id);
     }
 
     public DeliveryMethod getDeliveryMethodManageById(int id) {
-        return orderDao.getDeliveryMethodManageById(id);
+        return orderDAO.getDeliveryMethodManageById(id);
     }
 
 //    public List<Order> getListOrderById(String orderId){
@@ -85,7 +73,7 @@ public class AdminOrderServices {
 //    }
 
     public Order getOrderById(String id) {
-        return orderDao.getOrderById(id);
+        return orderDAO.getOrderById(id);
     }
 
 //    public void updateOrderStatusIdByOrderId(int orderStatusId , String orderId){
@@ -98,11 +86,11 @@ public class AdminOrderServices {
 
     public void removeOrderByMultipleOrderId(String[] multipleOrderId) {
         orderDetailDAO.removeOrderDetailByMultipleOrderId(multipleOrderId);
-        orderDao.removeOrderByMultipleId(multipleOrderId);
+        orderDAO.removeOrderByMultipleId(multipleOrderId);
     }
 
     public void cancelOrderByMultipleId(String[] multipleId) {
-        orderDao.cancelOrderByArrayMultipleId(multipleId);
+        orderDAO.cancelOrderByArrayMultipleId(multipleId);
     }
 
     public List<OrderDetail> getListOrderDetailByOrderId(String orderId) {
@@ -110,7 +98,7 @@ public class AdminOrderServices {
     }
 
     public boolean updateOrder(String orderId, Integer orderStatusId, Integer transactionStatusId) {
-        Order order = orderDao.getOrderById(orderId);
+        Order order = orderDAO.getOrderById(orderId);
         if (orderStatusId != null && transactionStatusId != null) {
             return updateStatusAndOrderTransaction(order, orderStatusId, transactionStatusId);
         }
@@ -125,7 +113,7 @@ public class AdminOrderServices {
 
     private boolean updateStatusAndOrderTransaction(Order order, Integer orderStatusId, Integer transactionStatusId) {
         if (canUpdateStatusByOrderId(order, orderStatusId) && canUpdateTransactionByOrderId(order, transactionStatusId)) {
-            orderDao.updateStatusByOrderId(order.getId(), orderStatusId, transactionStatusId);
+            orderDAO.updateStatusByOrderId(order.getId(), orderStatusId, transactionStatusId);
             return true;
         }
         return false;
@@ -170,7 +158,7 @@ public class AdminOrderServices {
 
     public boolean updateOrderTransaction(Order order, int transactionStatusId) {
         if (canUpdateTransactionByOrderId(order, transactionStatusId)) {
-            orderDao.updateOrderTransaction(order.getId(), transactionStatusId);
+            orderDAO.updateOrderTransaction(order.getId(), transactionStatusId);
             return true;
         }
         return false;
@@ -178,18 +166,18 @@ public class AdminOrderServices {
 
     public boolean updateOrderStatus(Order order, int statusId) {
         if (canUpdateStatusByOrderId(order, statusId)) {
-            orderDao.updateOrderStatus(order.getId(), statusId);
+            orderDAO.updateOrderStatus(order.getId(), statusId);
             return true;
         }
         return false;
     }
 
     public Voucher getVoucherById(int id) {
-        return orderDao.getVoucherById(id);
+        return orderDAO.getVoucherById(id);
     }
 
     public String getTotalPriceFormatByOrderId(String orderId) {
-        Order order = orderDao.getOrderById(orderId);
+        Order order = orderDAO.getOrderById(orderId);
         List<OrderDetail> listOrderDetail = orderDetailDAO.getListOrderDetailByOrderId(orderId);
         double totalPrice = 0;
         for (OrderDetail orderDetail : listOrderDetail) {
@@ -204,10 +192,10 @@ public class AdminOrderServices {
     }
 
     public long getQuantity() {
-        return orderDao.getQuantity();
+        return orderDAO.getQuantity();
     }
 
     public List<Order> getLimit(int limit, int offset) {
-        return orderDao.getLimit(limit, offset);
+        return orderDAO.getLimit(limit, offset);
     }
 }

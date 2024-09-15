@@ -10,17 +10,15 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import java.util.List;
 
-@WebListener
+//@WebListener
 public class ConfigCheckout implements ServletContextListener {
-
-    public ConfigCheckout() {
-    }
+    CheckoutServices checkoutServices ;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        List<DeliveryMethod> listDeliveryMethod = CheckoutServices.getINSTANCE().getAllInformationDeliveryMethod();
-        List<PaymentMethod> listPaymentMethod = CheckoutServices.getINSTANCE().getAllPaymentMethod();
+        List<DeliveryMethod> listDeliveryMethod = checkoutServices.getAllInformationDeliveryMethod();
+        List<PaymentMethod> listPaymentMethod = checkoutServices.getAllPaymentMethod();
         context.setAttribute("listDeliveryMethod", listDeliveryMethod);
         context.setAttribute("listPaymentMethod", listPaymentMethod);
     }

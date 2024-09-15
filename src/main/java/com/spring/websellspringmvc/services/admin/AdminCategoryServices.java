@@ -6,24 +6,18 @@ import com.spring.websellspringmvc.dao.ParameterDAO;
 import com.spring.websellspringmvc.models.Category;
 import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AdminCategoryServices {
-    private static AdminCategoryServices INSTANCE;
-    private CategoryDAO categoryDAO;
-    private ParameterDAO parameterDAO;
-
-    private AdminCategoryServices() {
-        categoryDAO = new CategoryDAO();
-        parameterDAO = new ParameterDAO();
-    }
-
-    public static AdminCategoryServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new AdminCategoryServices();
-        return INSTANCE;
-    }
+    CategoryDAO categoryDAO;
+    ParameterDAO parameterDAO;
 
     public List<Category> getCategories() {
         List<Category> categories = categoryDAO.getAllCategory();

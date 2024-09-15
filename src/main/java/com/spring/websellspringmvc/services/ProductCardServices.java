@@ -3,33 +3,26 @@ package com.spring.websellspringmvc.services;
 import com.spring.websellspringmvc.dao.*;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.utils.MoneyRange;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductCardServices {
-    private static final int LIMIT = 9;
-    private static ProductCardServices INSTANCE;
-    private ProductDao productDAO;
-    private ProductCardDAO productCardDAO;
-    private ReviewDAO reviewDAO;
-    private SizeDAO sizeDAO;
-    private ColorDAO colorDAO;
-    private CategoryDAO categoryDAO;
-    private ProductCardServices() {
-        this.productDAO = new ProductDao();
-        this.productCardDAO = new ProductCardDAO();
-        this.sizeDAO = new SizeDAO();
-        this.colorDAO = new ColorDAO();
-        this.categoryDAO = new CategoryDAO();
-        this.reviewDAO = new ReviewDAO();
-
-    }
-
-    public static ProductCardServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new ProductCardServices();
-        return INSTANCE;
-    }
+    @NonFinal
+    static final int LIMIT = 9;
+    ProductDAO productDAO;
+    ProductCardDAO productCardDAO;
+    ReviewDAO reviewDAO;
+    SizeDAO sizeDAO;
+    ColorDAO colorDAO;
+    CategoryDAO categoryDAO;
 
     public List<Category> getAllCategory() {
         List<Category> listCategories = categoryDAO.getAllCategory();
@@ -62,9 +55,11 @@ public class ProductCardServices {
     }
 
     public List<Product> filter(List<Integer> listId, int pageNumber) {
-        List<Product> productList = productCardDAO.pagingAndFilter(listId, pageNumber, LIMIT, true);
+        int offset = (pageNumber - 1) * LIMIT;
+        List<Product> productList = productCardDAO.pagingAndFilter(listId, offset, LIMIT, true);
         return productList;
     }
+
     public List<Integer> getIdProductFromCategoryId(String[] categoryIds) {
         List<Product> listProduct = productCardDAO.getIdProductByCategoryId(Arrays.asList(categoryIds));
         if (listProduct.isEmpty()) return null;

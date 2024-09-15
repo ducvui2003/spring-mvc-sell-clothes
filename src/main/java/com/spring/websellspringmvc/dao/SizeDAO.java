@@ -2,67 +2,32 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlBatch;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SizeDAO {
-    public List<Size> getAllSize() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT DISTINCT nameSize").append(" FROM sizes");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Size.class);
-    }
+@Repository
+public interface SizeDAO {
+    @SqlQuery("SELECT DISTINCT nameSize FROM sizes")
+    public List<Size> getAllSize();
 
-    public List<Product> getIdProduct(String size) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT productId ").append(" FROM sizes ").append("WHERE nameSize = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Product.class, size);
-    }
+    @SqlQuery("SELECT productId FROM sizes WHERE nameSize = :sizeName")
+    public List<Product> getIdProduct(@Bind("sizeName") String sizeName);
 
-    public void addSizes(Size[] sizes) {
-        StringBuilder sql = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        sql.append("INSERT INTO sizes (nameSize, productId, sizePrice) ")
-                .append("VALUES ");
-        for (int i = 0; i < sizes.length; i++) {
-            if (i != 0)
-                sql.append(" , ");
-            sql.append("( ?, ?, ? )");
-            params.add(sizes[i].getNameSize());
-            params.add(sizes[i].getProductId());
-            params.add(sizes[i].getSizePrice());
-        }
-        GeneralDAO.executeAllTypeUpdate(sql.toString(), params.toArray());
-    }
+    @SqlBatch("INSERT INTO sizes (nameSize, productId, sizePrice) VALUES (:nameSize, :productId, :sizePrice)")
+    public void addSizes(Size[] sizes);
 
-    public List<Size> getIdSizeByProductId(int productId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id FROM sizes WHERE productId = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Size.class, productId);
-    }
+    @SqlQuery("SELECT id FROM sizes WHERE productId = :productId")
+    public List<Size> getIdSizeByProductId(@Bind("productId") int productId);
 
-    public void updateSize(Size size, int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE sizes ")
-                .append("SET ")
-                .append(" nameSize = ? ,")
-                .append(" sizePrice = ? ")
-                .append(" WHERE id = ? ");
-        GeneralDAO.executeAllTypeUpdate(sql.toString(), size.getNameSize(), size.getSizePrice(), id);
-    }
+    @SqlUpdate("UPDATE sizes SET nameSize = :nameSize, sizePrice = :sizePrice WHERE id = :id")
+    public void updateSize(Size size, int id);
 
-    public void deleteSizeList(List<Integer> listId) {
-        StringBuilder idRange = new StringBuilder();
-        if (listId.size() == 1) idRange.append(listId.get(0));
-        else
-            for (int i = 0; i < listId.size(); i++) {
-                idRange.append(listId.get(i));
-                if (i != listId.size() - 1) {
-                    idRange.append(" , ");
-                }
-            }
-        StringBuilder sql = new StringBuilder();
-        sql.append("DELETE FROM sizes ").append("WHERE id IN (").append(idRange).append(")");
-        GeneralDAO.executeAllTypeUpdate(sql.toString());
-    }
+    @SqlUpdate("DELETE FROM sizes WHERE id = :id")
+    public void deleteSizeList(List<Integer> listId);
 }

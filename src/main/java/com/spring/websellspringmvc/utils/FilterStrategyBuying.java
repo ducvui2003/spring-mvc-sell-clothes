@@ -7,74 +7,70 @@ import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.services.ProductCardServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterStrategyBuying extends FilterStrategy {
-    private final int QUANTITY_PAGE_DEFAULT = 5;
-    private int quantityPageMin;
-    private int quantityPageMax;
-    private int currentPage;
+@Component
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+public class FilterStrategyBuying {
+    int QUANTITY_PAGE_DEFAULT = 5;
+    ProductCardServices productCardServices;
 
-    public FilterStrategyBuying(HttpServletRequest request) {
-        super(request);
-    }
-
-    public FilterStrategyBuying(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
-    }
-
-    @Override
+    //    @Override
     public void doFilter() {
-        List<Integer> filterByColor = filterByColor();
-        List<Integer> filterByCategoryId = filterByCategory();
-        List<Integer> filterByMoneyRange = filterMyMoney();
-        List<Integer> filterBySize = filterBySize();
-        String pageNumber = request.getParameter("page");
-
-        int page;
-        try {
-            page = Integer.parseInt(pageNumber);
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-        List<List<Integer>> listId = new ArrayList<>();
-        listId.add(filterByColor);
-        listId.add(filterByCategoryId);
-        listId.add(filterByMoneyRange);
-        listId.add(filterBySize);
-        List<Integer> listIDFiltered = findCommonIDs(listId);
-        List<Product> productCardFiltered = ProductCardServices.getINSTANCE().filter(listIDFiltered.isEmpty() ? null : listIDFiltered, page);
-
-        int quantityPage = productCardFiltered.isEmpty() ? 0 : ProductCardServices.getINSTANCE().getQuantityPage(listIDFiltered);
-
-        StringBuffer requestURL = request.getRequestURL();
-        requestURL.append("?").append("page=" + page);
-
-        List<String> listInputChecked = listValueChecked("page");
-
-        List<DetailProduct> detailProducts = new ArrayList<>();
-        productCardFiltered.forEach(product -> {
-            DetailProduct dp = new DetailProduct(product,
-                    ProductFactory.getListImagesByProductId(product.getId()),
-                    ProductFactory.calculateStar(product.getId()),
-                    ProductFactory.getReviewCount(product.getId()));
-            detailProducts.add(dp);
-        });
-        FilteredProductResponse responseData = new FilteredProductResponse(requestURL.toString(), detailProducts, quantityPage, page, listInputChecked);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonResponse = null;
-        try {
-            jsonResponse = mapper.writeValueAsString(responseData);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(jsonResponse);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        List<Integer> filterByColor = filterByColor();
+//        List<Integer> filterByCategoryId = filterByCategory();
+//        List<Integer> filterByMoneyRange = filterMyMoney();
+//        List<Integer> filterBySize = filterBySize();
+//        String pageNumber = request.getParameter("page");
+//
+//        int page;
+//        try {
+//            page = Integer.parseInt(pageNumber);
+//        } catch (NumberFormatException e) {
+//            page = 1;
+//        }
+//        List<List<Integer>> listId = new ArrayList<>();
+//        listId.add(filterByColor);
+//        listId.add(filterByCategoryId);
+//        listId.add(filterByMoneyRange);
+//        listId.add(filterBySize);
+//        List<Integer> listIDFiltered = findCommonIDs(listId);
+//        List<Product> productCardFiltered = productCardServices.filter(listIDFiltered.isEmpty() ? null : listIDFiltered, page);
+//
+//        int quantityPage = productCardFiltered.isEmpty() ? 0 : productCardServices.getQuantityPage(listIDFiltered);
+//
+//        StringBuffer requestURL = request.getRequestURL();
+//        requestURL.append("?").append("page=" + page);
+//
+//        List<String> listInputChecked = listValueChecked("page");
+//
+//        List<DetailProduct> detailProducts = new ArrayList<>();
+//        productCardFiltered.forEach(product -> {
+//            DetailProduct dp = new DetailProduct(product,
+//                    ProductFactory.getListImagesByProductId(product.getId()),
+//                    ProductFactory.calculateStar(product.getId()),
+//                    ProductFactory.getReviewCount(product.getId()));
+//            detailProducts.add(dp);
+//        });
+//        FilteredProductResponse responseData = new FilteredProductResponse(requestURL.toString(), detailProducts, quantityPage, page, listInputChecked);
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonResponse = null;
+//        try {
+//            jsonResponse = mapper.writeValueAsString(responseData);
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(jsonResponse);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private class DetailProduct {

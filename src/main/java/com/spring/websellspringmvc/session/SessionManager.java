@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class SessionManager {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private HttpSession session;
+    UserServices userServices;
 
     private SessionManager(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
@@ -41,22 +43,22 @@ public class SessionManager {
     }
 
     public User getUser() {
-        Cookie[] cookies = request.getCookies();
-        try {
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals(SESSION_ID)) {
-                        User userOld = sessionTable.get(cookie.getValue());
-                        User user = UserServices.getINSTANCE().getUser(userOld.getId());
-                        sessionTable.replace(cookie.getValue(), user);
-                        ShoppingCartServices.getINSTANCE().setUser(user);
-                        return user;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            return null;
-        }
+//        Cookie[] cookies = request.getCookies();
+//        try {
+//            if (cookies != null) {
+//                for (Cookie cookie : cookies) {
+//                    if (cookie.getName().equals(SESSION_ID)) {
+//                        User userOld = sessionTable.get(cookie.getValue());
+//                        User user = UserServices.getINSTANCE().getUser(userOld.getId());
+//                        sessionTable.replace(cookie.getValue(), user);
+//                        ShoppingCartServices.getINSTANCE().setUser(user);
+//                        return user;
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            return null;
+//        }
         return null;
     }
 
@@ -64,7 +66,7 @@ public class SessionManager {
         String sessionId = generateSessionId();
         sessionTable.put(sessionId, user);
 
-        ShoppingCartServices.getINSTANCE().setUser(user);
+//        ShoppingCartServices.getINSTANCE().setUser(user);
         Cookie cookie = new Cookie(SESSION_ID, sessionId);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -98,7 +100,7 @@ public class SessionManager {
     public void updateUser() {
         int userId = getUser().getId();
         removeUser();
-        User user = UserServices.getINSTANCE().getUser(userId);
+        User user = userServices.getUser(userId);
         addUser(user);
     }
 }

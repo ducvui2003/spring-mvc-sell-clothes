@@ -9,18 +9,19 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
-@WebFilter(urlPatterns = "/*")
+//@WebFilter(urlPatterns = "/*")
 public class CheckAccountFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         User user = SessionManager.getInstance((HttpServletRequest) request, (HttpServletResponse) response).getUser();
 
-        if(user != null) {
+        if (user != null) {
             HttpSession session = ((HttpServletRequest) request).getSession();
-            if(session.getAttribute(user.getId() + "") == null) {
+            if (session.getAttribute(user.getId() + "") == null) {
                 session.setAttribute(user.getId() + "", new ShoppingCart());
             }
         }

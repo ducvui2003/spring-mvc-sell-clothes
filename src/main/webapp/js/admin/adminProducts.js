@@ -692,7 +692,7 @@ $(document).ready(() => {
     // Thực thi xem sản phẩm
     function handleRead(id) {
         http({
-            url: "/api/admin/product/read",
+            url: "/api/admin/product/detail",
             type: "GET",
             data: {
                 id: id

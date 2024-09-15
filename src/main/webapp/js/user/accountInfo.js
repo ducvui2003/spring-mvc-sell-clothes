@@ -55,7 +55,7 @@ $(document).ready(function () {
                 alert(() => {
                     var formData = new FormData(form);
                     $.ajax({
-                        url: "/upload-avatar",
+                        url: "/api/user/upload-avatar",
                         type: "POST",
                         data: formData,
                         processData: false,

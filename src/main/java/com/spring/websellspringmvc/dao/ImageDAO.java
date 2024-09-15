@@ -1,57 +1,31 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Image;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.SqlBatch;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageDAO {
-    public List<Image> getThumbnail(int productId) {
-        String sql = "SELECT nameImage FROM images WHERE productId = ? AND isThumbnail = 1";
-        return GeneralDAO.executeQueryWithSingleTable(sql, Image.class, productId);
-    }
+@Repository
+public interface ImageDAO {
+    @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId AND isThumbnail = 1")
+    public List<Image> getThumbnail(@Bind("productId") int productId);
 
-    public void addImages(List<Image> images) {
-        StringBuilder sql = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        sql.append("INSERT INTO images (nameImage, productId) ")
-                .append("VALUES ");
-        for (int i = 0; i < images.size(); i++) {
-            if (i != 0)
-                sql.append(" , ");
-            String nameImage = images.get(i).getNameImage();
-            nameImage = nameImage.substring(nameImage.indexOf("product_img") + 12);
-            sql.append(" ( ? , ? ) ");
-            params.add(nameImage);
-            params.add(images.get(i).getProductId());
-        }
-        GeneralDAO.executeAllTypeUpdate(sql.toString(), params.toArray());
-    }
+    @SqlBatch("INSERT INTO images (nameImage, productId) VALUES (:nameImage, :productId)")
+    public void addImages(@BindBean List<Image> images);
 
-    public List<Image> getNameImages(int productId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT nameImage FROM images WHERE productId = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Image.class, productId);
-    }
+    @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId")
+    public List<Image> getNameImages(@Bind("productId") int productId);
 
-    public List<Image> getIdImages(int productId) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id FROM images WHERE productId = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), Image.class, productId);
-    }
+    @SqlQuery("SELECT id FROM images WHERE productId = :productId")
+    public List<Image> getIdImages(@Bind("productId") int productId);
 
-    public void deleteImages(List<Integer> nameImages) {
-        StringBuilder idRange = new StringBuilder();
-        if (nameImages.size() == 1) idRange.append(nameImages.get(0));
-        else
-            for (int i = 0; i < nameImages.size(); i++) {
-                idRange.append(nameImages.get(i));
-                if (i != nameImages.size() - 1) {
-                    idRange.append(" , ");
-                }
-            }
-        StringBuilder sql = new StringBuilder();
-        sql.append("DELETE FROM images ").append("WHERE id IN (").append(idRange).append(")");
-        GeneralDAO.executeAllTypeUpdate(sql.toString());
-    }
+    @SqlUpdate("DELETE FROM images WHERE id IN (<ids>)")
+    public void deleteImages(@BindList("ids") List<Integer> ids);
 }

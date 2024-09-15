@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebFilter(filterName = "checkoutFilter", urlPatterns = {"/public/user/checkout.jsp", "/api/checkout/*"})
@@ -27,11 +28,11 @@ public class CheckoutFilter implements Filter {
         User userAuth = SessionManager.getInstance(request, response).getUser();
 
 //        String userIdCart = String.valueOf(userAuth.getId());
-
-        String fullName = userAuth.getFullName();
-        String email = userAuth.getEmail();
-        String phone = userAuth.getPhone();
-        String address = userAuth.getAddress();
+//
+//        String fullName = userAuth.getFullName();
+//        String email = userAuth.getEmail();
+//        String phone = userAuth.getPhone();
+//        String address = userAuth.getAddress();
 
 //        DeliveryInfo deliveryInfoAuth = new DeliveryInfo(fullName, email, phone, address);
 

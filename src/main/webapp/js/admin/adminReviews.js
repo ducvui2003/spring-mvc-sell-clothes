@@ -12,12 +12,13 @@ $(document).ready(function () {
         ordering: false,
         ajax: {
             url: "/api/admin/review/datatable",
-            data: function (d) {
-                d.page = d.start / d.length + 1;
-                delete d.start;
-                delete d.length
-                return d;
-            },
+            method: "POST",
+            // data: function (d) {
+            //     d.page = d.start / d.length + 1;
+            //     delete d.start;
+            //     delete d.length
+            //     return d;
+            // },
             dataSrc: function (json) {
                 json.draw = json.draw;
                 json.recordsTotal = json.quantity * json.reviews.length;
@@ -129,10 +130,10 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 http({
                     url: "/api/admin/review/visible",
-                    method: "POST",
+                    method: "PUT",
                     data: {
                         id: id,
-                        type: type
+                        type: type.toUpperCase(),
                     }
                 }).then(function (data) {
                     if (data.success) {
@@ -170,7 +171,7 @@ $(document).ready(function () {
 
     function getDetailComment(id) {
         http({
-            url: "/api/admin/review/get",
+            url: "/api/admin/review/detail",
             method: "GET",
             data: {
                 id: id

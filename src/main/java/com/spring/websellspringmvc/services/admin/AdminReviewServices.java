@@ -5,26 +5,20 @@ import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.models.Review;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.state.ReviewState;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminReviewServices {
-    public static AdminReviewServices INSTANCE;
-    private static final int LIMIT = 10;
-    private ReviewDAO reviewDAO;
-    private UserDAO userDAO;
-
-    private AdminReviewServices() {
-        this.reviewDAO = new ReviewDAO();
-        this.userDAO = new UserDAO();
-
-    }
-
-    public static AdminReviewServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new AdminReviewServices();
-        return INSTANCE;
-    }
+    static int LIMIT = 10;
+    ReviewDAO reviewDAO;
+    UserDAO userDAO;
 
     public List<Review> getReviews(int pageNumber) {
         return reviewDAO.getReviews(pageNumber, LIMIT);

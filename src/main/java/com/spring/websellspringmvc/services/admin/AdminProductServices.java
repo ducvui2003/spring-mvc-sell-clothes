@@ -7,34 +7,33 @@ import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
 import com.spring.websellspringmvc.services.state.ProductState;
-import com.spring.websellspringmvc.utils.Comparison;
 
 import jakarta.servlet.http.Part;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.sql.Date;
 import java.util.*;
 
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminProductServices {
-    private static final int LIMIT = 15;
-    private static AdminProductServices INSTANCE;
-    ProductDao productDAO = new ProductDao();
-    ColorDAO colorDAO = new ColorDAO();
-    ImageDAO imageDAO = new ImageDAO();
-    SizeDAO sizeDAO = new SizeDAO();
-    ProductCardDAO productCardDAO = new ProductCardDAO();
+    static int LIMIT = 15;
+    ProductDAO productDAO;
+    ColorDAO colorDAO;
+    ImageDAO imageDAO;
+    SizeDAO sizeDAO;
+    ProductCardDAO productCardDAO;
 
-    private AdminProductServices() {
-    }
-
-    public static AdminProductServices getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new AdminProductServices();
-        return INSTANCE;
-    }
 
     public int addProduct(Product product) {
         List<Product> productList = productDAO.getIdProductByName(product.getName());
         if (!productList.isEmpty()) {
-            System.out.println("AdminProductServices: Không thể thêm sản phẩm cùng tên");
+            log.error("AdminProductServices: Không thể thêm sản phẩm cùng tên");
             return 0;
         }
         return productDAO.addProduct(product);
@@ -77,7 +76,8 @@ public class AdminProductServices {
     }
 
     public List<Product> filter(List<Integer> listId, int pageNumber) {
-        List<Product> productList = productCardDAO.pagingAndFilter(listId, pageNumber, LIMIT);
+        int offset = (pageNumber - 1) * LIMIT;
+        List<Product> productList = productCardDAO.pagingAndFilter(listId, offset, LIMIT);
         return productList;
     }
 
@@ -217,15 +217,16 @@ public class AdminProductServices {
         return nameImageList.subList(imageList.size() - quantityImgDelete, imageList.size());
     }
 
-//    Xóa image theo id
+    //    Xóa image theo id
     public void deleteImages(List<Integer> idImages) {
         imageDAO.deleteImages(idImages);
     }
 
-//    Thêm image
-    public void addImages(List<Image> images ) {
+    //    Thêm image
+    public void addImages(List<Image> images) {
         imageDAO.addImages(images);
     }
+
     public void updateImages(UploadImageServices uploadImageServices, Collection<Part> images, int productId) throws Exception {
 
 //        if (quantityImgDelete != 0) {
@@ -244,7 +245,4 @@ public class AdminProductServices {
         productCardDAO.updateVisibility(productId, state.getValue());
     }
 
-    public List<Product> getLimit(int limit, int offset) {
-        return productDAO.getLimit(limit, offset);
-    }
 }

@@ -1,28 +1,22 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.OrderDetail;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class OrderDetailDAO {
-    public List<OrderDetail> getOrderDetailById(int id) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT orderId,productId, productName, sizeRequired, colorRequired, quantityRequired, price ")
-                .append("FROM order_details ")
-                .append("WHERE id = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), OrderDetail.class, id);
-    }
+@Repository
+public interface OrderDetailDAO {
+    @SqlQuery("SELECT orderId,productId, productName, sizeRequired, colorRequired, quantityRequired, price FROM order_details WHERE id = :id")
+    public List<OrderDetail> getOrderDetailById(@Bind("id") int id);
 
-    public List<OrderDetail> getListOrderDetailByOrderId(String orderId){
-        StringBuilder sql = new StringBuilder("SELECT id, orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price ");
-        sql.append(" FROM order_details WHERE orderId = ?");
-        return GeneralDAO.executeQueryWithSingleTable(sql.toString(), OrderDetail.class, orderId);
-    }
+    @SqlQuery("SELECT id, orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price FROM order_details WHERE orderId = :orderId")
+    public List<OrderDetail> getListOrderDetailByOrderId(@Bind("orderId") String orderId);
 
-    public void removeOrderDetailByMultipleOrderId(String[] multipleOrderId){
-        String fillEntry = String.format("'%s'", String.join("','", multipleOrderId));
-        StringBuilder sql = new StringBuilder("DELETE FROM order_details");
-        sql.append(" WHERE orderId IN(" + fillEntry + ")");
-        GeneralDAO.executeAllTypeUpdate(sql.toString());
-    }
+    @SqlUpdate("DELETE FROM order_details WHERE orderId IN (<orderIds>)")
+    public void removeOrderDetailByMultipleOrderId(@BindList("orderIds") String[] orderIds);
 }

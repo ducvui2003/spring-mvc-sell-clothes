@@ -5,11 +5,13 @@ import com.spring.websellspringmvc.services.ProductCardServices;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
+
 import java.io.IOException;
 import java.util.List;
 
 @WebFilter(filterName = "productBuying", urlPatterns = {"/filterProductBuying", "/public/product/productBuying.jsp"})
 public class ProductBuying implements Filter {
+    ProductCardServices productCardServices;
     private final int DEFAULT_PAGE = 1;
 
     public void init(FilterConfig config) throws ServletException {
@@ -20,9 +22,9 @@ public class ProductBuying implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
-        List<Product> productCardList = ProductCardServices.getINSTANCE().getProducts(DEFAULT_PAGE);
+        List<Product> productCardList = productCardServices.getProducts(DEFAULT_PAGE);
         request.setAttribute("productCardList", productCardList);
-        int quantityPage = ProductCardServices.getINSTANCE().getQuantityPage();
+        int quantityPage = productCardServices.getQuantityPage();
         request.setAttribute("quantityPage", quantityPage);
         String requestURL = "/filterProductBuying?";
         request.setAttribute("requestURL", requestURL);

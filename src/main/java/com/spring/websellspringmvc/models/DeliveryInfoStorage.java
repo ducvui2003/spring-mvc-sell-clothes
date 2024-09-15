@@ -96,15 +96,4 @@ public class DeliveryInfoStorage {
         return deliveryInfoMap.get(key);
     }
 
-
-    public static void main(String[] args) {
-        DeliveryInfoStorage deliveryInfoStorage = new DeliveryInfoStorage();
-        DeliveryInfo deliveryInfo = new DeliveryInfo("A", "A", "A", "A");
-        DeliveryInfo deliveryInfo1 = new DeliveryInfo("A", "A", "A", "B");
-        DeliveryInfo deliveryInfo2 = new DeliveryInfo("A", "A", "A", "A");
-        System.out.println(deliveryInfoStorage.add("1", deliveryInfo));
-        System.out.println(deliveryInfoStorage.add("2", deliveryInfo1));
-        System.out.println(deliveryInfoStorage.add("3", deliveryInfo2));
-        System.out.println(deliveryInfoStorage.getDeliveryInfoMap());
-    }
 }

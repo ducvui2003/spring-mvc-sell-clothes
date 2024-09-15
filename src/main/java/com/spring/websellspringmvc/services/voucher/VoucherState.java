@@ -6,6 +6,11 @@ public enum VoucherState {
 
     private String value;
 
+    @Override
+    public String toString() {
+        return value;
+    }
+
     private VoucherState(String value) {
         this.value = value;
     }

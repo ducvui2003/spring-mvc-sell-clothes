@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.spring.websellspringmvc.dto.OrderDetailResponseDTO;
 import com.spring.websellspringmvc.dto.OrderItemResponseDTO;
 import com.spring.websellspringmvc.models.User;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
 import com.spring.websellspringmvc.services.HistoryService;
 import com.spring.websellspringmvc.session.SessionManager;
@@ -15,11 +18,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "OrderDetailTracking", value = "/api/user/order/detail")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderDetailTrackingController extends HttpServlet {
+    HistoryService historyService;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Gson gson = new Gson();
@@ -27,7 +35,7 @@ public class OrderDetailTrackingController extends HttpServlet {
         User user = SessionManager.getInstance(req, resp).getUser();
         int userId = user.getId();
         String orderId = req.getParameter("orderId");
-        OrderDetailResponseDTO orderDetail = HistoryService.getINSTANCE().getOrderByOrderId(orderId, userId);
+        OrderDetailResponseDTO orderDetail = historyService.getOrderByOrderId(orderId, userId);
         if (orderDetail == null) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             jsonResponse.addProperty("success", false);
@@ -69,8 +77,7 @@ public class OrderDetailTrackingController extends HttpServlet {
     }
 
 
-
-    private JsonObject getAddress(OrderDetailResponseDTO orderDetail){
+    private JsonObject getAddress(OrderDetailResponseDTO orderDetail) {
         JsonObject addressJson = new JsonObject();
         addressJson.addProperty("province", orderDetail.getProvince());
         addressJson.addProperty("district", orderDetail.getDistrict());
@@ -78,4 +85,5 @@ public class OrderDetailTrackingController extends HttpServlet {
         addressJson.addProperty("detail", orderDetail.getDetail());
         return addressJson;
     }
+
 }

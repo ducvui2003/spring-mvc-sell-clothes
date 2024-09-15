@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.services;
 
+import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderDaoUser;
 import com.spring.websellspringmvc.dto.OrderDetailResponseDTO;
 import com.spring.websellspringmvc.dto.OrderItemResponseDTO;
@@ -7,24 +8,20 @@ import com.spring.websellspringmvc.dto.OrderResponseDTO;
 import com.spring.websellspringmvc.models.Image;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Product;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HistoryService {
-    private static HistoryService INSTANCE;
-    private OrderDaoUser orderDAO;
-
-    private HistoryService() {
-        this.orderDAO = new OrderDaoUser();
-    }
-
-    public static HistoryService getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new HistoryService();
-        return INSTANCE;
-    }
+    OrderDAO orderDAO;
 
     public List<OrderDetail> getOrderDetailByOrderId(List<String> listId) {
         if (listId.isEmpty()) return new ArrayList<>();

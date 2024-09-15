@@ -7,56 +7,68 @@ import com.spring.websellspringmvc.services.ProductServices;
 
 import java.util.List;
 
+
 public class ProductFactory {
+    ProductCardServices productCardServices;
 
-    public static Product getProductById(int productId){
-        return ProductServices.getINSTANCE().getProductByProductId(productId);
+    public static Product getProductById(int productId) {
+//        return ProductServices.getINSTANCE().getProductByProductId(productId);
+        return null;
     }
 
-    public static List<Image> getListImagesByProductId(int productId){
-        return ProductServices.getINSTANCE().getListImagesByProductId(productId);
+    public static List<Image> getListImagesByProductId(int productId) {
+//        return ProductServices.getINSTANCE().getListImagesByProductId(productId);
+        return null;
     }
 
-    public static List<Color> getListColorsByProductId(int productId){
-        return ProductServices.getINSTANCE().getListColorsByProductId(productId);
+    public static List<Color> getListColorsByProductId(int productId) {
+//        return ProductServices.getINSTANCE().getListColorsByProductId(productId);
+        return null;
     }
 
-    public static List<Size> getListSizesByProductId(int productId){
-        return ProductServices.getINSTANCE().getListSizesByProductId(productId);
+    public static List<Size> getListSizesByProductId(int productId) {
+//        return ProductServices.getINSTANCE().getListSizesByProductId(productId);
+        return null;
     }
 
-    public static double getPriceSizeByName(String nameSize, int productId){
-        return ProductServices.getINSTANCE().getPriceSizeByName(nameSize, productId);
+    public static double getPriceSizeByName(String nameSize, int productId) {
+//        return ProductServices.getINSTANCE().getPriceSizeByName(nameSize, productId);
+        return 0;
     }
 
     public static int getReviewCount(int productId) {
-        return ProductCardServices.getINSTANCE().getReviewCount(productId);
-    }
-    public static int calculateStar(int productId) {
-        return ProductCardServices.getINSTANCE().calculateStar(productId);
-    }
-    public static Size getSizeByNameSizeWithProductId(String nameSize, int productId){
-        return ProductServices.getINSTANCE().getSizeByNameSizeWithProductId(nameSize, productId);
+//        return ProductCardServices.getINSTANCE().getReviewCount(productId);
+        return 0;
     }
 
-    public static Color getColorByCodeColorWithProductId(String codeColor, int productId){
-        return ProductServices.getINSTANCE().getColorByCodeColorWithProductId(codeColor, productId);
+    public static int calculateStar(int productId) {
+//        return ProductCardServices.getINSTANCE().calculateStar(productId);
+        return 0;
+    }
+
+    public static Size getSizeByNameSizeWithProductId(String nameSize, int productId) {
+//        return ProductServices.getINSTANCE().getSizeByNameSizeWithProductId(nameSize, productId);
+        return null;
+    }
+
+    public static Color getColorByCodeColorWithProductId(String codeColor, int productId) {
+//        return ProductServices.getINSTANCE().getColorByCodeColorWithProductId(codeColor, productId);
+        return null;
     }
 
     public static String getNameCategoryById(int id) {
-        return ProductCardServices.getINSTANCE().getNameCategoryById(id);
+//        return ProductCardServices.getINSTANCE().getNameCategoryById(id);
+        return null;
     }
 
     public static User getUserByIdOrderDetail(int orderDetailId) {
-        return AdminReviewServices.getINSTANCE().getUserByIdProductDetail(orderDetailId);
+//        return AdminReviewServices.getINSTANCE().getUserByIdProductDetail(orderDetailId);
+        return null;
     }
 
     public static String getNameProductByIdOrderDetail(int orderDetailId) {
-        return ProductCardServices.getINSTANCE().getNameProductByIdOrderDetail(orderDetailId);
-    }
-
-    public static Product getMaxId(){
-        return ProductServices.getINSTANCE().getMaxId();
+//        return ProductCardServices.getINSTANCE().getNameProductByIdOrderDetail(orderDetailId);
+        return null;
     }
 
 }

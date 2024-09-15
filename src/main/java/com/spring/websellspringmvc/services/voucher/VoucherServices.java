@@ -1,31 +1,26 @@
 package com.spring.websellspringmvc.services.voucher;
 
-import com.spring.websellspringmvc.dao.ShoppingCartDao;
 import com.spring.websellspringmvc.dao.VoucherDAO;
-import com.spring.websellspringmvc.dto.VoucherDTO;
-import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.dto.VoucherDetailRequest;
+import com.spring.websellspringmvc.models.CartItem;
+import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.models.Voucher;
 import com.spring.websellspringmvc.utils.Comparison;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VoucherServices {
-    VoucherDAO voucherDAO = new VoucherDAO();
-    private static VoucherServices INSTANCE;
-    private ShoppingCartDao shoppingCartDao;
-
-    private VoucherServices() {
-        this.shoppingCartDao = new ShoppingCartDao();
-    }
-
-    public static VoucherServices getINSTANCE() {
-        if (INSTANCE == null) {
-            INSTANCE = new VoucherServices();
-        }
-        return INSTANCE;
-    }
+    VoucherDAO voucherDAO;
 
     public List<Voucher> getAll() {
         List<Voucher> listVoucher = voucherDAO.selectAll();
@@ -37,46 +32,47 @@ public class VoucherServices {
         return listVoucher;
     }
 
-    public VoucherDTO canApply(User user, String code, List<Integer> listIdProduct) {
-        VoucherDTO voucherDTO = new VoucherDTO();
+    public VoucherDetailRequest canApply(User user, String code, List<Integer> listIdProduct) {
+        VoucherDetailRequest voucherDetailRequest = new VoucherDetailRequest();
         if (listIdProduct == null || listIdProduct.isEmpty()) {
-            voucherDTO.setState(VoucherApplyState.NOT_FOUND.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.NOT_FOUND.getValue());
+            return voucherDetailRequest;
         }
 //        Kiểm tra danh sách sản phẩm gửi lên có nằm trong giỏ hàng của user không ?
-        List<CartItem> listCartItem = shoppingCartDao.getCartProductByProductIdAndUserId(listIdProduct, user.getId());
+//        List<CartItem> listCartItem = shoppingCartDao.getCartProductByProductIdAndUserId(listIdProduct, user.getId());
+        List<CartItem> listCartItem = null;
         if (listCartItem == null || listCartItem.isEmpty()) {
-            voucherDTO.setState(VoucherApplyState.NOT_FOUND.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.NOT_FOUND.getValue());
+            return voucherDetailRequest;
         }
 //        Kiểm tra xem mã giảm giá có tồn tại không?
         Voucher voucher = voucherDAO.selectByCode(code);
         if (voucher == null) {
-            voucherDTO.setState(VoucherApplyState.NOT_FOUND.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.NOT_FOUND.getValue());
+            return voucherDetailRequest;
         }
 //       Kiểm tra xem voucher còn lượt sử dụng không?
         if (voucher.getAvailableTurns() == 0) {
-            voucherDTO.setState(VoucherApplyState.EMPTY_AVAILABLE_TURN.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.EMPTY_AVAILABLE_TURN.getValue());
+            return voucherDetailRequest;
         }
 
         LocalDate current = LocalDate.now();
         LocalDate givenDate = voucher.getExpiryDate().toLocalDate().plusDays(1);
         if (current.isAfter(givenDate)) {
-            voucherDTO.setState(VoucherApplyState.EXPIRED.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.EXPIRED.getValue());
+            return voucherDetailRequest;
         }
 
         VoucherProductStrategy strategy = new VoucherProductStrategy(listCartItem, voucher);
         if (!strategy.apply()) {
-            voucherDTO.setState(VoucherApplyState.CAN_NOT_APPLY.getValue());
-            return voucherDTO;
+            voucherDetailRequest.setState(VoucherApplyState.CAN_NOT_APPLY.getValue());
+            return voucherDetailRequest;
         }
-        voucherDTO.setVoucher(voucher);
-        voucherDTO.setState(VoucherApplyState.CAN_APPLY.getValue());
-        voucherDTO.setListIdProduct(listIdProduct);
-        return voucherDTO;
+        voucherDetailRequest.setVoucher(voucher);
+        voucherDetailRequest.setState(VoucherApplyState.CAN_APPLY.getValue());
+        voucherDetailRequest.setListIdProduct(listIdProduct);
+        return voucherDetailRequest;
     }
 
     public List<Voucher> getVoucher(Integer start, Integer length, String searchValue, String orderBy, String orderDir) {
@@ -96,13 +92,13 @@ public class VoucherServices {
         return true;
     }
 
-    public VoucherDTO getDetail(String code) {
+    public VoucherDetailRequest getDetail(String code) {
         Voucher voucher = voucherDAO.selectByCode(code);
         if (voucher == null) return null;
-        VoucherDTO voucherDTO = new VoucherDTO();
-        voucherDTO.setVoucher(voucher);
-        voucherDTO.setListIdProduct(voucherDAO.getListProductByCode(code));
-        return voucherDTO;
+        VoucherDetailRequest voucherDetailRequest = new VoucherDetailRequest();
+        voucherDetailRequest.setVoucher(voucher);
+        voucherDetailRequest.setListIdProduct(voucherDAO.getListProductByCode(code));
+        return voucherDetailRequest;
     }
 
     public void changeState(String code, VoucherState type) {

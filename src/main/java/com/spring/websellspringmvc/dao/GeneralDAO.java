@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.services.LogService;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -21,17 +20,18 @@ public class GeneralDAO {
 
     }
 
-    public <T> List<T> executeQueryWithSingleTable(String sql, Class<T> type, Object... params) {
-        Handle handle = jdbi.open();
-        Query query = handle.createQuery(sql);
-        query.setFetchSize(Integer.MIN_VALUE);
-
-        if (params != null) {
-            for (int i = 0; i < params.length; i++) {
-                query.bind(i, params[i]);
-            }
-        }
-        return query.mapToBean(type).list();
+    public static <T> List<T> executeQueryWithSingleTable(String sql, Class<T> type, Object... params) {
+//        Handle handle = jdbi.open();
+//        Query query = handle.createQuery(sql);
+//        query.setFetchSize(Integer.MIN_VALUE);
+//
+//        if (params != null) {
+//            for (int i = 0; i < params.length; i++) {
+//                query.bind(i, params[i]);
+//            }
+//        }
+//        return query.mapToBean(type).list();
+        return null;
     }
 
     public List<Map<String, Object>> executeQueryWithJoinTables(String sql, Object... params) {
@@ -72,11 +72,6 @@ public class GeneralDAO {
             for (int i = 0; i < params.length; i++) {
                 insert.bind(i, params[i]);
             }
-        }
-        try {
-            LogService.getINSTANCE().insertLog(sql, params);
-        } catch (Exception e) {
-            System.out.println("Lỗi bởi ghi log trong general dao [executeInsert]>> " + e.getMessage());
         }
         return insert.executeAndReturnGeneratedKeys("id") // "id" is the column name of the generated key
                 .mapTo(Integer.class)

@@ -1,22 +1,26 @@
 package com.spring.websellspringmvc.services.voucher;
 
-import com.spring.websellspringmvc.dao.ProductDao;
+import com.spring.websellspringmvc.dao.ProductDAO;
 import com.spring.websellspringmvc.dao.VoucherDAO;
 import com.spring.websellspringmvc.models.CartItem;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.models.Voucher;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class VoucherProductStrategy implements IVoucherStrategy {
-    protected List<CartItem> cartItems;
-    protected Voucher voucher;
-    protected static VoucherDAO voucherDAO = new VoucherDAO();
-    protected ProductDao productDao = new ProductDao();
-    protected List<Integer> listProductIdCanApply;
+    List<CartItem> cartItems;
+    Voucher voucher;
+    VoucherDAO voucherDAO;
+    ProductDAO productDao;
+    List<Integer> listProductIdCanApply;
 
     public VoucherProductStrategy(List<CartItem> cartItems, Voucher voucher) {
         this.cartItems = cartItems;

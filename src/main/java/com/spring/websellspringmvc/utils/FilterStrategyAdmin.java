@@ -17,125 +17,126 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterStrategyAdmin extends FilterStrategy {
+public class FilterStrategyAdmin {
     private final int QUANTITY_PAGE_DEFAULT = 5;
     private int quantityPageMin;
     private int quantityPageMax;
     private int currentPage;
+//    public FilterStrategyAdmin(HttpServletRequest request) {
+//        super(request);
+//    }
+//
+//    public FilterStrategyAdmin(HttpServletRequest request, HttpServletResponse response) {
+//        super(request, response);
+//    }
 
-    public FilterStrategyAdmin(HttpServletRequest request) {
-        super(request);
-    }
-
-    public FilterStrategyAdmin(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
-    }
-
-    @Override
+//    @Override
     public void doFilter() {
-        List<Integer> filterByDate;
-        try {
-            filterByDate = filterByTimeUpdate();
-        } catch (ParseException ignored) {
-            filterByDate = new ArrayList<>();
-        }
-
-        List<Integer> filterByName = filterByNameProduct();
-        List<Integer> filterByColor = filterByColor();
-        List<Integer> filterByCategoryId = filterByCategory();
-        List<Integer> filterByMoneyRange = filterMyMoney();
-        List<Integer> filterBySize = filterBySize();
-
-        String pageNumber = request.getParameter("page");
-        int page;
-        try {
-            page = Integer.parseInt(pageNumber);
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-        List<List<Integer>> listId = new ArrayList<>();
-        listId.add(filterByDate);
-        listId.add(filterByName);
-        listId.add(filterByColor);
-        listId.add(filterByCategoryId);
-        listId.add(filterByMoneyRange);
-        listId.add(filterBySize);
-
-        List<Integer> listIDFiltered = findCommonIDs(listId);
-        List<Product> productCardFiltered;
-        if (listIDFiltered.isEmpty()) {
-            productCardFiltered = AdminProductServices.getINSTANCE().filter(null, page);
-        } else {
-            productCardFiltered = AdminProductServices.getINSTANCE().filter(listIDFiltered, page);
-        }
-
-        int quantityPage;
-        if (productCardFiltered.isEmpty()) {
-            quantityPage = 0;
-        } else {
-            quantityPage = AdminProductServices.getINSTANCE().getQuantityPage(listIDFiltered);
-        }
-
-        StringBuffer requestURL = request.getRequestURL();
-        String queryString = request.getQueryString();
-        queryString = cutParameterInURL(queryString, "page");
-        requestURL.append("?").append(queryString);
-
-        List<String> listInputChecked = listValueChecked(queryString);
-
-        List<DetailProduct> detailProducts = new ArrayList<>();
-        productCardFiltered.forEach(product -> {
-            DetailProduct dp = new DetailProduct(product,
-                    ProductFactory.getListImagesByProductId(product.getId()),
-                    ProductFactory.calculateStar(product.getId()),
-                    ProductFactory.getReviewCount(product.getId()),
-                    ProductFactory.getNameCategoryById(product.getId()));
-            detailProducts.add(dp);
-        });
-        FilteredProductResponse responseData = new FilteredProductResponse(requestURL.toString(), detailProducts, quantityPage, page, listInputChecked);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonResponse = null;
-        try {
-            jsonResponse = mapper.writeValueAsString(responseData);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(jsonResponse);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        List<Integer> filterByDate;
+//        try {
+//            filterByDate = filterByTimeUpdate();
+//        } catch (ParseException ignored) {
+//            filterByDate = new ArrayList<>();
+//        }
+//
+//        List<Integer> filterByName = filterByNameProduct();
+//        List<Integer> filterByColor = filterByColor();
+//        List<Integer> filterByCategoryId = filterByCategory();
+//        List<Integer> filterByMoneyRange = filterMyMoney();
+//        List<Integer> filterBySize = filterBySize();
+//
+//        String pageNumber = request.getParameter("page");
+//        int page;
+//        try {
+//            page = Integer.parseInt(pageNumber);
+//        } catch (NumberFormatException e) {
+//            page = 1;
+//        }
+//        List<List<Integer>> listId = new ArrayList<>();
+//        listId.add(filterByDate);
+//        listId.add(filterByName);
+//        listId.add(filterByColor);
+//        listId.add(filterByCategoryId);
+//        listId.add(filterByMoneyRange);
+//        listId.add(filterBySize);
+//
+//        List<Integer> listIDFiltered = findCommonIDs(listId);
+//        List<Product> productCardFiltered;
+//        if (listIDFiltered.isEmpty()) {
+//            productCardFiltered = AdminProductServices.getINSTANCE().filter(null, page);
+//        } else {
+//            productCardFiltered = AdminProductServices.getINSTANCE().filter(listIDFiltered, page);
+//        }
+//
+//        int quantityPage;
+//        if (productCardFiltered.isEmpty()) {
+//            quantityPage = 0;
+//        } else {
+//            quantityPage = AdminProductServices.getINSTANCE().getQuantityPage(listIDFiltered);
+//        }
+//
+//        StringBuffer requestURL = request.getRequestURL();
+//        String queryString = request.getQueryString();
+//        queryString = cutParameterInURL(queryString, "page");
+//        requestURL.append("?").append(queryString);
+//
+//        List<String> listInputChecked = listValueChecked(queryString);
+//
+//        List<DetailProduct> detailProducts = new ArrayList<>();
+//        productCardFiltered.forEach(product -> {
+//            DetailProduct dp = new DetailProduct(product,
+//                    ProductFactory.getListImagesByProductId(product.getId()),
+//                    ProductFactory.calculateStar(product.getId()),
+//                    ProductFactory.getReviewCount(product.getId()),
+//                    ProductFactory.getNameCategoryById(product.getId()));
+//            detailProducts.add(dp);
+//        });
+//        FilteredProductResponse responseData = new FilteredProductResponse(requestURL.toString(), detailProducts, quantityPage, page, listInputChecked);
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonResponse = null;
+//        try {
+//            jsonResponse = mapper.writeValueAsString(responseData);
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(jsonResponse);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private List<Integer> filterByTimeUpdate() throws ParseException {
-        String dateQueryString = request.getParameter("date");
-        if (dateQueryString == null || dateQueryString.isEmpty()) return new ArrayList<>();
-
-        try {
-            String[] dates = dateQueryString.split(" - ");
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate dateStart = LocalDate.parse(dates[0], dateFormatter);
-            LocalDate dateEnd = LocalDate.parse(dates[1], dateFormatter);
-
-            // Convert LocalDate to java.sql.Date for database operations
-            Date sqlDateStart = Date.valueOf(dateStart);
-            Date sqlDateEnd = Date.valueOf(dateEnd);
-            request.setAttribute("sqlDateStart", sqlDateStart);
-            request.setAttribute("sqlDateEnd", sqlDateEnd);
-            List<Integer> listId = AdminProductServices.getINSTANCE().getProductByTimeCreated(sqlDateStart, sqlDateEnd);
-            return listId;
-        } catch (DateTimeParseException | IllegalArgumentException e) {
-            throw new ParseException(e.getMessage(), 0);
-        }
+//        String dateQueryString = request.getParameter("date");
+//        if (dateQueryString == null || dateQueryString.isEmpty()) return new ArrayList<>();
+//
+//        try {
+//            String[] dates = dateQueryString.split(" - ");
+//            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//            LocalDate dateStart = LocalDate.parse(dates[0], dateFormatter);
+//            LocalDate dateEnd = LocalDate.parse(dates[1], dateFormatter);
+//
+//            // Convert LocalDate to java.sql.Date for database operations
+//            Date sqlDateStart = Date.valueOf(dateStart);
+//            Date sqlDateEnd = Date.valueOf(dateEnd);
+//            request.setAttribute("sqlDateStart", sqlDateStart);
+//            request.setAttribute("sqlDateEnd", sqlDateEnd);
+//            List<Integer> listId = AdminProductServices.getINSTANCE().getProductByTimeCreated(sqlDateStart, sqlDateEnd);
+//            return listId;
+//        } catch (DateTimeParseException | IllegalArgumentException e) {
+//            throw new ParseException(e.getMessage(), 0);
+//        }
+        return null;
     }
 
     private List<Integer> filterByNameProduct() {
-        String nameProduct = request.getParameter("keyword");
-        if (nameProduct == null || nameProduct.isBlank()) return new ArrayList<>();
-
-        List<Integer> listId = AdminProductServices.getINSTANCE().getProductByName(nameProduct);
-        request.setAttribute("keyword", nameProduct);
-
-        return listId;
+//        String nameProduct = request.getParameter("keyword");
+//        if (nameProduct == null || nameProduct.isBlank()) return new ArrayList<>();
+//
+//        List<Integer> listId = AdminProductServices.getINSTANCE().getProductByName(nameProduct);
+//        request.setAttribute("keyword", nameProduct);
+//
+//        return listId;
+        return null;
     }
 
     private class DetailProduct {

@@ -1,136 +1,56 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.models.Product;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class DashboardDAO {
-    public int countUser() {
-        String querry = "SELECT id FROM users";
-        return GeneralDAO.executeQueryWithSingleTable(querry, User.class).size();
-    }
+@Repository
+public interface DashboardDAO {
 
-    public int countProduct() {
-        String querry = "SELECT id FROM products";
-        return GeneralDAO.executeQueryWithSingleTable(querry, Product.class).size();
-    }
+    @SqlQuery("SELECT count(*) FROM users")
+    public int countUser();
 
-    public int countOrder() {
-        String querry = "SELECT id FROM orders";
-        return GeneralDAO.executeQueryWithSingleTable(querry, Order.class).size();
-    }
+    @SqlQuery("SELECT count(*) FROM products")
+    public int countProduct();
 
-    public int countReview() {
-        String querry = "SELECT id FROM reviews";
-        return GeneralDAO.executeQueryWithSingleTable(querry, Review.class).size();
-    }
+    @SqlQuery("SELECT count(*) FROM orders")
+    public int countOrder();
 
-    public List<OrderDetail> getTop5Product() {
-        String querry = "SELECT products.id, products.name, SUM(quantityRequired)\n" +
-                "FROM order_details  INNER JOIN products ON products.id = order_details.productId\n" +
-                "GROUP BY products.id, products.name\n" +
-                "ORDER BY SUM(quantityRequired) DESC\n" +
-                "LIMIT 5";
-        return GeneralDAO.executeQueryWithSingleTable(querry, OrderDetail.class);
-    }
+    @SqlQuery("SELECT count(*) FROM reviews")
+    public int countReview();
 
-    public List<Product> getTop5ProductName(int productId) {
-        String querry = "SELECT name FROM products WHERE id=?";
-        return GeneralDAO.executeQueryWithSingleTable(querry, Product.class, productId);
-    }
+    @SqlQuery("SELECT COUNT(*) count FROM orders WHERE MONTH(dateOrder) = :month AND YEAR(dateOrder) = :year AND orderStatusId = 4")
+    public Long quantityOrderSuccess(@Bind("month") String month, @Bind("year") String year);
 
-    public List<OrderDetail> getTop5ProductQuantity(int productId) {
-        String querry = "SELECT quantityRequired FROM order_details WHERE productId=?";
-        return GeneralDAO.executeQueryWithSingleTable(querry, OrderDetail.class, productId);
-    }
+    @SqlQuery("SELECT COUNT(*) count FROM orders WHERE MONTH(dateOrder) = :month AND YEAR(dateOrder) = :year AND orderStatusId = 5")
+    public Long quantityOrderFailed(@Bind("month") String month, @Bind("year") String year);
 
-    public List<Order> getOrderByMonth(int month) {
-        String querry = "SELECT * FROM orders WHERE MONTH(dateOrder)=?";
-        return GeneralDAO.executeQueryWithSingleTable(querry, Order.class, month);
-    }
+    @SqlQuery("""
+            SELECT products.id, products.name, SUM(quantityRequired) as total 
+            FROM orders JOIN (order_details JOIN products ON products.id = order_details.productId) ON orders.id = order_details.orderId 
+            WHERE YEAR(orders.dateOrder) = :year AND MONTH(orders.dateOrder) = :month AND orders.orderStatusId = 4 
+            GROUP BY products.id, products.name 
+            ORDER BY total DESC 
+            LIMIT 5
+            """)
+    public Map<Product, Integer> getListProductPopular(String month, String year);
 
-    public List<OrderDetail> getOrderByOrderId(String orderId) {
-        String querry = "SELECT quantityRequired, price FROM order_details WHERE orderId = ?";
-        return GeneralDAO.executeQueryWithSingleTable(querry, OrderDetail.class, orderId);
-    }
+    @SqlQuery("""
+            SELECT products.id, products.name, SUM(quantityRequired) as total 
+            FROM orders JOIN (order_details JOIN products ON products.id = order_details.productId) ON orders.id = order_details.orderId 
+            WHERE YEAR(orders.dateOrder) = :year AND MONTH(orders.dateOrder) = :month AND orders.orderStatusId = 4 
+            GROUP BY products.id, products.name 
+            ORDER BY total ASC 
+            LIMIT 5
+            """)
+    public Map<Product, Integer> getListProductNotPopular(@Bind("month") String month, @Bind("year") String year);
 
-    public List<OrderDetail> getOrderDetailByOrderId(String orderId) {
-        String querry = "SELECT quantityRequired FROM order_details WHERE orderId=?";
-        return GeneralDAO.executeQueryWithSingleTable(querry, OrderDetail.class, orderId);
-    }
-
-    public Long quantityOrderSuccess(String month, String year) {
-        LogDAOImp.CountResult result = new LogDAOImp.CountResult();
-        String query = "SELECT COUNT(*) count FROM orders WHERE MONTH(dateOrder) = ? AND YEAR(dateOrder) = ? AND orderStatusId = 4";
-        GeneralDAO.customExecute(handle -> {
-            result.setCount(handle.createQuery(query)
-                    .bind(0, month)
-                    .bind(1, year)
-                    .mapTo(Long.class)
-                    .one());
-        });
-        return result.getCount();
-    }
-
-    public Long quantityOrderFailed(String month, String year) {
-        LogDAOImp.CountResult result = new LogDAOImp.CountResult();
-        String query = "SELECT COUNT(*) count FROM orders WHERE MONTH(dateOrder) = ? AND YEAR(dateOrder) = ? AND orderStatusId = 5";
-        GeneralDAO.customExecute(handle -> {
-            result.setCount(handle.createQuery(query)
-                    .bind(0, month)
-                    .bind(1, year)
-                    .mapTo(Long.class)
-                    .one());
-        });
-        return result.getCount();
-    }
-
-    public Map<Product, Integer> getListProductPopular(String month, String year) {
-        String query = "SELECT products.id, products.name, SUM(quantityRequired) as total " +
-                "FROM orders JOIN (order_details JOIN products ON products.id = order_details.productId) ON orders.id = order_details.orderId " +
-                "WHERE YEAR(orders.dateOrder) = ? AND MONTH(orders.dateOrder) = ? AND orders.orderStatusId = 4 " +
-                "GROUP BY products.id, products.name " +
-                "ORDER BY total DESC " +
-                "LIMIT 5 ";
-        List<Map<String, Object>> resultDB = GeneralDAO.executeQueryWithJoinTables(query, year, month);
-        Map<Product, Integer> result = new HashMap<>();
-        for (Map<String, Object> map : resultDB) {
-            Product product = new Product();
-            product.setId((Integer) map.get("id"));
-            product.setName((String) map.get("name"));
-            result.put(product, ((BigDecimal) map.get("total")).intValue());
-        }
-        return result;
-    }
-
-    public Map<Product, Integer> getListProductNotPopular(String month, String year) {
-        String query = "SELECT products.id, products.name, SUM(quantityRequired) as total " +
-                "FROM orders JOIN (order_details JOIN products ON products.id = order_details.productId) ON orders.id = order_details.orderId " +
-                "WHERE YEAR(orders.dateOrder) = ? AND MONTH(orders.dateOrder) = ? AND orders.orderStatusId = 4 " +
-                "GROUP BY products.id, products.name " +
-                "ORDER BY total ASC " +
-                "LIMIT 5 ";
-        List<Map<String, Object>> resultDB = GeneralDAO.executeQueryWithJoinTables(query, year, month);
-        Map<Product, Integer> result = new HashMap<>();
-        for (Map<String, Object> map : resultDB) {
-            Product product = new Product();
-            product.setId((Integer) map.get("id"));
-            product.setName((String) map.get("name"));
-            result.put(product, ((BigDecimal) map.get("total")).intValue());
-        }
-        return result;
-    }
-
-//    public Double getRevenueByMonth(String month, String year) {
-//        String query = "SELECT SUM(order_details.quantityRequired * order_details.price) FROM `order_details` join orders on order_details.orderId = orders.id " +
-//                "WHERE MONTH(orders.dateOrder) = ? AND YEAR(orders.dateOrder) = ? AND orders.orderStatusId = 4 ";
-//        return JDBIConfig.get().withHandle(handle -> handle.createQuery(query)
-//                .bind(0, month)
-//                .bind(1, year)
-//                .mapTo(Double.class)
-//                .one());
-//    }
+    @SqlQuery("""
+            SELECT SUM(order_details.quantityRequired * order_details.price) FROM `order_details` join orders on order_details.orderId = orders.id 
+            WHERE MONTH(orders.dateOrder) = :month AND YEAR(orders.dateOrder) = :year AND orders.orderStatusId = 4 
+            """)
+    public Double getRevenueByMonth(@Bind("month") String month, @Bind("year") String year);
 }

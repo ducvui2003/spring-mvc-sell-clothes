@@ -1,22 +1,19 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.config.JDBIConfig;
 import com.spring.websellspringmvc.models.User;
-import lombok.RequiredArgsConstructor;
-import org.jdbi.v3.core.Jdbi;
+import org.hibernate.annotations.processing.SQL;
 import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.springframework.context.annotation.Bean;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
-import org.jdbi.v3.sqlobject.statement.SqlQuery;
 
 
 @Repository
@@ -29,309 +26,72 @@ public interface UserDAO {
     @SqlQuery("SELECT id, username, fullName, passwordEncoding, gender, phone, email, address, birthday, isVerify, role, avatar FROM users WHERE username = :username AND isVerify = isVerify")
     List<User> selectByUsername(@Bind("username") String username, @Bind("isVerify") boolean isVerify);
 
+    @SqlQuery("SELECT id, username, fullName, passwordEncoding, gender, phone, email, address, birthday, isVerify, role, avatar FROM users WHERE email = :email AND isVerify = :isVerify")
+    List<User> selectByEmail(@Bind("email") String email, @Bind("isVerify") String isVerify);
 
-    List<User> selectByEmail(String email, String isVerify);
+    @SqlQuery("SELECT id FROM users WHERE username = :username")
+    List<User> findUsername(@Bind("username") String username);
 
-    List<User> findUsername(String username);
+    @SqlQuery("SELECT id FROM users WHERE email = :email")
+    List<User> findEmail(@Bind("email") String email);
 
-    List<User> findEmail(String email);
+    @SqlQuery("UPDATE users SET passwordEncoding = :passwordEncoding WHERE id = :id AND passwordEncoding = :passwordEncoding")
+    void updatePasswordEncoding(@Bind("id") int id, @Bind("passwordEncoding") String passwordEncoding);
 
-    int updatePasswordEncoding(int id, String pass);
-
+    @SqlQuery("SELECT id, tokenVerifyTime, tokenVerify FROM users WHERE username = ? AND isVerify = 0")
     List<User> selectTokenVerify(String username);
 
-    void updateTokenVerify(int id, String token, Timestamp timeTokenExpired);
+    @SqlUpdate("UPDATE users SET tokenVerify = :tokenVerify, tokenVerifyTime = :tokenVerifyTime WHERE id = :id")
+    void updateTokenVerify(@Bind("id") int id, @Bind("tokenVerify") String tokenVerify, @Bind("timeTokenExpired") Timestamp timeTokenExpired);
 
-    void updateVerify(int id, boolean status);
+    @SqlQuery("UPDATE users SET isVerify = :isVerify WHERE id = :id")
+    void updateVerify(@Bind(":id") int id, @Bind("status") boolean isVerify);
 
-    List<User> selectTokenResetPassword(String email);
+    @SqlQuery("SELECT id, tokenResetPassword, tokenResetPasswordTime FROM users WHERE email = :email")
+    List<User> selectTokenResetPassword(@Bind("email") String email);
 
-    void updateTokenResetPassword(int id, String token, Timestamp timeTokenExpired);
+    @SqlQuery("UPDATE users SET tokenResetPassword = :tokenResetPassword, tokenResetPasswordTime = :tokenResetPasswordTime WHERE id = :id")
+    void updateTokenResetPassword(@Bind(":id") int id, @Bind(":tokenResetPassword") String tokenResetPassword, @Bind("tokenResetPasswordTime") Timestamp tokenResetPasswordTime);
 
-    int insert(User user);
+    @SqlUpdate("""
+            INSERT INTO users (username, passwordEncoding, fullName, gender, email, phone, address, birthDay, isVerify, role, avatar, tokenVerifyTime, tokenVerify, tokenResetPasswordTime, tokenResetPassword) 
+            VALUES ( :username, :passwordEncoding, :fullName, :gender, :email, :phone, :address, :birthDay, :isVerify, :role, :avatar, :tokenVerifyTime, :tokenVerify, :tokenResetPasswordTime, :tokenResetPassword)
+            """)
+    @GetGeneratedKeys
+    void insert(@BindBean User user);
 
-    int insertAll(List<User> list);
+    @SqlQuery("UPDATE users SET fullName = :fullName, gender = :gender, phone = :phone, birthDay = :birthDay WHERE id = :id")
+    void updateUserById(@Bind("id") int id, @Bind("fullName") String fullName, @Bind("gender") String gender, @Bind("phone") String phone, @Bind("birthDay") Date birthDay);
 
-    List<User> selectALl();
+    @SqlUpdate("UPDATE users SET fullName = :fullName, gender = :gender, phone = :phone, birthDay = :birthDay, role = :role WHERE id = :id")
+    public void updateUser(@BindBean User user);
 
-    void deleteUserById(int id);
+    @SqlUpdate("UPDATE users SET passwordEncoding = :password WHERE id = :id")
+    public void updateUserPassword(@Bind("id") int userId, @Bind("password") String password);
 
-    List<User> searchUsersByName(String search);
+    @SqlQuery("UPDATE users SET avatar = :avatar WHERE id = :id")
+    public void updateInfoUser(@Bind("id") int id, @Bind("avatar") String avatar);
 
-    void insertUser(User user);
+    @SqlQuery("""
+            SELECT DISTINCT users.id, users.fullName 
+            FROM users JOIN (orders JOIN order_details ON orders.id = order_details.orderId) ON users.id = orders.userId 
+            WHERE order_details.id = :orderDetailId
+            """)
+    public List<User> getUserByIdProductDetail(@Bind("orderDetailId") int orderDetailId);
 
-    List<User> getUserByID(int id);
+    @SqlQuery("SELECT COUNT(*) count FROM users")
+    public long getQuantity();
 
-    void updateUserByID(int id, String fullName);
-//    public User selectById(int id) {
-//        String query = "SELECT id, username, fullName, gender, phone, email, birthday, isVerify, role, avatar FROM users WHERE id = ?";
-//        return generalDAO.executeQueryWithSingleTable(query, User.class, id).get(0);
-//    }
-//
-//    public List<User> selectByUsername(String username, String isVerify) {
-//        StringBuilder query = new StringBuilder();
-//        query.append("SELECT id, username, fullName, passwordEncoding, gender, phone, email, address, birthday, isVerify, role, avatar FROM users WHERE username = ?")
-//                .append(isVerify == null ? "" : " AND isVerify = ?");
-//        if (isVerify == null)
-//            return generalDAO.executeQueryWithSingleTable(query.toString(), User.class, username);
-//        return generalDAO.executeQueryWithSingleTable(query.toString(), User.class, username, isVerify);
-//    }
-//
-//    public List<User> selectByEmail(String email, String isVerify) {
-//        StringBuilder query = new StringBuilder();
-//        query.append("SELECT id, username, fullName, passwordEncoding, gender, phone, email, address, birthday, isVerify, role, avatar FROM users WHERE email = ?")
-//                .append(isVerify == null ? "" : " AND isVerify = ?");
-//        if (isVerify == null)
-//            return generalDAO.executeQueryWithSingleTable(query.toString(), User.class, email);
-//        return generalDAO.executeQueryWithSingleTable(query.toString(), User.class, email, isVerify);
-//    }
-//
-//
-//    public List<User> findUsername(String username) {
-//        return generalDAO.executeQueryWithSingleTable("SELECT id FROM users WHERE username = ?", User.class, username);
-//    }
-//
-//
-//    public List<User> findEmail(String email) {
-//        return generalDAO.executeQueryWithSingleTable("SELECT id FROM users WHERE email = ?", User.class, email);
-//    }
-//
-//
-//    public int updatePasswordEncoding(int id, String pass) {
-//        String statement = "UPDATE users " +
-//                "SET passwordEncoding = :passwordEncoding "
-//                + "WHERE id = :id";
-//        int count = JDBIConfig.get().withHandle(handle -> handle.createUpdate(statement)
-//                .bind("id", id)
-//                .bind("passwordEncoding", pass)
-//                .execute());
-//        return count;
-//    }
-//
-//
-//    public List<User> selectTokenVerify(String username) {
-//        String query = "SELECT id, tokenVerifyTime, tokenVerify FROM users WHERE username = ? AND isVerify = 0";
-//        return generalDAO.executeQueryWithSingleTable(query, User.class, username);
-//    }
-//
-//    public void updateTokenVerify(int id, String token, Timestamp timeTokenExpired) {
-//        String statement = "UPDATE users " +
-//                "SET tokenVerify = ?, tokenVerifyTime = ? " +
-//                "WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(statement, token, timeTokenExpired, id);
-//    }
-//
-//
-//    public void updateVerify(int id, boolean status) {
-//        String query = "UPDATE users " +
-//                "SET isVerify = ? " +
-//                "WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, status, id);
-//    }
-//
-//
-//    public List<User> selectTokenResetPassword(String email) {
-//        String query = "SELECT id, tokenResetPassword, tokenResetPasswordTime FROM users WHERE email = ?";
-//        return generalDAO.executeQueryWithSingleTable(query, User.class, email);
-//    }
-//
-//
-//    public void updateTokenResetPassword(int id, String token, Timestamp timeTokenExpired) {
-//        String query = "UPDATE users " +
-//                "SET tokenResetPassword = ?, tokenResetPasswordTime = ? " +
-//                "WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, token, timeTokenExpired, id);
-//    }
-//
-//
-//    public int insert(User user) {
-//        String statement = "INSERT INTO users (username, passwordEncoding, fullName, gender, email, phone, address, birthDay, isVerify, role, avatar, tokenVerifyTime, tokenVerify, tokenResetPasswordTime, tokenResetPassword) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-//        return JDBIConfig.get().withHandle(handle -> handle.createUpdate(statement)
-//                .bind(0, user.getUsername())
-//                .bind(1, user.getPasswordEncoding())
-//                .bind(2, user.getFullName())
-//                .bind(3, user.getGender())
-//                .bind(4, user.getEmail())
-//                .bind(5, user.getPhone())
-//                .bind(6, user.getAddress())
-//                .bind(7, user.getBirthDay())
-//                .bind(8, user.isVerify())
-//                .bind(9, user.getRole())
-//                .bind(10, user.getAvatar())
-//                .bind(11, user.getTokenVerifyTime())
-//                .bind(12, user.getTokenVerify())
-//                .bind(13, user.getTokenResetPasswordTime())
-//                .bind(14, user.getTokenResetPassword())
-//                .execute());
-//    }
-//
-//
-//    public int insertAll(List<User> list) {
-//        int count = 0;
-//        for (User item : list) {
-//            insert(item);
-//            count++;
-//        }
-//        return count;
-//    }
-//
-//
-//    public List<User> selectALl() {
-//        String querry = "Select id, username, email, fullname, gender, phone, address, birthDay, role from users ";
-//        return generalDAO.executeQueryWithSingleTable(querry, User.class);
-//    }
-//
-//
-//    public void deleteUserById(int id) {
-//        String query = "DELETE FROM users WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, id);
-//    }
-//
-//
-//    public List<User> searchUsersByName(String search) {
-//        String query = "SELECT id, username, fullName, gender, phone, email, address, birthday, isVerify, role, avatar FROM users WHERE LOWER(username) LIKE ? OR LOWER(email) LIKE ? ";
-//        return generalDAO.executeQueryWithSingleTable(query, User.class, "%" + search.toLowerCase() + "%", "%" + search.toLowerCase() + "%");
-//    }
-//
-//
-//    public void insertUser(User user) {
-//        String query = "INSERT INTO users(username, passwordEncoding, fullname, gender, email, phone, birthDay, role) VALUES(?,?,?,?,?,?,?,?,?)";
-//        generalDAO.executeAllTypeUpdate(query,
-//                user.getUsername(),
-//                user.getPasswordEncoding(),
-//                user.getFullName(),
-//                user.getGender(),
-//                user.getEmail(),
-//                user.getPhone(),
-//                user.getBirthDay(),
-//                user.getRole());
-//    }
-//
-//
-//    public List<User> getUserByID(int id) {
-//        String querry = "SELECT id, username, email, fullName, gender, phone, address, birthDay, avatar, role FROM users WHERE id = ?";
-//        return generalDAO.executeQueryWithSingleTable(querry, User.class, id);
-//    }
-//
-//
-//    public void updateUserByID(int id, String fullName, String gender, String phone, Date birthDay) {
-//        String query = "UPDATE users SET fullname = ?, gender = ?, phone = ?, birthDay = ? WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, fullName, gender, phone, birthDay, id);
-//    }
-//
-//
-//    public void updateUser(User user) {
-//        String query = "UPDATE users SET  fullname = ?, gender = ?, phone = ?, birthDay = ?, role = ? WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, user.getUsername(), user.getFullName(), user.getGender(), user.getEmail(), user.getPhone(), user.getBirthDay(), user.getRole(), user.getId());
-//    }
-//
-//
-//    public void updateUserPassword(int userId, String password) {
-//        String querry = "UPDATE users SET passwordEncoding = ? WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(querry, password, userId);
-//    }
-//
-//
-//    public int deleteAll(List<User> list) {
-//        return 0;
-//    }
-//
-//
-//    public int update(Object o) {
-//        User user = (User) o;
-//        String statement = "UPDATE users " +
-//                "SET username = :username, passwordEncoding = :passwordEncoding, fullName = :fullName, " +
-//                "gender = :gender, email = :email, phone = :phone, address = :address, birthday = :birthday, " +
-//                "isVerify = :isVerify, role = :role, avatar = :avatar, tokenVerify = :tokenVerify, " +
-//                "tokenResetPassword = :tokenResetPassword " +
-//                "WHERE id = :id";
-//        int count = JDBIConfig.get().withHandle(handle -> handle.createUpdate(statement)
-//                .bind("id", user.getId())
-//                .bind("username", user.getUsername())
-//                .bind("passwordEncoding", user.getPasswordEncoding())
-//                .bind("email", user.getEmail())
-//                .bind("fullName", user.getFullName())
-//                .bind("phone", user.getPhone())
-//                .bind("address", user.getAddress())
-//                .bind("birthday", user.getBirthDay())
-//                .bind("isVerify", user.isVerify())
-//                .bind("role", user.getRole())
-//                .bind("avatar", user.getAvatar())
-//                .bind("tokenVerify", user.getTokenVerify())
-//                .bind("tokenResetPassword", user.getTokenResetPassword())
-//                .execute());
-//        return count;
-//    }
-//
-//
-//    public List<User> getAvatar(int id) {
-//        StringBuilder sql = new StringBuilder();
-//        sql.append("SELECT avatar FROM users WHERE id = ?");
-//        return generalDAO.executeQueryWithSingleTable(sql.toString(), User.class, id);
-//    }
-//
-//
-//    public void updateInfoUser(int id, String avatar) {
-//        String query = "UPDATE users SET avatar = ? WHERE id = ?";
-//        generalDAO.executeAllTypeUpdate(query, avatar, id);
-//    }
-//
-//
-//    public List<User> getUserByIdProductDetail(int orderDetailId) {
-//        StringBuilder sql = new StringBuilder();
-//        sql.append("SELECT DISTINCT users.id, users.fullName ")
-//                .append("FROM users JOIN (orders JOIN order_details ON orders.id = order_details.orderId) ON users.id = orders.userId ")
-//                .append("WHERE order_details.id = ?");
-//        return generalDAO.executeQueryWithSingleTable(sql.toString(), User.class, orderDetailId);
-//    }
-//
-//    public long getQuantity() {
-//        String sql = "SELECT COUNT(*) count FROM users";
-//        LogDAOImp.CountResult result = new LogDAOImp.CountResult();
-//        generalDAO.customExecute(handle -> {
-//            result.setCount(handle.createQuery(sql)
-//                    .mapToBean(LogDAOImp.CountResult.class)
-//                    .list().get(0).getCount());
-//        });
-//        return result.getCount();
-//    }
-//
-//
-//    public List<User> getLimit(int limit, int offset) {
-//        String querry = "Select id, username, email, fullname, gender, phone, address, birthDay, role from users limit ? offset ?";
-//        return generalDAO.executeQueryWithSingleTable(querry, User.class, limit, offset);
-//    }
-//
-//    public List<User> selectWithCondition(Integer start, Integer length, String searchValue, String orderBy, String orderDir) {
-//        String sql = "SELECT id, username, fullName, gender, email, phone, birthday, role " + "FROM users " +
-//                "WHERE username LIKE :search OR fullName LIKE :search OR email LIKE :search OR phone LIKE :search " +
-//                "ORDER BY :orderBy :orderDir LIMIT :limit OFFSET :start";
-//        List<User> users = new ArrayList<>();
-//        generalDAO.customExecute(handle -> {
-//            users.addAll(handle.createQuery(sql)
-//                    .bind("search", "%" + searchValue + "%")
-//                    .bind("limit", length)
-//                    .bind("start", start)
-//                    .bind("orderBy", orderBy)
-//                    .bind("orderDir", orderDir)
-//                    .mapToBean(User.class)
-//                    .list());
-//        });
-//        if (orderDir.equals("desc")) {
-//            Collections.reverse(users);
-//        }
-//        return users;
-//    }
-//
-//    public long getSizeWithCondition(String searchValue) {
-//        String sql = "SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE :search OR email LIKE :search OR phone LIKE :search ";
-//        LogDAOImp.CountResult result = new LogDAOImp.CountResult();
-//        generalDAO.customExecute(handle -> {
-//            result.setCount(handle.createQuery(sql)
-//                    .bind("search", "%" + searchValue + "%")
-//                    .mapToBean(LogDAOImp.CountResult.class)
-//                    .list().get(0).getCount());
-//        });
-//        return result.getCount();
-//    }
+    @SqlQuery("Select id, username, email, fullName, gender, phone, address, birthDay, role from users limit :limit offset :offset")
+    public List<User> getLimit(@Bind("limit") int limit, @Bind("offset") int offset);
+
+    @SqlQuery("""
+            SELECT id, username, fullName, gender, email, phone, birthday, role " + "FROM users 
+            WHERE username LIKE :search OR fullName LIKE :search OR email LIKE :search OR phone LIKE :search 
+            ORDER BY :orderBy :orderDir LIMIT :limit OFFSET :start"
+            """)
+    public List<User> selectWithCondition(Integer start, Integer length, String searchValue, String orderBy, String orderDir);
+
+    @SqlQuery("SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE %:search% OR email LIKE :search OR phone LIKE :search")
+    public long getSizeWithCondition(@Bind("searchValue") String search);
 }
