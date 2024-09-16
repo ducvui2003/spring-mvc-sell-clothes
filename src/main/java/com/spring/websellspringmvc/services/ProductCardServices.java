@@ -1,12 +1,17 @@
 package com.spring.websellspringmvc.services;
 
 import com.spring.websellspringmvc.dao.*;
+import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
+import com.spring.websellspringmvc.mapper.ProductMapper;
 import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.MoneyRange;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,26 +22,26 @@ import java.util.*;
 public class ProductCardServices {
     @NonFinal
     static final int LIMIT = 9;
-    ProductDAO productDAO;
     ProductCardDAO productCardDAO;
     ReviewDAO reviewDAO;
+    ProductDAO productDAO;
     SizeDAO sizeDAO;
+    ImageDAO imageDAO;
     ColorDAO colorDAO;
     CategoryDAO categoryDAO;
+    ProductMapper productMapper = ProductMapper.INSTANCE;
+    CloudinaryUploadServices cloudinaryUploadServices;
 
     public List<Category> getAllCategory() {
-        List<Category> listCategories = categoryDAO.getAllCategory();
-        return listCategories;
+        return categoryDAO.getAllCategory();
     }
 
     public List<Color> getAllColor() {
-        List<Color> listColor = colorDAO.getAllColor();
-        return listColor;
+        return colorDAO.getAllColor();
     }
 
     public List<Size> getAllSize() {
-        List<Size> listSize = sizeDAO.getAllSize();
-        return listSize;
+        return sizeDAO.getAllSize();
     }
 
     public List<Product> getProducts(int numberPage) {
@@ -56,8 +61,7 @@ public class ProductCardServices {
 
     public List<Product> filter(List<Integer> listId, int pageNumber) {
         int offset = (pageNumber - 1) * LIMIT;
-        List<Product> productList = productCardDAO.pagingAndFilter(listId, offset, LIMIT, true);
-        return productList;
+        return productCardDAO.pagingAndFilter(listId, offset, LIMIT, true);
     }
 
     public List<Integer> getIdProductFromCategoryId(String[] categoryIds) {
@@ -171,5 +175,20 @@ public class ProductCardServices {
         return productCardDAO.getNameProductById(productId).get(0).getName();
     }
 
-
+    public Page<ProductCardResponse> filter(ProductFilter productFilter) {
+        List<Product> products = productDAO.filter(productFilter);
+        List<ProductCardResponse> response = new ArrayList<>();
+        for (Product product : products) {
+            String thumbnail = imageDAO.getThumbnail(product.getId());
+            int reviewCount = getReviewCount(product.getId());
+            int rating = calculateStar(product.getId());
+            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
+            productCardResponse.setThumbnail(cloudinaryUploadServices.getImage("product_img", thumbnail));
+            productCardResponse.setRating(rating);
+            productCardResponse.setReviewCount(reviewCount);
+            response.add(productCardResponse);
+        }
+        long total = productDAO.countFilter(productFilter);
+        return new PageImpl<>(response, productFilter.getPageable(), total);
+    }
 }

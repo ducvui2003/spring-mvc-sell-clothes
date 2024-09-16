@@ -23,5 +23,5 @@ public class Product {
     double salePrice;
     boolean visibility;
     Date createAt;
-    List<Image> images = new ArrayList<>();
+//    List<Image> images = new ArrayList<>();
 }

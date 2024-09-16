@@ -24,6 +24,8 @@ import java.util.Map;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class SignatureController {
+    CloudinaryUploadServices cloudinaryUploadServices;
+
     @PostMapping("/signature")
     public ResponseEntity<SignatureResponse> signature(@RequestBody SignatureRequest request) {
         Map<String, Object> paramsToSign = new HashMap<>();
@@ -40,7 +42,7 @@ public class SignatureController {
 
             SignatureResponse.Sign sign = new SignatureResponse.Sign();
             try {
-                String signature = CloudinaryUploadServices.getINSTANCE().generateSignature(paramsToSign);
+                String signature = cloudinaryUploadServices.generateSignature(paramsToSign);
                 sign.setSignature(signature);
                 sign.setTimestamp(timestamp);
             } catch (Exception e) {

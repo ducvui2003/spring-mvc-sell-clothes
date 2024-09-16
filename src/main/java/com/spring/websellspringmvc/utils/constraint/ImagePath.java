@@ -1,4 +1,4 @@
-package com.spring.websellspringmvc.config;
+package com.spring.websellspringmvc.utils.constraint;
 
 public enum ImagePath {
     CATEGORY("size_table"),

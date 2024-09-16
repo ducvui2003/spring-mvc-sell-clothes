@@ -11,18 +11,18 @@
                         <a href="${pageContext.request.contextPath}/" class="nav__link hvr-grow-shadow">Trang chủ</a>
                     </li>
                     <li class="nav__item">
-                        <a href="${pageContext.request.contextPath}/public/product/productBuying.jsp"
+                        <a href="/product"
                            class="nav__link hvr-grow-shadow">
                             Gian hàng
                         </a>
                     </li>
                     <li class="nav__item">
-                        <a href="${pageContext.request.contextPath}/public/contact.jsp" class="nav__link hvr-grow-shadow">
+                        <a href="${pageContext.request.contextPath}/contact" class="nav__link hvr-grow-shadow">
                             Liên hệ
                         </a>
                     </li>
                     <li class="nav__item">
-                        <a href="<c:url value="/public/about.jsp" />" class="nav__link hvr-grow-shadow"> Về
+                        <a href="<c:url value="/about" />" class="nav__link hvr-grow-shadow"> Về
                             chúng tôi
                         </a>
                     </li>
@@ -82,9 +82,10 @@
                                         <div class="setting__link">Tài khoản của tôi</div>
                                     </a>
                                     <c:if test="${auth.role == 2 || auth.role == 1}">
-                                        <a href="<c:url value="/public/admin/adminProducts.jsp" />" class="setting__item">
-                                        <div class="setting__link">Quản lý</div>
-                                    </a>
+                                        <a href="<c:url value="/public/admin/adminProducts.jsp" />"
+                                           class="setting__item">
+                                            <div class="setting__link">Quản lý</div>
+                                        </a>
                                     </c:if>
                                     <a href="<c:url value="/signOut" />" class="setting__item">
                                         <div class="setting__link setting__logOut">Đăng xuất</div>

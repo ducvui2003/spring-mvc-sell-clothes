@@ -42,7 +42,7 @@ public interface ReviewDAO {
 
     @SqlQuery(
             """
-                    SELECT reviews.orderDetailId, reviews.ratingStar, reviews.feedback, reviews.reviewDate 
+                    SELECT COUNT(*) 
                     FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id 
                     WHERE order_details.productId = :productId AND reviews.visibility = :visibility
                     """

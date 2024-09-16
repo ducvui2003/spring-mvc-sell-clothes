@@ -1,14 +1,11 @@
 package com.spring.websellspringmvc.controller.web.product;
 
-import com.spring.websellspringmvc.config.ConfigPage;
-import com.spring.websellspringmvc.utils.FilterStrategy;
-import com.spring.websellspringmvc.utils.FilterStrategyBuying;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @WebServlet(name = "filterProductBuying", value = "/filterProductBuying")
