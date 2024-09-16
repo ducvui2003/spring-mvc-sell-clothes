@@ -1,11 +1,13 @@
 package com.spring.websellspringmvc.services;
 
 import com.spring.websellspringmvc.dao.HomeDAO;
+import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.models.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +26,7 @@ public class HomeServices {
 //    }
 
     public List<Product> getListNewProducts(boolean isSeeMore) {
+
         return homeDao.getListNewProducts();
     }
 
@@ -31,7 +34,19 @@ public class HomeServices {
         return homeDao.getListSlideShow();
     }
 
-    public List<Product> getListTrendProducts(boolean isSeeMore) {
-        return homeDao.getListTrendProducts();
+    public List<ProductCardResponse> getListTrendProducts(boolean isSeeMore) {
+        List<Product> products = homeDao.getListTrendProducts();
+        List<ProductCardResponse> response = new ArrayList<>();
+        for (Product product : products) {
+            response.add(ProductCardResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .salePrice(product.getSalePrice())
+                    .originalPrice(product.getOriginalPrice())
+                    .image(product.getImage())
+                    .build());
+        }
+        return response;
+
     }
 }

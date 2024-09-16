@@ -14,8 +14,8 @@ import java.util.List;
 
 @Repository
 public interface ImageDAO {
-    @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId AND isThumbnail = 1")
-    public List<Image> getThumbnail(@Bind("productId") int productId);
+    @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId LIMIT 1")
+    public String getThumbnail(@Bind("productId") int productId);
 
     @SqlBatch("INSERT INTO images (nameImage, productId) VALUES (:nameImage, :productId)")
     public void addImages(@BindBean List<Image> images);

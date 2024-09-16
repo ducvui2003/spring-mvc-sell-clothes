@@ -4,11 +4,13 @@ import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.admin.AdminReviewServices;
 import com.spring.websellspringmvc.services.ProductCardServices;
 import com.spring.websellspringmvc.services.ProductServices;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
+@Component
 public class ProductFactory {
+    ProductServices productServices;
     ProductCardServices productCardServices;
 
     public static Product getProductById(int productId) {
@@ -16,9 +18,8 @@ public class ProductFactory {
         return null;
     }
 
-    public static List<Image> getListImagesByProductId(int productId) {
-//        return ProductServices.getINSTANCE().getListImagesByProductId(productId);
-        return null;
+    public List<Image> getListImagesByProductId(int productId) {
+        return productServices.getListImagesByProductId(productId);
     }
 
     public static List<Color> getListColorsByProductId(int productId) {

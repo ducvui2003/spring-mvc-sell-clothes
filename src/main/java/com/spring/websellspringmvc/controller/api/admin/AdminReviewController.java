@@ -72,10 +72,6 @@ public class AdminReviewController {
 
         OrderDetail orderDetail = reviewServices.getOrderDetail(review.getOrderDetailId());
         Order order = reviewServices.getOrder(orderDetail.getOrderId());
-//        JsonObject jsonObject = new JsonObject();
-//        jsonObject.add("review", convertReview(review));
-//        jsonObject.add("orderDetail", convertOrderDetail(orderDetail));
-//        jsonObject.add("order", convertOrder(order));
 
         return ResponseEntity.ok(ReviewDetailResponse.builder().order(orderMapper.toOrderResponse(order))
                 .orderDetail(orderMapper.toOrderDetailResponse(orderDetail))
@@ -97,39 +93,5 @@ public class AdminReviewController {
             jsonObject.addProperty("success", false);
         }
         return ResponseEntity.badRequest().body(jsonObject.toString());
-    }
-
-    private JsonElement convertReview(Review review) {
-        JsonObject result = new JsonObject();
-        result.addProperty("id", review.getId());
-        result.addProperty("ratingStar", review.getRatingStar());
-        result.addProperty("feedback", review.getFeedback());
-        result.addProperty("date", review.getReviewDate().toString());
-        result.addProperty("visibility", review.isVisibility());
-        return result;
-    }
-
-    private JsonElement convertOrderDetail(OrderDetail orderDetail) {
-        String image = ProductFactory.getListImagesByProductId(orderDetail.getProductId()).get(0).getNameImage();
-        JsonObject result = new JsonObject();
-        result.addProperty("productName", orderDetail.getProductName());
-        result.addProperty("image", image);
-        result.addProperty("size", orderDetail.getSizeRequired());
-        result.addProperty("color", orderDetail.getColorRequired());
-        result.addProperty("quantity", orderDetail.getQuantityRequired());
-        result.addProperty("price", orderDetail.getPrice());
-        return result;
-    }
-
-    private JsonElement convertOrder(Order order) {
-        JsonObject result = new JsonObject();
-        result.addProperty("fullName", order.getFullName());
-        result.addProperty("email", order.getEmail());
-        result.addProperty("phone", order.getPhone());
-        result.addProperty("province", order.getProvince());
-        result.addProperty("district", order.getDistrict());
-        result.addProperty("ward", order.getWard());
-        result.addProperty("detail", order.getDetail());
-        return result;
     }
 }

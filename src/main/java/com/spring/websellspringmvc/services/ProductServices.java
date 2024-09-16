@@ -53,5 +53,9 @@ public class ProductServices {
     public List<Product> getAllProductSelect() {
         return productCardDAO.getProduct();
     }
+
+    public Image getThumbnailProduct(int productId) {
+        return imageDAO.get
+    }
 }
 

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 
 public class AdminProductController {
+    ProductFactory productFactory;
     AdminProductServices adminProductServices;
     ProductServices productServices;
     ProductMapper productMapper = ProductMapper.INSTANCE;
@@ -94,7 +95,7 @@ public class AdminProductController {
 
         List<Size> sizeList = ProductFactory.getListSizesByProductId(id);
         List<Color> colorList = ProductFactory.getListColorsByProductId(id);
-        List<Image> imageList = ProductFactory.getListImagesByProductId(id);
+        List<Image> imageList = productFactory.getListImagesByProductId(id);
 
         return ResponseEntity.ok(ProductDetailResponse.builder()
                 .product(product)

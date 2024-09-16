@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Slider;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +18,11 @@ public interface HomeDAO {
                     WHERE visibility = 1 AND createAt >= DATE_SUB('2023-12-01', INTERVAL 1 MONTH)
                     """
     )
+    @RegisterBeanMapper(Product.class)
     public List<Product> getListNewProducts();
 
     @SqlQuery("SELECT nameSlide, nameImage FROM sliders WHERE visibility = 1")
+    @RegisterBeanMapper(Slider.class)
     public List<Slider> getListSlideShow();
 
     @SqlQuery("""
@@ -30,6 +33,6 @@ public interface HomeDAO {
             HAVING SUM(order_details.quantityRequired) >= 10
             ORDER BY SUM(order_details.quantityRequired) DESC
             """)
-
+    @RegisterBeanMapper(Product.class)
     public List<Product> getListTrendProducts();
 }

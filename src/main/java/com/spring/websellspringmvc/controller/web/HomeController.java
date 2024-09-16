@@ -60,7 +60,7 @@ public class HomeController {
         return mav;
     }
 
-    @GetMapping("")
+    @GetMapping("/newProducts")
     ModelAndView newProductsPage(@RequestParam(value = "page", defaultValue = "1") int page) {
         ModelAndView mav = new ModelAndView(ConfigPage.PRODUCT_NEW);
         List<Product> listAllNewProducts = homeServices.getListNewProducts(true);

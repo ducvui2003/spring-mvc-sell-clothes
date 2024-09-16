@@ -5,6 +5,8 @@ import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.spring.websellspringmvc.properties.CloudinaryProperties;
 import jakarta.servlet.http.Part;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,14 +15,16 @@ import java.util.List;
 import java.util.Map;
 
 //Services dùng để upload ảnh, service hiện tại đang sử dụng Cloudinary làm cloud lưu trữ ảnh
+@Service
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CloudinaryUploadServices implements IUpload {
     private static CloudinaryUploadServices INSTANCE = null;
-    private Cloudinary cloudinary;
+     Cloudinary cloudinary;
     // Chiều cao và chiều dài cho ảnh lấy (bên cloud tự điều chỉnh kích thước width và height, nếu để null thì lấy kích thước gốc của ảnh)
-    private Integer width;
-    private Integer height;
+     Integer width;
+     Integer height;
     //    Obj dùng để thao tác trên ảnh
-    private Transformation transformation;
+     Transformation transformation;
 
     // Khởi tạo các giá trị cần thiết cho biến
     private void init() {

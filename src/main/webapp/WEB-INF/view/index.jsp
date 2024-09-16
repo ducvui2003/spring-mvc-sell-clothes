@@ -211,18 +211,18 @@
                             </a>
                             <div class="product__review">
                                 <div class="review__icon">
-                                    <%for (int starA = 1; starA <= productFactory.calculateStar(newProduct.getId()); starA++) {%>
-                                    <i class="fa-solid fa-star icon__item"></i>
-                                    <%}%>
+<%--                                    <%for (int starA = 1; starA <= productFactory.calculateStar(newProduct.getId()); starA++) {%>--%>
+<%--                                    <i class="fa-solid fa-star icon__item"></i>--%>
+<%--                                    <%}%>--%>
 
-                                    <%for (int starB = 1; starB <= 5 - productFactory.calculateStar(newProduct.getId()); starB++) {%>
-                                    <i class="fa-regular fa-star icon__item"></i>
-                                    <%}%>
+<%--                                    <%for (int starB = 1; starB <= 5 - productFactory.calculateStar(newProduct.getId()); starB++) {%>--%>
+<%--                                    <i class="fa-regular fa-star icon__item"></i>--%>
+<%--                                    <%}%>--%>
                                 </div>
-                                <a class="number__turns--ratting"
-                                   href="${showProductDetail}"><%=productFactory.getReviewCount(newProduct.getId())%>
-                                    nhận xét
-                                </a>
+<%--                                <a class="number__turns--ratting"--%>
+<%--                                   href="${showProductDetail}"><%=productFactory.getReviewCount(newProduct.getId())%>--%>
+<%--                                    nhận xét--%>
+<%--                                </a>--%>
                             </div>
                         </div>
                     </div>
