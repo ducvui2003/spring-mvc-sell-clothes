@@ -35,10 +35,11 @@ import java.util.List;
 public class UserController {
     UserServices userServices;
     HistoryService historyService;
+    SessionManager sessionManager;
 
     @PostMapping("/upload-avatar")
     public void uploadAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         Part avatar = request.getPart("avatar");
         String root = PathProperties.getINSTANCE().getPathAvatarUserWeb();
         UploadImageServices uploadImageServices = new UploadImageServices(root);
@@ -64,7 +65,7 @@ public class UserController {
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
 
         if (currentPassword == null || newPassword == null || confirmPassword == null) {
             json.put("error", "Missing required fields");
@@ -87,7 +88,7 @@ public class UserController {
 
     @PostMapping("/info")
     protected void changeInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         int userId = user.getId();
         String fullName = request.getParameter("fullName");
         String phone = request.getParameter("phone");
@@ -107,7 +108,7 @@ public class UserController {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        SessionManager.getInstance(request, response).updateUser();
+//        SessionManager.getInstance(request, response).updateUser();
         JSONObject json = new JSONObject();
         json.put("status", "success");
         response.setStatus(200);
@@ -128,7 +129,7 @@ public class UserController {
     @GetMapping("/order")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int statusId = Integer.parseInt(request.getParameter("statusId"));
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         List<OrderResponseDTO> orders = historyService.getOrder(user.getId(), statusId);
         JSONObject json = new JSONObject();
         json.put("data", orders);

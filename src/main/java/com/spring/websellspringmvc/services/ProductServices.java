@@ -1,20 +1,24 @@
 package com.spring.websellspringmvc.services;
 
 import com.spring.websellspringmvc.dao.*;
+import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.models.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductServices {
-
-    ProductDAO productDao;
+    ProductDAO productDAO;
+    ProductCardServices productCardServices;
     ImageDAO imageDAO;
     ColorDAO colorDAO;
     SizeDAO sizeDAO;
@@ -22,40 +26,38 @@ public class ProductServices {
     ProductCardDAO productCardDAO;
 
     public List<Image> getListImagesByProductId(int productId) {
-        return productDao.getListImagesByProductId(productId);
+        return productDAO.getListImagesByProductId(productId);
     }
 
     public List<Color> getListColorsByProductId(int productId) {
-        return productDao.getListColorsByProductId(productId);
+        return productDAO.getListColorsByProductId(productId);
     }
 
     public List<Size> getListSizesByProductId(int productId) {
-        return productDao.getListSizesByProductId(productId);
+        return productDAO.getListSizesByProductId(productId);
     }
 
     public double getPriceSizeByName(String nameSize, int productId) {
-        return productDao.getPriceSizeByName(nameSize, productId);
+        return productDAO.getPriceSizeByName(nameSize, productId);
     }
 
     public Size getSizeByNameSizeWithProductId(String nameSize, int productId) {
-        return productDao.getSizeByNameSizeWithProductId(nameSize, productId);
+        return productDAO.getSizeByNameSizeWithProductId(nameSize, productId);
     }
 
 
     public Product getProductByProductId(int productId) {
-        return productDao.getProductByProductId(productId);
+        return productDAO.getProductByProductId(productId);
     }
 
     public Color getColorByCodeColorWithProductId(String codeColor, int productId) {
-        return productDao.getColorByCodeColorWithProductId(codeColor, productId);
+        return productDAO.getColorByCodeColorWithProductId(codeColor, productId);
     }
 
     public List<Product> getAllProductSelect() {
         return productCardDAO.getProduct();
     }
 
-    public Image getThumbnailProduct(int productId) {
-        return imageDAO.get
-    }
+
 }
 

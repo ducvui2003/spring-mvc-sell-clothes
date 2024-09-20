@@ -5,11 +5,11 @@ import com.spring.websellspringmvc.models.Address;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
-import com.spring.websellspringmvc.properties.Map4dProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,12 +21,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AddressServices {
+    @Value("${app.service.map4d.url}")
+    @NonFinal
+    String url;
+    @Value("${app.service.map4d.api-key}")
+    @NonFinal
+    String apiKey;
     AddressDAO addressDAO;
 
     boolean validateAddress(String address) throws URISyntaxException, IOException {
-        URI uri = new URIBuilder(Map4dProperties.getINSTANCE().getUrl())
+        URI uri = new URIBuilder(url)
                 .addParameter("address", address)
-                .addParameter("key", Map4dProperties.getINSTANCE().getApiKey()).build();
+                .addParameter("key", apiKey).build();
         HttpResponse response = Request.Get(uri).execute().returnResponse();
         int statusCode = response.getStatusLine().getStatusCode();
         return statusCode == 200;

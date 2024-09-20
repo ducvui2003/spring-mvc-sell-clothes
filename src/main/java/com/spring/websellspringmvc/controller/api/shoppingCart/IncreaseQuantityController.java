@@ -16,18 +16,19 @@ import java.io.IOException;
 
 @WebServlet(name = "IncreaseQuantityController", value = "/api/cart/increase")
 public class IncreaseQuantityController extends HttpServlet {
+    SessionManager sessionManager;
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int productId = 0;
         int cartProductIndex = 0;
         HttpSession session = request.getSession(true);
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         String userIdCart = String.valueOf(user.getId());
         ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);
         try {
             productId = Integer.parseInt((String) request.getAttribute("productId"));
             cartProductIndex = Integer.parseInt((String) request.getAttribute("cartProductIndex"));
-        }catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             exception.printStackTrace();
         }
 
@@ -36,7 +37,7 @@ public class IncreaseQuantityController extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
         response.setContentType("application/json");
 
-        if(code != null){
+        if (code != null) {
 //            Voucher voucher = cart.getVoucherApplied();
 //            if (voucher == null){
 //                voucher = ShoppingCartServices.getINSTANCE().getValidVoucherApply(code);
@@ -68,7 +69,7 @@ public class IncreaseQuantityController extends HttpServlet {
         jsonObject.put("newSubtotalFormat", newSubtotalFormat);
         jsonObject.put("newTemporaryPriceFormat", newTemporaryPriceFormat);
 //        jsonObject.put("newTotalPriceFormat", newTotalPriceFormat);
-        if(session.getAttribute("successApplied") != null){
+        if (session.getAttribute("successApplied") != null) {
             jsonObject.put("successApplied", session.getAttribute("successApplied"));
 //            jsonObject.put("discountPriceFormat", discountPriceFormat);
         } else if (session.getAttribute("failedApply") != null) {

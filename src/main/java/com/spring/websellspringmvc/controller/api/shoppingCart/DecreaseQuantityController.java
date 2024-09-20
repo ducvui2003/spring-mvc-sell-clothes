@@ -15,16 +15,18 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet(name = "DecreaseQuantityController", value = "/api/cart/decrease")
 public class DecreaseQuantityController extends HttpServlet {
+    SessionManager sessionManager;
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int productId = 0;
         int cartProductIndex = 0;
         HttpSession session = request.getSession(true);
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         String userIdCart = String.valueOf(user.getId());
         ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);
         try {

@@ -15,7 +15,7 @@ public class MailProperties {
     private static String durationTokenRestPassword;
 
     static {
-        InputStream inputStream = DatabaseProperties.class.getClassLoader().getResourceAsStream("mail.properties");
+        InputStream inputStream = MailProperties.class.getClassLoader().getResourceAsStream("mail.properties");
         try {
             properties.load(inputStream);
             host = properties.getProperty("mail.smtp.host");

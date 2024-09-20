@@ -32,11 +32,12 @@ public class AddressController {
     String ADDRESS_DELETE = "delete";
     String ADDRESS_UPDATE = "update";
     AddressServices addressServices;
+    SessionManager sessionManager;
     Gson gson = new GsonBuilder().create();
 
     @GetMapping
     public void getAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int userId = SessionManager.getInstance(request, response).getUser().getId();
+        int userId = sessionManager.getUser().getId();
         List<Address> addressList = addressServices.getAddress(userId);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("status", HttpServletResponse.SC_OK);
@@ -66,7 +67,7 @@ public class AddressController {
         }
 
         try {
-            User user = SessionManager.getInstance(request, response).getUser();
+            User user = sessionManager.getUser();
             Address address = new Address();
             address.setProvince(province);
             address.setDistrict(district);
@@ -113,7 +114,6 @@ public class AddressController {
 
         try {
             Integer addressId = Integer.parseInt(id);
-            SessionManager sessionManager = SessionManager.getInstance(req, resp);
             User user = sessionManager.getUser();
             if (user == null) {
                 jsonObject.addProperty("status", false);

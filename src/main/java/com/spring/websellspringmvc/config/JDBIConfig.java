@@ -3,6 +3,7 @@ package com.spring.websellspringmvc.config;
 import com.spring.websellspringmvc.dao.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.SqlLogger;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +16,7 @@ public class JDBIConfig {
     @Bean
     public Jdbi jdbi(DataSource dataSource) {
         log.info("Creating datasource...");
-        return Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin());
+        return Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin()).setSqlLogger(new CustomSQLLogger());
     }
 
     @Bean

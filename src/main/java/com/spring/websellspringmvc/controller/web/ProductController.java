@@ -9,6 +9,7 @@ import com.spring.websellspringmvc.models.Review;
 import com.spring.websellspringmvc.services.ProductCardServices;
 import com.spring.websellspringmvc.services.ProductServices;
 import com.spring.websellspringmvc.services.ReviewServices;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,12 @@ public class ProductController {
     ProductCardServices productCardServices;
     ReviewServices reviewServices;
     ProductServices productServices;
+
+    @GetMapping("/product")
+    public ModelAndView filterProductBuying() {
+        return new ModelAndView(PageAddress.PRODUCT_BUYING.getPage());
+    }
+
 
     @GetMapping("/showProductDetail")
     public ModelAndView showProductDetail(@RequestParam(value = "id", defaultValue = "1") int id) {
@@ -62,7 +69,5 @@ public class ProductController {
         mav.addObject("listParameter", listParameter);
         return mav;
     }
-
-//    @GetMapping("/filterProductBuying")
 
 }

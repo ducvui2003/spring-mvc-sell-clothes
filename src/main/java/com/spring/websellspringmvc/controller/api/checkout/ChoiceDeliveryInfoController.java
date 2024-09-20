@@ -16,11 +16,11 @@ import java.io.IOException;
 
 @WebServlet(name = "ChoiceDeliveryInfoController", value = "/api/checkout/delivery/choice")
 public class ChoiceDeliveryInfoController extends HttpServlet {
-
+    SessionManager sessionManager;
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String deliveryInfoKey = (String) request.getAttribute("deliveryInfoKey");
         HttpSession session = request.getSession(true);
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         String userIdCart = String.valueOf(user.getId());
         DeliveryInfoStorage deliveryInfoStorage = (DeliveryInfoStorage) session.getAttribute("deliveryInfoStorage");
         ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);

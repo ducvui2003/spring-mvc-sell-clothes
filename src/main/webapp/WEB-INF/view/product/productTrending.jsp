@@ -1,31 +1,32 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<html>
+<!DOCTYPE html>
+<html lang="vi">
+
 <head>
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/trendingNewProducts.css" />">
     <title>Sản phẩm thịnh hành</title>
 </head>
 
 <body>
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <div class="popular__section container-xl">
         <h2 class="section__title">Sản phẩm thịnh hành</h2>
         <div class="product__items">
-            <c:forEach items="${requestScope.listProductsPerPage}" var="trendProduct">
+            <c:forEach var="item" items="${requestScope.content}">
                 <c:url var="showProductDetail" value="showProductDetail">
-                    <c:param name="id" value="${trendProduct.id}"/> </c:url>
+                    <c:param name="id" value="${item.id}"/>
+                </c:url>
                 <div class="product__item">
                     <div class="product__content">
                         <div class="image--tag">
-                            <c:set value="${productFactory.getListImagesByProductId(trendProduct.id)}"
-                                   var="listTrendProductImages"/>
-                            <img src="${listTrendProductImages.get(0).nameImage}" alt="">
+                            <img src="${item.thumbnail}" alt="">
                             <span class="product__tag">Thịnh hành</span>
                             <form class="action__bar" action="<c:url value="/api/cart/add"/>" method="post">
-                                <input type="hidden" name="productId" value="${trendProduct.id}">
+                                <input type="hidden" name="productId" value="${item.id}">
                                 <button type="submit" class="add__cart"><i
                                         class="fa-solid fa-cart-shopping"></i></button>
                                 <a class="see__detail" target="_blank" href="${showProductDetail}"><i
@@ -37,42 +38,59 @@
                                href="${showProductDetail}">${trendProduct.name}</a>
                             <div class="product__review">
                                 <div class="review__icon">
-                                    <c:forEach var="starA" begin="1" step="1"
-                                               end="${productFactory.calculateStar(newProduct.id)}">
-                                        <i class="fa-solid fa-star icon__item"></i> </c:forEach>
-                                    <c:forEach var="starB" begin="1" step="1"
-                                               end="${5 - productFactory.calculateStar(newProduct.id)}">
-                                        <i class="fa-regular fa-star icon__item"></i> </c:forEach>
+                                    <c:forEach var="star" begin="1" end="5">
+                                        <c:choose>
+                                            <c:when test="${item.rating < 5 }">
+                                                <i class="fa-solid fa-star icon__item"></i>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="fa-regular fa-star icon__item"></i>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
                                 </div>
                                 <a class="number__turns--ratting" target="_blank"
-                                   href="${showProductDetail}">${productFactory.getReviewCount(trendProduct.id)}
+                                   href="${showProductDetail}">${item.reviewCount}
                                     nhận xét
                                 </a>
                             </div>
                             <span class="product__price">
-                                        <fmt:setLocale value="vi_VN"/>
-                                        <c:choose> <c:when test="${trendProduct.salePrice== null}">
-                                                <strong class="priority__price">
-                                                    <fmt:formatNumber value="${trendProduct.originalPrice}"
-                                                                      type="currency"/>
-                                                </strong> </c:when> <c:otherwise>
-                                                <strong class="sale__price">
-                                                    <fmt:formatNumber value="${trendProduct.salePrice}"
-                                                                      type="currency"/>
-                                                </strong> <s class="original__price">
-                                                    <fmt:formatNumber value="${trendProduct.originalPrice}"
-                                                                      type="currency"/>
-                                                </s> </c:otherwise> </c:choose>
-                                    </span>
+                                <fmt:setLocale value="vi_VN"/>
+                                <c:choose>
+                                    <c:when test="${item.salePrice== null}">
+                                        <strong class="priority__price">
+                                            <fmt:formatNumber value="${item.originalPrice}"
+                                                              type="currency"/>
+                                        </strong>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <strong class="sale__price">
+                                            <fmt:setLocale value="vi_VN"/>
+                                            <fmt:formatNumber value="${item.salePrice}"
+                                                              type="currency"
+                                                              currencySymbol="₫"
+                                                              maxFractionDigits="0"/>
+                                        </strong> <s class="original__price">
+                                            <fmt:setLocale value="vi_VN"/>
+                                            <fmt:formatNumber value="${item.originalPrice}"
+                                                              type="currency"
+                                                              currencySymbol="₫"
+                                                              maxFractionDigits="0"/>
+                                        </s>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
                         </div>
                     </div>
                 </div>
             </c:forEach>
         </div>
-        <ul class="paging" style="position: relative"></ul>
+        <ul class="paging" style="position: relative">
+
+        </ul>
     </div>
 </main>
-<c:import url="/public/footer.jsp"/>
+<c:import url="/footer"/>
 <script src="<c:url value="/js/base.js"/>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="

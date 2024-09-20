@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebFilter(filterName = "admin", urlPatterns = {"/public/admin/*", "/api/admin/*"})
+//@WebFilter(filterName = "admin", urlPatterns = {"/public/admin/*", "/api/admin/*"})
 public class AdminRole implements Filter {
     public void init(FilterConfig config) throws ServletException {
     }
@@ -21,19 +21,19 @@ public class AdminRole implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        User user = SessionManager.getInstance(httpServletRequest, httpServletResponse).getUser();
-        if (user == null) {
-            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-        boolean isAdmin = user.getRole().equals("2");
-        if (isAdmin) {
-            chain.doFilter(request, response);
-        } else {
-            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
-        }
+//        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+//        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+//        User user = SessionManager.getInstance(httpServletRequest, httpServletResponse).getUser();
+//        if (user == null) {
+//            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+//            return;
+//        }
+//        boolean isAdmin = user.getRole().equals("2");
+//        if (isAdmin) {
+//            chain.doFilter(request, response);
+//        } else {
+//            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+//        }
     }
 }
  

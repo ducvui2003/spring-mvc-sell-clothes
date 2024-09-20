@@ -21,7 +21,7 @@ public interface CategoryDAO {
     @SqlUpdate("INSERT INTO categories (:nameType, :sizeTableImage) VALUES (?, ?) ")
     public int add(@BindBean Category category);
 
-    @SqlUpdate("SELECT id FROM categories WHERE nameType = :nameType")
+    @SqlQuery("SELECT id FROM categories WHERE nameType = :nameType")
     public List<Category> getCategoryByNameType(@Bind("nameType") String nameType);
 
     @SqlUpdate("""

@@ -1,17 +1,12 @@
 package com.spring.websellspringmvc.config;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
+import org.springframework.stereotype.Component;
 
-//@WebListener
-public class ConfigPage implements ServletContextListener {
-    public static String DOMAIN;
-
+@Component
+public class ConfigPage {
     public static String CONTACT;
     //    Auth
-    public static String SIGN_IN, SIGN_UP, RESET_PASSWORD, VERIFY, FORGET_PASSWORD;
+    public static String SIGN_IN, SIGN_UP, RESET_PASSWORD, VERIFY_SUCCESS, FORGET_PASSWORD;
     //    User
     public static String USER_ACCOUNT, USER_CHANGE_PASSWORD, USER_PURCHASE_HISTORY, USER_CART, USER_CHECKOUT, USER_SUCCESS_ORDER, USER_REVIEW, USER_REVIEW_SUCCESS;
     //    Product
@@ -21,27 +16,19 @@ public class ConfigPage implements ServletContextListener {
 
     public static String ERROR_404;
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        ServletContextListener.super.contextInitialized(sce);
-        ServletContext servletContext = sce.getServletContext();
-        DOMAIN = servletContext.getInitParameter("contextPath");
-        init();
-    }
-
-    private void init() {
-        HOME = "/index";
+    static {
+        HOME = "/home";
         CONTACT = "/contact";
 //        Config path /public/auth/
-        String folderAuth = "";
+        String folderAuth = "/auth/";
         SIGN_IN = folderAuth + "signIn";
         SIGN_UP = folderAuth + "signUp";
         RESET_PASSWORD = folderAuth + "resetPassword";
         FORGET_PASSWORD = folderAuth + "forgotPassword";
-        VERIFY = folderAuth + "verifySuccess";
+        VERIFY_SUCCESS = folderAuth + "verifySuccess";
 
 //        Config path /public/user
-        String folderUser = "/user";
+        String folderUser = "/user/";
         USER_ACCOUNT = folderUser + "account";
         USER_CHANGE_PASSWORD = folderUser + "changePassword";
         USER_PURCHASE_HISTORY = folderUser + "purchaseHistory";
