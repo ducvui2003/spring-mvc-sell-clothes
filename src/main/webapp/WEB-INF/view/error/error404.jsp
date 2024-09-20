@@ -1,10 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/error404.css"/>">
-    <title>404</title>
+    <title>404 - Tài nguyên không tồn tại</title>
 </head>
 <body>
 <main>
@@ -17,7 +18,7 @@
                     <p class="error__detail">Tài nguyên này có thể đã bị xóa hoặc không tồn tại, bạn nên quay trở lại
                         trang
                         chủ.</p>
-                    <a href="<c:url value="/public/index.jsp"/>" class="button button--hover error__button">
+                    <a href="/" class="button button--hover error__button">
                         <i class="fa-solid fa-arrow-left"></i>
                         Trang chủ
                     </a>

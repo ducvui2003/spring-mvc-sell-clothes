@@ -30,6 +30,8 @@ import java.util.List;
 public class ReviewController {
     ReviewServices reviewServices;
     ProductCardServices productCardServices;
+    SessionManager sessionManager;
+
     @PostMapping("/createReview")
     public ModelAndView createReview(@RequestParam("orderProductId") int orderProductId,
                                      @RequestParam(value = "ratingStar", defaultValue = "5") int ratingStar,
@@ -38,7 +40,7 @@ public class ReviewController {
     ) {
         ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW_SUCCESS);
 
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         int userId = user.getId();
 
         if (!reviewServices.canReview(userId, orderProductId)) {

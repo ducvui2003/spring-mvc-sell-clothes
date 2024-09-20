@@ -25,7 +25,7 @@ public class CheckoutFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
 
-        User userAuth = SessionManager.getInstance(request, response).getUser();
+//        User userAuth = SessionManager.getInstance(request, response).getUser();
 
 //        String userIdCart = String.valueOf(userAuth.getId());
 //

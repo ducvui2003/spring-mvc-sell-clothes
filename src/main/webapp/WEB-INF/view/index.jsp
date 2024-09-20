@@ -2,14 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<jsp:useBean id="productFactory" class="com.spring.websellspringmvc.utils.ProductFactory"
-             scope="session"/>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <jsp:include page="commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/home.css" />">
     <title>Trang chủ</title>
 </head>

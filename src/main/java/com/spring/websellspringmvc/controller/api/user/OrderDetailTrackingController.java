@@ -27,12 +27,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderDetailTrackingController extends HttpServlet {
     HistoryService historyService;
+    SessionManager sessionManager;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Gson gson = new Gson();
         JsonObject jsonResponse = new JsonObject();
-        User user = SessionManager.getInstance(req, resp).getUser();
+        User user = sessionManager.getUser();
         int userId = user.getId();
         String orderId = req.getParameter("orderId");
         OrderDetailResponseDTO orderDetail = historyService.getOrderByOrderId(orderId, userId);

@@ -3,10 +3,11 @@ package com.spring.websellspringmvc.services.image;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
-import com.spring.websellspringmvc.properties.CloudinaryProperties;
 import jakarta.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,6 +21,9 @@ import java.util.Map;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CloudinaryUploadServices implements IUpload {
+    @Value("${app.service.cloudinary.api-secret}")
+    @NonFinal
+    String apiSecret;
     Cloudinary cloudinary;
     // Chiều cao và chiều dài cho ảnh lấy (bên cloud tự điều chỉnh kích thước width và height, nếu để null thì lấy kích thước gốc của ảnh)
     //    Obj dùng để thao tác trên ảnh
@@ -87,6 +91,6 @@ public class CloudinaryUploadServices implements IUpload {
 
 
     public String generateSignature(Map<String, Object> params) {
-        return cloudinary.apiSignRequest(params, CloudinaryProperties.getApiSecret());
+        return cloudinary.apiSignRequest(params, apiSecret);
     }
 }

@@ -14,20 +14,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet(name = "DeleteCartProductController", value = "/api/cart/delete")
 public class DeleteCartProductController extends HttpServlet {
+    SessionManager sessionManager;
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int productId = 0;
         int cartProductIndex = 0;
         HttpSession session = request.getSession(true);
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         String userIdCart = String.valueOf(user.getId());
         ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);
         try {
-            if(request.getAttribute("productId") != null){
+            if (request.getAttribute("productId") != null) {
                 productId = Integer.parseInt((String) request.getAttribute("productId"));
                 cartProductIndex = Integer.parseInt((String) request.getAttribute("cartProductIndex"));
             }
@@ -40,7 +42,7 @@ public class DeleteCartProductController extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
         response.setContentType("application/json");
 
-        if(code != null){
+        if (code != null) {
 //            Voucher voucher = cart.getVoucherApplied();
 //            if (voucher == null){
 //                voucher = ShoppingCartServices.getINSTANCE().getValidVoucherApply(code);

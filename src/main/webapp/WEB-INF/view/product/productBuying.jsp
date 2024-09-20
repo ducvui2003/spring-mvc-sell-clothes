@@ -15,7 +15,8 @@
     <div class="p-5 animate__animated animate__slideInDown" style="position: relative; z-index: 10;">
         <div class="p-5 search">
             <form class="form-inline my-2 my-lg-0 d-flex">
-                <input style="z-index: 2;" class="search__inp form-control mr-sm-2 p-3 me-2" type="search" placeholder="Search"
+                <input style="z-index: 2;" class="search__inp form-control mr-sm-2 p-3 me-2" type="search"
+                       placeholder="Search"
                        aria-label="Search" name="keyword">
                 <button class="search__btn btn btn-outline-success my-2 my-sm-0 ps-4 pe-4 hvr-rectangle-out"
                         type="submit">
@@ -33,68 +34,68 @@
                     <form class="form__filter" id="form__filter">
                         <div class="filter__group"><span class="filter__title">Phân loại sản phẩm</span>
                             <div id="category" class="filter__radio-list">
-<%--                                <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"--%>
-<%--                                           var="category">--%>
-<%--                                    <label class="filter__radio-item">--%>
-<%--                                        <input name="categoryId" type="checkbox" class="filter__input filter__radio"--%>
-<%--                                               hidden="hidden" value="${category.id}">--%>
-<%--                                        <span class="filter-radio__icon-wrapper">--%>
+                                <%--                                <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"--%>
+                                <%--                                           var="category">--%>
+                                <%--                                    <label class="filter__radio-item">--%>
+                                <%--                                        <input name="categoryId" type="checkbox" class="filter__input filter__radio"--%>
+                                <%--                                               hidden="hidden" value="${category.id}">--%>
+                                <%--                                        <span class="filter-radio__icon-wrapper">--%>
 
-<%--                                            <i class="fa-solid fa-check filter-radio__icon"></i>--%>
-<%--                                        </span> ${category.nameType}--%>
-<%--                                    </label>--%>
-<%--                                </c:forEach>--%>
+                                <%--                                            <i class="fa-solid fa-check filter-radio__icon"></i>--%>
+                                <%--                                        </span> ${category.nameType}--%>
+                                <%--                                    </label>--%>
+                                <%--                                </c:forEach>--%>
                             </div>
                         </div>
                         <span class="filter__separate"></span>
                         <div class="filter__group"><span class="filter__title">Mức giá</span>
                             <div id="money" class="filter__radio-list">
-<%--                                <c:forEach items="${pageContext.servletContext.getAttribute('moneyRangeList')}"--%>
-<%--                                           var="moneyRange">--%>
-<%--                                    <fmt:formatNumber value="${moneyRange.from}" type="currency" currencyCode="VND"--%>
-<%--                                                      var="moneyFrom"/>--%>
-<%--                                    <fmt:formatNumber value="${moneyRange.to}" type="currency" currencyCode="VND"--%>
-<%--                                                      var="moneyTo"/>--%>
-<%--                                    <label class="filter__radio-item">--%>
-<%--                                        <input name="moneyRange" type="checkbox" class="filter__input filter__radio"--%>
-<%--                                               hidden="hidden" value="${moneyRange.getFrom()}-${moneyRange.getTo()}">--%>
-<%--                                        <span class="filter-radio__icon-wrapper"><i--%>
-<%--                                                class="fa-solid fa-check filter-radio__icon"></i>--%>
-<%--                                        </span>--%>
-<%--                                        <span class="hvr-skew-forward">--%>
-<%--                                                ${moneyFrom} - ${moneyTo}--%>
-<%--                                        </span>--%>
-<%--                                    </label> </c:forEach>--%>
+                                <%--                                <c:forEach items="${pageContext.servletContext.getAttribute('moneyRangeList')}"--%>
+                                <%--                                           var="moneyRange">--%>
+                                <%--                                    <fmt:formatNumber value="${moneyRange.from}" type="currency" currencyCode="VND"--%>
+                                <%--                                                      var="moneyFrom"/>--%>
+                                <%--                                    <fmt:formatNumber value="${moneyRange.to}" type="currency" currencyCode="VND"--%>
+                                <%--                                                      var="moneyTo"/>--%>
+                                <%--                                    <label class="filter__radio-item">--%>
+                                <%--                                        <input name="moneyRange" type="checkbox" class="filter__input filter__radio"--%>
+                                <%--                                               hidden="hidden" value="${moneyRange.getFrom()}-${moneyRange.getTo()}">--%>
+                                <%--                                        <span class="filter-radio__icon-wrapper"><i--%>
+                                <%--                                                class="fa-solid fa-check filter-radio__icon"></i>--%>
+                                <%--                                        </span>--%>
+                                <%--                                        <span class="hvr-skew-forward">--%>
+                                <%--                                                ${moneyFrom} - ${moneyTo}--%>
+                                <%--                                        </span>--%>
+                                <%--                                    </label> </c:forEach>--%>
                             </div>
                         </div>
                         <span class="filter__separate"></span>
                         <div class="filter__group"><span class="filter__title">Kích cỡ</span>
                             <div id="size" class="filter__radio-list">
-<%--                                <c:forEach items="${requestScope.sizeList}" var="item">--%>
-<%--                                    <label class="filter__radio-item">--%>
-<%--                                        <input name="size" value="${item.nameSize}" type="checkbox"--%>
-<%--                                               class="filter__input filter__radio" hidden="hidden">--%>
-<%--                                        <span class="filter-radio__icon-wrapper">--%>
-<%--                                            <i class="fa-solid fa-check filter-radio__icon"></i>--%>
-<%--                                        </span>--%>
-<%--                                        <span class="hvr-skew-forward">--%>
-<%--                                                ${item.nameSize}--%>
-<%--                                        </span>--%>
-<%--                                    </label>--%>
-<%--                                </c:forEach>--%>
+                                <%--                                <c:forEach items="${requestScope.sizeList}" var="item">--%>
+                                <%--                                    <label class="filter__radio-item">--%>
+                                <%--                                        <input name="size" value="${item.nameSize}" type="checkbox"--%>
+                                <%--                                               class="filter__input filter__radio" hidden="hidden">--%>
+                                <%--                                        <span class="filter-radio__icon-wrapper">--%>
+                                <%--                                            <i class="fa-solid fa-check filter-radio__icon"></i>--%>
+                                <%--                                        </span>--%>
+                                <%--                                        <span class="hvr-skew-forward">--%>
+                                <%--                                                ${item.nameSize}--%>
+                                <%--                                        </span>--%>
+                                <%--                                    </label>--%>
+                                <%--                                </c:forEach>--%>
                             </div>
                         </div>
                         <span class="filter__separate"></span>
                         <div class="filter__group"><span class="filter__title">Màu sắc</span>
                             <div id="color" class="filter__color-list">
-<%--                                <c:forEach items="${requestScope.colorList}" var="item">--%>
-<%--                                    <label class="filter__color-item">--%>
-<%--                                        <input name="color" type="checkbox" value="${item.codeColor}"--%>
-<%--                                               class="filter__input filter__color" hidden="hidden">--%>
-<%--                                        <span class="filter__color-show shadow rounded hvr-grow"--%>
-<%--                                              style="background-color: ${item.codeColor}"></span>--%>
-<%--                                    </label>--%>
-<%--                                </c:forEach>--%>
+                                <%--                                <c:forEach items="${requestScope.colorList}" var="item">--%>
+                                <%--                                    <label class="filter__color-item">--%>
+                                <%--                                        <input name="color" type="checkbox" value="${item.codeColor}"--%>
+                                <%--                                               class="filter__input filter__color" hidden="hidden">--%>
+                                <%--                                        <span class="filter__color-show shadow rounded hvr-grow"--%>
+                                <%--                                              style="background-color: ${item.codeColor}"></span>--%>
+                                <%--                                    </label>--%>
+                                <%--                                </c:forEach>--%>
                             </div>
                         </div>
                         <button class="filter__submit button--hover button p-2" type="submit">Lọc</button>

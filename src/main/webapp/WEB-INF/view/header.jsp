@@ -5,10 +5,10 @@
     <nav class="nav">
         <div class="container-xl">
             <div class="nav__inner">
-                <a href="${pageContext.request.contextPath}/" class="logo"></a>
+                <a href="/" class="logo"></a>
                 <ul class="nav__list">
                     <li class="nav__item">
-                        <a href="${pageContext.request.contextPath}/" class="nav__link hvr-grow-shadow">Trang chủ</a>
+                        <a href="/" class="nav__link hvr-grow-shadow">Trang chủ</a>
                     </li>
                     <li class="nav__item">
                         <a href="/product"
@@ -17,26 +17,26 @@
                         </a>
                     </li>
                     <li class="nav__item">
-                        <a href="${pageContext.request.contextPath}/contact" class="nav__link hvr-grow-shadow">
+                        <a href="/contact" class="nav__link hvr-grow-shadow">
                             Liên hệ
                         </a>
                     </li>
                     <li class="nav__item">
-                        <a href="<c:url value="/about" />" class="nav__link hvr-grow-shadow"> Về
+                        <a href="/about" class="nav__link hvr-grow-shadow"> Về
                             chúng tôi
                         </a>
                     </li>
                 </ul>
-                <c:set var="sessionId" value="${cookie['sessionId'].value}"/>
-                <c:set var="auth" value="${sessionScope.sessionUser[sessionId]}"/>
+                <%--                <c:set var="sessionId" value="${cookie['sessionId'].value}"/>--%>
+                <c:set var="auth" value="${sessionScope.user}"/>
                 <c:choose>
                     <c:when test="${empty auth}"> <!--cta == call to action-->
                         <div class="nav__cta">
-                            <a href="<c:url value="/public/auth/signIn.jsp" />"
+                            <a href="/signIn"
                                class="me-3 nav__button nav__button--signIn hvr-ripple-in">
                                 Đăng nhập
                             </a>
-                            <a href="${pageContext.request.contextPath}/public/auth/signUp.jsp"
+                            <a href="/signUp"
                                class="nav__button nav__button--signUp button button button--hover hvr-round-corners
                                     hvr-radial-out">
                                 Đăng ký
@@ -54,13 +54,13 @@
                                         </span>
                                     <span class="qlt__swapper">
                                             <span class="qlt__value">
-                                                <c:set var="userIdCart" value="${String.valueOf(auth.id)}"/>
-                                                <c:choose>
-                                                    <c:when test="${sessionScope[userIdCart] == null}"> 0 </c:when>
-                                                    <c:otherwise>
-                                                        ${sessionScope[userIdCart].getTotalItems()}
-                                                    </c:otherwise>
-                                                </c:choose>
+<%--                                                <c:set var="userIdCart" value="${String.valueOf(auth.id)}"/>--%>
+<%--                                                <c:choose>--%>
+<%--                                                    <c:when test="${sessionScope[userIdCart] == null}"> 0 </c:when>--%>
+<%--                                                    <c:otherwise>--%>
+<%--                                                        ${sessionScope[userIdCart].getTotalItems()}--%>
+<%--                                                    </c:otherwise>--%>
+<%--                                                </c:choose>--%>
                                             </span>
                                         </span>
                                 </a>
@@ -68,20 +68,20 @@
                             <div class="account hvr-grow">
                                 <i class="account__icon fa-regular fa-user"></i>
                                 <div class="setting__list">
-                                    <a href="${pageContext.request.contextPath}/public/user/accountInfo.jsp"
+                                    <a href="/user/info"
                                        class="setting__item">
                                         <div class="setting__link">
                                             <div class="account__info">
                                                 <i class="account__icon fa-regular fa-user"></i>
-                                                <p class="account__name"> ${auth.getUsername()} </p>
+                                                <p class="account__name"> ${auth.username} </p>
                                             </div>
                                         </div>
                                     </a>
-                                    <a href="${pageContext.request.contextPath}/public/user/accountInfo.jsp"
+                                    <a href="/user/info"
                                        class="setting__item">
                                         <div class="setting__link">Tài khoản của tôi</div>
                                     </a>
-                                    <c:if test="${auth.role == 2 || auth.role == 1}">
+                                    <c:if test="${auth.role == 'ADMIN'}">
                                         <a href="<c:url value="/public/admin/adminProducts.jsp" />"
                                            class="setting__item">
                                             <div class="setting__link">Quản lý</div>
