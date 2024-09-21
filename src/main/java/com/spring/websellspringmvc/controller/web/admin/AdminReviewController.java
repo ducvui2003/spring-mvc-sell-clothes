@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.web.admin;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,13 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller("adminProductControllerMVC")
+@Controller("adminReviewControllerMVC")
 @RequiredArgsConstructor
-@RequestMapping("/admin/product")
+@RequestMapping("/admin/review")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AdminProductController {
+public class AdminReviewController {
     @GetMapping
-    public ModelAndView showProductPage() {
-        return new ModelAndView(PageAddress.ADMIN_PRODUCT.getPage());
+    public ModelAndView showReviewPage() {
+        ModelAndView mav = new ModelAndView(PageAddress.ADMIN_REVIEW.getPage());
+        return mav;
     }
 }

@@ -19,7 +19,7 @@
           type='text/css'/>
     <script type='text/javascript'
             src='https://cdn.jsdelivr.net/npm/froala-editor@4.0.10/js/froala_editor.pkgd.min.js'></script>
-    <%--    <c:import url="/filePond"/>--%>
+    <c:import url="/common/filePond"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
@@ -47,7 +47,7 @@
 <c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="../common/adminNavigator.jsp"/>
+    <c:import url="adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css" />">
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminProducts.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminCategories.css"/>">
-    <c:import url="/public/filePond.jsp"/>
+    <c:import url="/common/filePond"/>
     <!--LightBox 2-->
     <link href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/css/lightbox.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
@@ -16,10 +16,10 @@
 <body>
 <c:set var="listCategory" value="${requestScope.listCategory}"/>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

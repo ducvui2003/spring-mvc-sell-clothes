@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.controller.exception;
 
 import com.spring.websellspringmvc.config.ConfigPage;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -16,16 +17,16 @@ public class ErrorView {
 
     public static final ErrorView SIGN_IN_FAILED = new ErrorView(
             Map.of("signInFailed", "Tài khoản hoặc mật khẩu sai"),
-            ConfigPage.SIGN_IN
+            PageAddress.SIGN_IN.getPage()
     );
 
     public static final ErrorView SIGN_UP_FAILED = new ErrorView(
             Map.of("user exist ", "username hoặc email đã tồn tại"),
-            ConfigPage.SIGN_UP
+            PageAddress.SIGN_UP.getPage()
     );
 
     public static final ErrorView ERROR_404 = new ErrorView(
-            ConfigPage.ERROR_404
+            PageAddress.ERROR_404.getPage()
     );
 
     public static final ErrorView FORGET_PASSWORD_FAILED = new ErrorView(

@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountSecurity.css"/>">
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <title>Bảo mật</title>
 
 </head>
 <body>
-<%@include file="/WEB-INF/public/header.jsp" %>
+<c:import url="/header"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="w-100 px-4 mt-4">
@@ -59,7 +59,7 @@
     </div>
 
 </div>
-<%@include file="/WEB-INF/public/footer.jsp" %>
+<c:import url="/footer"/>
 <div class='d-none loader__wrapper position-fixed top-0 start-0 end-0 bottom-0'
      style="background-color: rgba(0,0,0,0.5)">
     <span class='position-absolute top-50 start-50 translate-middle loader'></span>

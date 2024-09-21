@@ -14,15 +14,16 @@
     <div class="wrapper_navigator">
         <ul class="navbar__list">
             <li class="navbar__item">
-                <a href="<c:url value="/public/user/accountInfo.jsp"/>"
-                   class="navbar__link button button button--hover hvr-grow-shadow" data-index="1"> Thông tin cá nhân</a>
+                <a href="/user/info"
+                   class="navbar__link button button button--hover hvr-grow-shadow" data-index="1"> Thông tin cá
+                    nhân</a>
             </li>
             <li class="navbar__item">
-                <a href="<c:url value="/public/user/accountSecurity.jsp"/>"
+                <a href="/user/security"
                    class="navbar__link button button button--hover hvr-grow-shadow" data-index="2"> Bảo mật</a>
             </li>
             <li class="navbar__item">
-                <a href="<c:url value="/public/user/accountOrder.jsp"/>"
+                <a href="/user/order"
                    class="navbar__link button button button--hover hvr-grow-shadow" data-index="3"> Đơn hàng
                 </a>
             </li>
