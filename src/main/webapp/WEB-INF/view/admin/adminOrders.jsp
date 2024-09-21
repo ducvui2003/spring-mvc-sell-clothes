@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
@@ -14,10 +14,10 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <%@include file="adminNavigator.jsp" %>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -37,18 +37,18 @@
                                         Xuất file excel
                                     </button>
                                 </form>
-<%--                                <div class="delete__wrapper hvr-bounce-out">--%>
-<%--                                    <div class="button button__delete">--%>
-<%--                                        <i class="fa-solid fa-trash"></i>--%>
-<%--                                        Xóa đơn hàng--%>
-<%--                                    </div>--%>
-<%--                                </div>--%>
-<%--                                <div class="cancel__wrapper hvr-bounce-out">--%>
-<%--                                    <div class="button button__cancel">--%>
-<%--                                        <i class="fa-solid fa-ban"></i>--%>
-<%--                                        Hủy đơn hàng--%>
-<%--                                    </div>--%>
-<%--                                </div>--%>
+                                <%--                                <div class="delete__wrapper hvr-bounce-out">--%>
+                                <%--                                    <div class="button button__delete">--%>
+                                <%--                                        <i class="fa-solid fa-trash"></i>--%>
+                                <%--                                        Xóa đơn hàng--%>
+                                <%--                                    </div>--%>
+                                <%--                                </div>--%>
+                                <%--                                <div class="cancel__wrapper hvr-bounce-out">--%>
+                                <%--                                    <div class="button button__cancel">--%>
+                                <%--                                        <i class="fa-solid fa-ban"></i>--%>
+                                <%--                                        Hủy đơn hàng--%>
+                                <%--                                    </div>--%>
+                                <%--                                </div>--%>
                             </div>
                         </div>
                         <div class="table__wrapper">
@@ -97,7 +97,8 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <select class="form-select mb-3" id="searchSelect" name="searchSelect" aria-label="Tìm kiếm theo">
+                            <select class="form-select mb-3" id="searchSelect" name="searchSelect"
+                                    aria-label="Tìm kiếm theo">
                                 <option value="orderId" selected>Mã đơn hàng
                                 </option>
                                 <option value="customerName">Tên khách hàng

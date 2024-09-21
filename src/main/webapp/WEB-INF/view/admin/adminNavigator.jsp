@@ -18,14 +18,14 @@
                     </li>
 
                     <li>
-                        <a href="<c:url value="/public/admin/adminReviews.jsp"/>" data-link="adminReviews.jsp"
+                        <a href="/admin/review" data-link="adminReviews.jsp"
                            class="mb-2 pb-3 sidebar_item">
                             <i class="fa-solid fa-square-poll-vertical"></i>
                             <span>Nhận xét</span></a>
                     </li>
 
                     <li>
-                        <a href="<c:url value="/public/admin/adminCategories.jsp"/>" data-link="adminCategories.jsp"
+                        <a href="/admin/category" data-link="adminCategories.jsp"
                            class="pb-3 sidebar_item">
                             <i class="fa-solid fa-table-list"></i>
                             <span>Loại sản phẩm</span></a>
@@ -34,34 +34,34 @@
             </li>
 
             <li>
-                <a href="<c:url value="/public/admin/adminOrders.jsp"/>" data-link="adminOrders.jsp"
+                <a href="/admin/order" data-link="adminOrders.jsp"
                    class="sidebar_item">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span>Đơn hàng</span></a>
             </li>
 
             <li>
-                <a href="<c:url value="/public/admin/adminUsers.jsp"/>" data-link="adminUsers.jsp" class="sidebar_item">
+                <a href="/admin/user" data-link="adminUsers.jsp" class="sidebar_item">
                     <i class="fa-solid fa-user"></i>
                     <span>Người dùng</span></a>
             </li>
 
             <li>
-                <a href="<c:url value="/public/admin/adminDashboard.jsp" />" data-link="adminDashboard.jsp" class="sidebar_item">
+                <a href="/admin/dashboard" data-link="adminDashboard.jsp" class="sidebar_item">
                     <i class="fa-solid fa-chart-simple"></i>
                     <span>Thống kê</span></a>
             </li>
             <li>
-                <a href="<c:url value="/public/admin/adminVoucher.jsp"/>" data-link="adminVoucher.jsp"
+                <a href="/admin/voucher" data-link="adminVoucher.jsp"
                    class="sidebar_item">
                     <i class="fa-solid fa-ticket-simple"></i>
                     <span>Mã giảm giá</span></a>
             </li>
-            <li>
-                <a href="<c:url value="/public/admin/adminLogs.jsp"/>" data-link="adminLogs.jsp" class="sidebar_item">
-                    <i class="fa-solid fa-book"></i>
-                    <span>Nhật ký hệ thống</span></a>
-            </li>
+<%--            <li>--%>
+<%--                <a href="<c:url value="/public/admin/adminLogs.jsp"/>" data-link="adminLogs.jsp" class="sidebar_item">--%>
+<%--                    <i class="fa-solid fa-book"></i>--%>
+<%--                    <span>Nhật ký hệ thống</span></a>--%>
+<%--            </li>--%>
         </ul>
     </div>
     <%--    <div class="ps__rail-x" style="left: 0px; bottom: 0px;">--%>
