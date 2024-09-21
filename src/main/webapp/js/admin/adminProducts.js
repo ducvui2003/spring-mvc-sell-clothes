@@ -58,32 +58,38 @@ $(document).ready(() => {
         searching: false,
         ordering: false,
         ajax: {
-            url: "/filterProductAdmin",
+            url: "/api/admin/product/datatable",
+            type: "POST",
+            contentType: 'application/json',
             data: function (d) {
-                d.page = d.start / d.length + 1;
-                delete d.start;
-                delete d.length
-                return d;
-            },
-            dataSrc: function (json) {
-                json.draw = json.draw;
-                json.recordsTotal = json.quantity * json.products.length;
-                json.recordsFiltered = json.quantity * json.products.length;
-                json.data = json.products.map(function (item) {
-                    return {
-                        id: item.product.id,
-                        name: item.product.name,
-                        category: item.nameCategory,
-                        originalPrice: item.product.originalPrice,
-                        salePrice: item.product.salePrice,
-                        stars: item.stars,
-                        reviewCounts: item.reviewCounts,
-                        image: item.images.length > 0 ? item.images[0].nameImage : '',
-                        state: item.product.visibility
-                    };
-                })
-                return json.data;
-            },
+                // Modify the data sent by DataTables to be in JSON format
+                return JSON.stringify(d);
+            }
+            // data: function (d) {
+            //     d.page = d.start / d.length + 1;
+            //     delete d.start;
+            //     delete d.length
+            //     return d;
+            // },
+            // dataSrc: function (json) {
+            //     json.draw = json.draw;
+            //     json.recordsTotal = json.quantity * json.products.length;
+            //     json.recordsFiltered = json.quantity * json.products.length;
+            //     json.data = json.products.map(function (item) {
+            //         return {
+            //             id: item.product.id,
+            //             name: item.product.name,
+            //             category: item.nameCategory,
+            //             originalPrice: item.product.originalPrice,
+            //             salePrice: item.product.salePrice,
+            //             // stars: item.stars,
+            //             // reviewCounts: item.reviewCounts,
+            //             // image: item.images.length > 0 ? item.images[0].nameImage : '',
+            //             // state: item.product.visibility
+            //         };
+            //     })
+            //     return json.data;
+            // },
         }, columns: [
             {data: "id"},
             {data: "name"},
@@ -143,7 +149,7 @@ $(document).ready(() => {
         initComplete: function (settings, json) {
             initEventDatatable();
             setupFormSearch();
-            handleSubmitFormSearch();
+            // handleSubmitFormSearch();
             configModal();
             initFileInput();
             initTextEditor();

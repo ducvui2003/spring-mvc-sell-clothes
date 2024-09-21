@@ -11,7 +11,7 @@
                     <span>Sản phẩm</span></a>
                 <ul id="collapse_product">
                     <li class="sidebar_active">
-                        <a href="<c:url value="/public/admin/adminProducts.jsp"/>" data-link="adminProducts.jsp"
+                        <a href="/admin/product" data-link="adminProducts.jsp"
                            class="mb-2 pb-3 sidebar_item">
                             <i class="fa-solid fa-list-check"></i>
                             <span>Quản lý</span></a>

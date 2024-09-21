@@ -1,14 +1,10 @@
-<%@ page import="java.util.List" %>
-<%@ page import="models.User" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<jsp:useBean id="productFactory" class="utils.ProductFactory" scope="session"/>
-<fmt:setLocale value="vi_VN"/>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
@@ -23,7 +19,7 @@
           type='text/css'/>
     <script type='text/javascript'
             src='https://cdn.jsdelivr.net/npm/froala-editor@4.0.10/js/froala_editor.pkgd.min.js'></script>
-    <c:import url="/public/filePond.jsp"/>
+    <%--    <c:import url="/filePond"/>--%>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
@@ -48,10 +44,10 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="../common/adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -154,7 +150,7 @@
                                 phẩm</label>
                             <div class="filter__radio-list">
                                 <select id="category" name="categoryId" multiple>
-                                    <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"
+                                    <c:forEach items="${categoryList}"
                                                var="category">
                                         <option class="filter__input filter__radio"
                                                 value="${category.id}"> ${category.nameType}</option>
@@ -180,7 +176,7 @@
                                    data-bs-title="Tìm kiếm kích cỡ sản phẩm, nếu không chọn sẽ tìm tất cả">Kích
                                 cỡ</label>
                             <select id="size" name="size" multiple>
-                                <c:forEach items="${requestScope.sizeList}" var="item">
+                                <c:forEach items="${sizeList}" var="item">
                                     <option name="size" value="${item.nameSize}"
                                             class="filter__input filter__radio"> ${item.nameSize}</option>
                                 </c:forEach>
@@ -194,7 +190,7 @@
                                    data-bs-placement="top"
                                    data-bs-title="Tìm kiếm theo màu sắc, nếu không có sẽ tìm tất cả">Màu sắc</label>
                             <select id="color" name="color" multiple>
-                                <c:forEach items="${requestScope.colorList}" var="item">
+                                <c:forEach items="${colorList}" var="item">
                                     <option name="color" value="${item.codeColor}"
                                     >${item.codeColor}</option>
                                 </c:forEach>
@@ -232,7 +228,7 @@
                         <div class="col-6">
                             <label for="idCategory" class="form-label text-nowrap">Phân loại sản phẩm</label>
                             <select id="idCategory" name="idCategory" class="form-select" aria-label="Chọn">
-                                <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"
+                                <c:forEach items="${categoryList}"
                                            var="category">
                                     <option value="${category.id}"> ${category.nameType}</option>
                                 </c:forEach>
@@ -333,175 +329,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/4.0.7/js/languages/vi.js"></script>
-<script type="module" src="<c:url value="/js/admin/adminProducts.js"/>"></script>
-
-<%
-    List<String> inputChecked = (List<String>) request.getAttribute("listInputChecked");
-    Object keyword = request.getAttribute("keyword");
-    Object dateStart = request.getAttribute("sqlDateStart");
-    Object dateEnd = request.getAttribute("sqlDateEnd");
-%>
-<script>
-    <%--function checkDate(inputDate, dateString) {--%>
-    <%--    inputDate.value = dateString;--%>
-    <%--}--%>
-
-    <%--function checkNameInput(keyword) {--%>
-    <%--    let inputElements = document.querySelector(`input[type = "text"]`);--%>
-    <%--    inputElements.value = keyword;--%>
-    <%--}--%>
-
-    <%--function checkedInputTag(name) {--%>
-    <%--    let inputElements = document.querySelectorAll("input");--%>
-    <%--    inputElements.forEach(function (element) {--%>
-    <%--        if (element.value === name)--%>
-    <%--            element.checked = true;--%>
-    <%--    })--%>
-    <%--}--%>
-
-    <%--<%--%>
-    <%-- if (inputChecked!=null && !inputChecked.isEmpty()){--%>
-    <%--     for (String input : inputChecked) {--%>
-    <%--%>--%>
-    <%--checkedInputTag("<%=input%>");--%>
-    <%--<%}--%>
-    <%-- }%>--%>
-
-    <%--<% if (keyword != null){%>--%>
-    <%--checkNameInput("<%=keyword%>");--%>
-    <%--<%}%>--%>
-
-    <%--<% if (dateStart != null){%>--%>
-    <%--checkDate(document.querySelector("#date-start"), "<%=dateStart%>");--%>
-    <%--<%}%>--%>
-
-    <%--<% if (dateEnd != null){%>--%>
-    <%--checkDate(document.querySelector("#date-end"), "<%=dateEnd%>");--%>
-    <%--<%}%>--%>
-
-    // $(document).ready(function () {
-    //     $('#form__filter').submit(
-    //         function (event) {
-    //             // Ngăn chặn hành vi mặc định của form (chẳng hạn chuyển hướng trang)
-    //             event.preventDefault();
-    //
-    //             var formData = $(this).serialize();
-    //
-    //             $.ajax({
-    //                 type: 'GET',
-    //                 url: $(this).attr('action'),
-    //                 data: formData,
-    //                 success: function (response) {
-    //                     updateProducts(response)
-    //                 },
-    //                 error: function (err) {
-    //                     console.log(err)
-    //                 }
-    //             });
-    //
-    //             function updateProducts(response) {
-    //                 window.history.pushState('string', '', response.url);
-    //                 let container = $('.product__list-admin')[0]
-    //                 let products = response.products
-    //                 let content = ''
-    //                 if (products.length <= 0) {
-    //                     content = '<p class="product__list--empty">Không có sản phẩm nào ứng với bộ lọc </p>'
-    //                 } else {
-    //                     const vndFormat = Intl.NumberFormat("vi-VI", {
-    //                         style: "currency",
-    //                         currency: "VND",
-    //                     });
-    //                     content = products.map(function (product) {
-    //                         const contentProduct = product.product
-    //                         let originPrice = contentProduct.salePrice
-    //                         let salePrice = contentProduct.originalPrice
-    //                         return `
-    //                             <tr class="table__row">
-    //                                 <td class="table__data-view">
-    //                                     <label>
-    //                                         <i class="fa-solid fa-eye"></i>
-    //                                     </label>
-    //                                 </td>
-    //                                 <td class="table__data-edit">
-    //                                     <label>
-    //                                         <i class="fa-solid fa-pen-to-square"></i>
-    //                                     </label>
-    //                                 </td>
-    //                                 <td class="table__data table__data-id">
-    //                                     <p class="table__cell">` + contentProduct.id + `</p>
-    //                                 </td>
-    //                                 <td class="table__data table__data-name">
-    //                                     <p class="table__cell line-clamp line-1">` + contentProduct.name + `</p>
-    //                                 </td>
-    //                                 <td class="table__data">
-    //                                     <p class="table__cell">Bo sung loai san pham</p>
-    //                                 </td>
-    //                                 <td class="table__data">
-    //                                     <p class="table__cell">` + originPrice + `đ</p>
-    //                                 </td>
-    //                                 <td class="table__data">
-    //                                         <p class="table__cell">` + salePrice + `đ</p>
-    //                                 </td>` +
-    //                             (contentProduct.visibility ? `
-    //                                 <td class="table__data table__data-visibility table__data-hide">
-    //                                             <div class="button button--hover button__hide">Ẩn</div>
-    //                                         </td>
-    //                             ` : `
-    //                                 <td class="table__data table__data-visibility table__data-un-hide">
-    //                                             <div class="button button--hover button__un-hide">Bỏ ẩn</div>
-    //                                         </td>
-    //                             `) + `</tr>`
-    //                     })
-    //                 }
-    //                 container.innerHTML = content.join("")
-    //             }
-    //         })
-    // })
-    // let ulCom = $('.search__box')[0]
-    //
-    // function handelSearch() {
-    //     let debounceTimer;
-    //     $('.filter__input').keydown(function () {
-    //         var formData = $(this).serialize();
-    //
-    //         clearTimeout(debounceTimer);
-    //
-    //         debounceTimer = setTimeout(() => {
-    //             $.ajax({
-    //                 url: '/searchProduct',
-    //                 method: 'GET',
-    //                 data: formData,
-    //                 success: function (response) {
-    //                     ulCom.innerHTML = ""
-    //                     for (let i = 0; i < response.length; ++i) {
-    //                         const li = document.createElement("li")
-    //                         li.setAttribute("class", "mb-1")
-    //                         const a = document.createElement("a")
-    //                         a.setAttribute("class", "text-dark mb-2 search__box-item")
-    //                         a.setAttribute("href", "/")
-    //                         a.innerText = response[i]
-    //                         li.appendChild(a)
-    //                         ulCom.appendChild(li)
-    //                     }
-    //                 },
-    //                 error: function (xhr, status, error) {
-    //                     console.error(xhr.responseText);
-    //                 }
-    //             })
-    //         }, 800);
-    //     })
-    // }
-    //
-    // // handelSearch()
-    //
-    // $('.filter__input').on('focus', function () {
-    //     $('.search__box').addClass('focused');
-    // });
-    //
-    // $('.filter__input').on('blur', function () {
-    //     $('.search__box').removeClass('focused');
-    // });
-</script>
-
+<script type="module" src="/js/admin/adminProducts.js"></script>
 </body>
 </html>

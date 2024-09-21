@@ -174,21 +174,4 @@ public class ProductCardServices {
     public String getNameProductById(int productId) {
         return productCardDAO.getNameProductById(productId).get(0).getName();
     }
-
-    public Page<ProductCardResponse> filter(ProductFilter productFilter) {
-        List<Product> products = productDAO.filter(productFilter);
-        List<ProductCardResponse> response = new ArrayList<>();
-        for (Product product : products) {
-            String thumbnail = imageDAO.getThumbnail(product.getId());
-            int reviewCount = getReviewCount(product.getId());
-            int rating = calculateStar(product.getId());
-            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
-            productCardResponse.setThumbnail(cloudinaryUploadServices.getImage("product_img", thumbnail));
-            productCardResponse.setRating(rating);
-            productCardResponse.setReviewCount(reviewCount);
-            response.add(productCardResponse);
-        }
-        long total = productDAO.countFilter(productFilter);
-        return new PageImpl<>(response, productFilter.getPageable(), total);
-    }
 }

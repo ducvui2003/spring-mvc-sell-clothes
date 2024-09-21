@@ -120,7 +120,7 @@
         </div>
     </div>
 </main>
-<%@include file="footer.jsp" %>
+<%@include file="common/footer.jsp" %>
 </body>
 <script src="<c:url value="/js/base.js"/>"></script>
 <%--Select 2 lib--%>

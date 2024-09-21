@@ -1,9 +1,12 @@
 package com.spring.websellspringmvc.dao;
 
+import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.Define;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -63,8 +66,8 @@ public interface ProductDAO {
             JOIN colors ON products.id = colors.productId 
             JOIN sizes ON products.id = sizes.productId
             WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
-            AND (:colorId IS NULL OR colors.id = (:colorId))
-            AND (:sizeId IS NULL OR sizes.id = (:sizeId))
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
             LIMIT :limit OFFSET :offset
             """)
     List<Product> filter(@BindBean ProductFilter productFilter);
@@ -77,9 +80,28 @@ public interface ProductDAO {
             JOIN colors ON products.id = colors.productId 
             JOIN sizes ON products.id = sizes.productId
             WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
-            AND (:colorId IS NULL OR colors.id = (:colorId))
-            AND (:sizeId IS NULL OR sizes.id = (:sizeId))
-            LIMIT :limit OFFSET :offset
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
             """)
     long countFilter(@BindBean ProductFilter productFilter);
+
+    @SqlQuery("""
+            SELECT products.id AS id, products.name AS name, categories.nameType AS category, products.originalPrice AS originalPrice, products.salePrice AS salePrice, products.visibility AS visibility 
+            FROM products JOIN categories ON products.categoryId = categories.id
+            ORDER BY
+                CASE WHEN :orderColumn = 0 THEN p.id END :orderDir,
+                CASE WHEN :orderColumn = 1 THEN p.name END :orderDir,
+                CASE WHEN :orderColumn = 2 THEN p.category END :orderDir
+            LIMIT :start OFFSET :length
+            """)
+    @RegisterBeanMapper(ProductDataTable.class)
+    List<ProductDataTable> datatable(@BindBean DatatableRequest datatableRequest);
+
+
+    @SqlQuery("""
+            SELECT COUNT(*)
+            FROM products JOIN categories ON products.categoryId = categories.id
+            LIMIT :start OFFSET :length
+            """)
+    long datatableCount(@BindBean DatatableRequest datatableRequest);
 }

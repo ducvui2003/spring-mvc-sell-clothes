@@ -32,4 +32,7 @@ public interface SizeDAO {
 
     @SqlUpdate("DELETE FROM sizes WHERE id = :id")
     public void deleteSizeList(List<Integer> listId);
+
+    @SqlQuery("SELECT * FROM sizes WHERE productId = :productId")
+    public List<Size> findSizeByProductId(@Bind("productId") int productId);
 }

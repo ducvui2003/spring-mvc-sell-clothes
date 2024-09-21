@@ -4,23 +4,24 @@ import com.google.gson.JsonObject;
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dto.request.CreateProductRequest;
+import com.spring.websellspringmvc.dto.request.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
+import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.ProductDetailResponse;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
 import com.spring.websellspringmvc.mapper.ProductMapper;
 import com.spring.websellspringmvc.models.Color;
 import com.spring.websellspringmvc.models.Image;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
-import com.spring.websellspringmvc.services.ProductServices;
+import com.spring.websellspringmvc.services.ProductService;
+import com.spring.websellspringmvc.services.ProductServicesImpl;
 import com.spring.websellspringmvc.services.admin.AdminProductServices;
 import com.spring.websellspringmvc.services.state.ProductState;
 import com.spring.websellspringmvc.utils.ProductFactory;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@RestController("apiAdminProductController")
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/product")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -38,8 +39,10 @@ import java.util.stream.Collectors;
 public class AdminProductController {
     ProductFactory productFactory;
     AdminProductServices adminProductServices;
-    ProductServices productServices;
+    ProductServicesImpl productServicesImpl;
     ProductMapper productMapper = ProductMapper.INSTANCE;
+    ProductService productService;
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest createProductRequest) {
@@ -88,7 +91,7 @@ public class AdminProductController {
         if (id == null)
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
 
-        Product product = productServices.getProductByProductId(id);
+        Product product = productServicesImpl.getProductByProductId(id);
 
         if (product == null)
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
@@ -106,7 +109,7 @@ public class AdminProductController {
     }
 
     @PostMapping("/visible")
-    public ResponseEntity visibleProduct(@RequestParam("id") Integer id, @RequestParam("type") ProductState state) {
+    public ResponseEntity<?> visibleProduct(@RequestParam("id") Integer id, @RequestParam("type") ProductState state) {
         JsonObject jsonObject = new JsonObject();
         if (id == null || state == null) {
             jsonObject.addProperty("success", false);
@@ -123,7 +126,7 @@ public class AdminProductController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity updateProduct(@RequestBody UpdateProductRequest updateProductRequest) {
+    public ResponseEntity<?> updateProduct(@RequestBody UpdateProductRequest updateProductRequest) {
         if (updateProductRequest.getSalePrice() > updateProductRequest.getOriginalPrice())
             throw new AppException(ErrorCode.PRICE_ERROR);
 
@@ -179,4 +182,9 @@ public class AdminProductController {
         return ResponseEntity.ok(jsonObject.toString());
     }
 
+    @PostMapping("/datatable")
+    public ResponseEntity<DatatableResponse<ProductDataTable>> getDatatable(@RequestBody DatatableRequest request) {
+        DatatableResponse<ProductDataTable> response = productService.datatable(request);
+        return ResponseEntity.ok(response);
+    }
 }

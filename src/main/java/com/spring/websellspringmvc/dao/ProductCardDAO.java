@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.models.Category;
 import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.utils.MoneyRange;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
@@ -15,6 +16,7 @@ import java.sql.Date;
 import java.util.List;
 
 @Repository
+@RegisterBeanMapper(Product.class)
 public interface ProductCardDAO {
     @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice FROM products WHERE visibility = :visibility LIMIT :limit OFFSET :offset")
     public List<Product> getProducts(int pageNumber, int limit, boolean visibility);
