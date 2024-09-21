@@ -103,7 +103,7 @@
                 </div>
                 <div class="col-9 animate__animated animate__fadeInRight tab_left">
                     <div class="product__notification"></div>
-                    <div class="product__list">
+                    <div id="product__list" class="product__list">
                         <%--  sản phẩm được hiển thị ở đây--%>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Image;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@RegisterBeanMapper(Image.class)
 public interface ImageDAO {
     @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId LIMIT 1")
     public String getThumbnail(@Bind("productId") int productId);

@@ -1,14 +1,10 @@
-<%@ page import="java.util.List" %>
-<%@ page import="models.User" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<jsp:useBean id="productFactory" class="utils.ProductFactory" scope="session"/>
-<fmt:setLocale value="vi_VN"/>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
@@ -23,7 +19,7 @@
           type='text/css'/>
     <script type='text/javascript'
             src='https://cdn.jsdelivr.net/npm/froala-editor@4.0.10/js/froala_editor.pkgd.min.js'></script>
-    <c:import url="/public/filePond.jsp"/>
+    <%--    <c:import url="/filePond"/>--%>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
@@ -48,10 +44,10 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="../common/adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -154,11 +150,11 @@
                                 phẩm</label>
                             <div class="filter__radio-list">
                                 <select id="category" name="categoryId" multiple>
-                                    <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"
-                                               var="category">
-                                        <option class="filter__input filter__radio"
-                                                value="${category.id}"> ${category.nameType}</option>
-                                    </c:forEach>
+                                    <%--                                    <c:forEach items="${pageContext.servletContext.getAttribute('categoryList')}"--%>
+                                    <%--                                               var="category">--%>
+                                    <%--                                        <option class="filter__input filter__radio"--%>
+                                    <%--                                                value="${category.id}"> ${category.nameType}</option>--%>
+                                    <%--                                    </c:forEach>--%>
                                 </select>
                             </div>
                         </div>
@@ -180,10 +176,10 @@
                                    data-bs-title="Tìm kiếm kích cỡ sản phẩm, nếu không chọn sẽ tìm tất cả">Kích
                                 cỡ</label>
                             <select id="size" name="size" multiple>
-                                <c:forEach items="${requestScope.sizeList}" var="item">
-                                    <option name="size" value="${item.nameSize}"
-                                            class="filter__input filter__radio"> ${item.nameSize}</option>
-                                </c:forEach>
+                                <%--                                <c:forEach items="${requestScope.sizeList}" var="item">--%>
+                                <%--                                    <option name="size" value="${item.nameSize}"--%>
+                                <%--                                            class="filter__input filter__radio"> ${item.nameSize}</option>--%>
+                                <%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
@@ -194,10 +190,10 @@
                                    data-bs-placement="top"
                                    data-bs-title="Tìm kiếm theo màu sắc, nếu không có sẽ tìm tất cả">Màu sắc</label>
                             <select id="color" name="color" multiple>
-                                <c:forEach items="${requestScope.colorList}" var="item">
-                                    <option name="color" value="${item.codeColor}"
-                                    >${item.codeColor}</option>
-                                </c:forEach>
+                                <%--                                <c:forEach items="${requestScope.colorList}" var="item">--%>
+                                <%--                                    <option name="color" value="${item.codeColor}"--%>
+                                <%--                                    >${item.codeColor}</option>--%>
+                                <%--                                </c:forEach>--%>
                             </select>
                         </div>
                     </div>
@@ -335,12 +331,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/4.0.7/js/languages/vi.js"></script>
 <script type="module" src="<c:url value="/js/admin/adminProducts.js"/>"></script>
 
-<%
-    List<String> inputChecked = (List<String>) request.getAttribute("listInputChecked");
-    Object keyword = request.getAttribute("keyword");
-    Object dateStart = request.getAttribute("sqlDateStart");
-    Object dateEnd = request.getAttribute("sqlDateEnd");
-%>
+<%--<%--%>
+<%--    List<String> inputChecked = (List<String>) request.getAttribute("listInputChecked");--%>
+<%--    Object keyword = request.getAttribute("keyword");--%>
+<%--    Object dateStart = request.getAttribute("sqlDateStart");--%>
+<%--    Object dateEnd = request.getAttribute("sqlDateEnd");--%>
+<%--%>--%>
 <script>
     <%--function checkDate(inputDate, dateString) {--%>
     <%--    inputDate.value = dateString;--%>

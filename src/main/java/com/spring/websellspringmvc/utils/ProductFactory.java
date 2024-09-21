@@ -1,16 +1,15 @@
 package com.spring.websellspringmvc.utils;
 
 import com.spring.websellspringmvc.models.*;
-import com.spring.websellspringmvc.services.admin.AdminReviewServices;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.services.ProductServices;
+import com.spring.websellspringmvc.services.ProductServicesImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class ProductFactory {
-    ProductServices productServices;
+    ProductServicesImpl productServicesImpl;
     ProductCardServices productCardServices;
 
     public static Product getProductById(int productId) {
@@ -19,7 +18,7 @@ public class ProductFactory {
     }
 
     public List<Image> getListImagesByProductId(int productId) {
-        return productServices.getListImagesByProductId(productId);
+        return productServicesImpl.getListImagesByProductId(productId);
     }
 
     public static List<Color> getListColorsByProductId(int productId) {

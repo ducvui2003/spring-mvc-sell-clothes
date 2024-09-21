@@ -39,7 +39,7 @@ public class ConfigPage {
         USER_REVIEW_SUCCESS = folderUser + "reviewSuccess";
 
 //        Config path /public/product/
-        String folderProduct = "/product";
+        String folderProduct = "/product/";
         PRODUCT_BUYING = folderProduct + "productBuying";
         PRODUCT_DETAIL = folderProduct + "productDetail";
         PRODUCT_ORDER = folderProduct + "productOrder";
@@ -48,14 +48,14 @@ public class ConfigPage {
 
 //        Config path /public/admin/
 //        Config path /public/admin/product/
-        String folderAdminProduct = "/admin/product/";
-        ADMIN_CATEGORY = folderAdminProduct + "adminCategories";
-        ADMIN_ORDER = folderAdminProduct + "adminOrders";
-        ADMIN_PRODUCT = folderAdminProduct + "adminProducts";
-        ADMIN_REVIEW = folderAdminProduct + "adminReviews";
-        ADMIN_USER = folderAdminProduct + "adminUsers";
-        ADMIN_MATERIAL = folderAdminProduct + "adminImportMaterial";
-        DASHBOARD = folderAdminProduct + "adminDashboard";
+        String folderAdmin = "/admin/";
+        ADMIN_CATEGORY = folderAdmin + "adminCategories";
+        ADMIN_ORDER = folderAdmin + "adminOrders";
+        ADMIN_PRODUCT = folderAdmin + "adminProducts";
+        ADMIN_REVIEW = folderAdmin + "adminReviews";
+        ADMIN_USER = folderAdmin + "adminUsers";
+        ADMIN_MATERIAL = folderAdmin + "adminImportMaterial";
+        DASHBOARD = folderAdmin + "adminDashboard";
 
         String folderError = "/error/";
         ERROR_404 = folderError + "error404";

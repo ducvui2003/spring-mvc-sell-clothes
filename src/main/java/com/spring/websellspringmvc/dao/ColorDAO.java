@@ -20,6 +20,10 @@ public interface ColorDAO {
     @RegisterBeanMapper(Color.class)
     public List<Color> getAllColor();
 
+    @SqlQuery("SELECT * FROM colors WHERE productId = :productId")
+    @RegisterBeanMapper(Color.class)
+    public List<Color> findColorByProductId(@Bind("productId") int productId);
+
     @SqlQuery("SELECT * FROM colors WHERE id = :id")
     @RegisterBeanMapper(Color.class)
     public Color findById(@Bind("id") int id);
@@ -34,4 +38,5 @@ public interface ColorDAO {
     public void updateColor(@BindBean("color") Color color, @Bind("id") int id);
 
     public void deleteColorList(List<Integer> listIdDelete);
+
 }

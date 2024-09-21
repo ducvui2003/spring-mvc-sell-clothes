@@ -1,11 +1,15 @@
 import {http} from "./base.js";
 
 $(document).ready(() => {
+    const SIZE = 9;
     const formFilter = $("#form__filter");
     const category = formFilter.find("#category");
     const money = formFilter.find("#money");
     const size = formFilter.find("#size");
     const color = formFilter.find("#color");
+
+    const productList = $("#product__list")
+
     // các sản phẩm khi vừa vào trang sản phẩm
     callAjaxToPage(1);
     handleFilterProduct(1)
@@ -48,7 +52,7 @@ $(document).ready(() => {
         const sizeHTML = data.sizes.map(size => (
             `
             <label class="filter__radio-item">
-                <input name="size" value="${size.nameSize}" type="checkbox"
+                <input name="sizeId" value="${size.nameSize}" type="checkbox"
                        class="filter__input filter__radio" hidden="hidden">
                 <span class="filter-radio__icon-wrapper">
                     <i class="fa-solid fa-check filter-radio__icon"></i>
@@ -64,7 +68,7 @@ $(document).ready(() => {
         const colorHTML = data.colors.map(color => (
             `
            <label class="filter__color-item">
-                <input name="color" type="checkbox" value="${color.codeColor}"
+                <input name="colorId" type="checkbox" value="${color.codeColor}"
                        class="filter__input filter__color" hidden="hidden">
                 <span class="filter__color-show shadow rounded hvr-grow"
                       style="background-color: ${color.codeColor}"></span>
@@ -78,12 +82,12 @@ $(document).ready(() => {
 
 // phương thức này truyền vào số trang hiện tại
 // sẽ trả về sản phẩm của trang đó
-    function callAjaxToPage(pageNumber) {
+    function callAjaxToPage(page) {
         $.ajax({
-            url: "/api/product/filter",
+            url: `/api/product/filter?page=${page}&size=${SIZE}`,
             type: "GET",
             success: function (data) {
-                generationPage(parseInt(pageNumber), data["quantity"])
+                handlePage(parseInt(page), data["quantity"])
                 showProduct(data.content)
             },
             error: function (error) {
@@ -96,7 +100,7 @@ $(document).ready(() => {
 // sẽ gọi method callAjaxToPage(currentPage)
     function changePage(aTag) {
         if (aTag) {
-            productList.innerHTML = ``
+            productList.html("")
             callAjaxToPage(aTag.innerText)
             // handleFilterProduct(aTag.innerText)
         }
@@ -104,7 +108,12 @@ $(document).ready(() => {
 
 // khi lấy được data của product dưới dạng json thì show ra giao diện
     function showProduct(products) {
-        products.forEach(function (item) {
+        productList.html("")
+        if (products.length === 0) {
+            productList.html(`<p class="product__list--empty">Không có sản phẩm nào</p>`)
+            return;
+        }
+        const html = products.map(function (item) {
             const star = item.rating
             const noStar = []
             const hasStar = []
@@ -134,14 +143,14 @@ $(document).ready(() => {
                 style: "currency",
                 currency: "VND",
             });
-            productList.innerHTML += `
+            return `
             <div class="product__item hvr-grow-shadow">
-                <a href="/showProductDetail?id=${id}">
+                <a href="/product/${id}">
                     <img src="${thumbnail}" class="product__img" alt="" loading="lazy"/>
                 </a>
                 
                 <div class="product__info">
-                    <a class="product__name" target="_blank" href="/showProductDetail?id=${id}">${name}</a>
+                    <a class="product__name" target="_blank" href="/product/${id}">${name}</a>
                 
                     <div class="product__review">
                         <div class="product__review-stars">
@@ -149,7 +158,7 @@ $(document).ready(() => {
                             ${noStarResult}
                         </div>
                         
-                           <a class="product__review-num" target="_blank" href="/showProductDetail?id=${id}">
+                           <a class="product__review-num" target="_blank" href="/product/${id}">
                                ${reviewCounts} nhận xét
                            </a>
                     </div> 
@@ -160,7 +169,8 @@ $(document).ready(() => {
                     </span>
                 </div>
             </div>`
-        })
+        }).join("")
+        productList.html(html)
     }
 
     function showBeforePaging(currentPage, minPage) {
@@ -191,7 +201,7 @@ $(document).ready(() => {
         }
     }
 
-    function generationPage(currentPage, totalPage) {
+    function handlePage(currentPage, totalPage) {
         var minPage = currentPage - 2
         var maxPage = currentPage + 2;
 
@@ -225,69 +235,18 @@ $(document).ready(() => {
             event.preventDefault();
             var formData = $(this).serialize();
             $.ajax({
-                url: '/filterProductBuying?page=' + pageNumber,
+                url: '/api/product/filter?page=' + pageNumber,
                 type: 'GET',
                 data: formData,
                 success: function (response) {
-                    generationPage(response['page'], response['quantity'])
-                    updateProducts(response)
+                    handlePage(response.page, response.totalPage)
+                    showProduct(response.content)
                 },
                 error: function (err) {
                     console.log(err)
                 }
             });
         })
-    }
-
-    function updateProducts(response) {
-        window.history.pushState('string', '', response["url"]);
-        let container = $('.product__list')[0]
-        let products = response["products"]
-        let content = ''
-        if (products.length <= 0) {
-            content = '<p class="product__list--empty">Không có sản phẩm nào ứng với bộ lọc </p>'
-        } else {
-            const vndFormat = Intl.NumberFormat("vi-VI", {
-                style: "currency",
-                currency: "VND",
-            });
-            content = products.map(function (product) {
-                const contentProduct = product["product"]
-                let linkProductDetail = '/showProductDetail?id=' + contentProduct['id']
-                let stars = ''
-                let noStars = ''
-
-                for (let star = 0; star < product['stars']; star++) {
-                    stars += '<i class="fa-solid fa-star"></i>'
-                }
-                for (let star = 0; star < 5 - product['stars']; star++) {
-                    noStars += '<i class="fa-regular fa-star"></i>'
-                }
-
-                const salePrice = contentProduct['salePrice']
-                const originPrice = contentProduct['originalPrice']
-                return `<div class = "product__item" >
-                        <a class="product__name" target="_blank" href="${linkProductDetail}">
-                            <img src = "${product.images[0].nameImage}" class="product__img" >
-                        </a>
-                        <div class = "product__info" >
-                            <a class="product__name" target="_blank" href="${linkProductDetail}">${contentProduct.name}</a>
-                            <div class="product__review">
-                                <div class="product__review-stars">${stars} ${noStars}</div>
-                                <a class="product__review-num" target="_blank" href="${linkProductDetail}">${product.reviewCounts} nhận xét</a>
-                            </div>
-                            
-                            <span class="product__price">
-                                <strong class="product__price--original">${vndFormat.format(originPrice)}</strong>
-                                <strong class="product__price--sale">${vndFormat.format(salePrice)}</strong>
-                            </span>
-                        </div>
-                    </div>
-            `;
-            })
-        }
-        container.innerHTML = content.join("")
-
     }
 
     let ulCom = $('.search__box')[0]
@@ -311,7 +270,7 @@ $(document).ready(() => {
                             li.setAttribute("class", "mb-1")
                             const a = document.createElement("a")
                             a.setAttribute("class", "text-dark mb-2 search__box-item")
-                            a.setAttribute("href", `/showProductDetail?id=${response[i].id}`)
+                            a.setAttribute("href", `/product/${response[i].id}`)
                             a.setAttribute("target", "_blank");
                             a.style.cursor = "pointer";
                             a.innerText = response[i].name
@@ -344,7 +303,5 @@ $(document).ready(() => {
         // $('.tab_right').css('z-index', '1');
         // $('.tab_left').css('z-index', '1');
     });
-
-    const productList = document.querySelector('.product__list')
     const productPages = document.querySelector('.paging')
 })

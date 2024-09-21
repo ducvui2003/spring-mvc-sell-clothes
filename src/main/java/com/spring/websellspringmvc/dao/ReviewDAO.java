@@ -2,6 +2,8 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Review;
+import com.spring.websellspringmvc.models.ReviewFilter;
+import com.spring.websellspringmvc.models.User;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -42,7 +44,7 @@ public interface ReviewDAO {
 
     @SqlQuery(
             """
-                    SELECT COUNT(*) 
+                    SELECT reviews.id, reviews.orderDetailId, reviews.ratingStar, reviews.feedback, reviews.reviewDate, reviews.visibility
                     FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id 
                     WHERE order_details.productId = :productId AND reviews.visibility = :visibility
                     """
@@ -108,4 +110,23 @@ public interface ReviewDAO {
 
     @SqlQuery("SELECT * FROM reviews")
     public List<Review> getAll();
+
+    @SqlQuery("""
+            SELECT reviews.id, reviews.orderDetailId, reviews.ratingStar, reviews.feedback, reviews.reviewDate, reviews.visibility
+            FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id
+            JOIN products ON order_details.productId = products.id
+            WHERE (:productId IS NULL OR products.id = :productId)
+            LIMIT :limit OFFSET :offset
+            """)
+    public List<Review> getReviewsByProductId(@BindBean ReviewFilter reviewFilter);
+
+    @SqlQuery("""
+            SELECT COUNT(*)
+            FROM reviews JOIN order_details ON reviews.orderDetailId = order_details.id
+            JOIN products ON order_details.productId = products.id
+            WHERE (:productId IS NULL OR products.id = :productId)
+            """)
+    long countFilter(@BindBean ReviewFilter reviewFilter);
+
+
 }

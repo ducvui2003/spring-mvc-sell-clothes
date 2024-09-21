@@ -6,14 +6,14 @@
 <html lang="en">
 
 <head>
-    <jsp:include page="/commonLink"/>
+    <jsp:include page="common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/home.css" />">
     <title>Trang chủ</title>
 </head>
 
 <body>
 <!--Header-->
-<c:import url="/header" charEncoding="UTF-8"/>
+<c:import url="common/header.jsp" charEncoding="UTF-8"/>
 <!--Main: chứa nội dung chính, các section như giới thiệu sản phầm, các cổ đông,...-->
 <!--Hero-->
 <main id="main" class="animate__animated animate__zoomIn">
@@ -114,7 +114,7 @@
 
                             <div class="product__info">
                                 <a class="product__name" target="_blank"
-                                   href="/showProductDetail?id=${product.id}">${product.name}
+                                   href="/product/${product.id}">${product.name}
                                 </a>
                                 <div class="product__review">
                                     <div class="review__icon">
@@ -275,7 +275,7 @@
     <div class="modal_hidden_search__box"></div>
 </main>
 <!--Footer-->
-<c:import url="/footer"/>
+<c:import url="common/footer.jsp"/>
 <script src="<c:url value="/js/home.js" />"></script>
 <script type="text/javascript">
     // function addToCartAjax() {
