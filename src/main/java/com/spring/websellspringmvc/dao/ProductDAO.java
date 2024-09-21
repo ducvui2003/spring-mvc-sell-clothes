@@ -63,8 +63,8 @@ public interface ProductDAO {
             JOIN colors ON products.id = colors.productId 
             JOIN sizes ON products.id = sizes.productId
             WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
-            AND (:colorId IS NULL OR colors.id = (:colorId))
-            AND (:sizeId IS NULL OR sizes.id = (:sizeId))
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
             LIMIT :limit OFFSET :offset
             """)
     List<Product> filter(@BindBean ProductFilter productFilter);
@@ -77,9 +77,8 @@ public interface ProductDAO {
             JOIN colors ON products.id = colors.productId 
             JOIN sizes ON products.id = sizes.productId
             WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
-            AND (:colorId IS NULL OR colors.id = (:colorId))
-            AND (:sizeId IS NULL OR sizes.id = (:sizeId))
-            LIMIT :limit OFFSET :offset
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
             """)
     long countFilter(@BindBean ProductFilter productFilter);
 }

@@ -1,31 +1,7 @@
 package com.spring.websellspringmvc.controller.api.checkout;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.spring.websellspringmvc.config.ConfigPage;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import com.spring.websellspringmvc.models.Address;
-import com.spring.websellspringmvc.models.DeliveryMethod;
-import com.spring.websellspringmvc.models.PaymentMethod;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.AddressServices;
-import com.spring.websellspringmvc.services.CheckoutServices;
-import com.spring.websellspringmvc.services.ProductServices;
-import com.spring.websellspringmvc.session.SessionManager;
-
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 @WebServlet(name = "CheckoutController", value = "/api/checkout")
 public class CheckoutController extends HttpServlet {

@@ -88,4 +88,5 @@ public interface UserDAO {
 
     @SqlQuery("SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE %:search% OR email LIKE :search OR phone LIKE :search")
     public long getSizeWithCondition(@Bind("searchValue") String search);
+
 }

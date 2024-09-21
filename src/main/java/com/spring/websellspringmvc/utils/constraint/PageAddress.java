@@ -4,16 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum PageAddress {
-    HOME("home"),
+    HOME("/index"),
     PRODUCT_TRENDING("/product/productTrending"),
     PRODUCT_BUYING("/product/productBuying"),
-    CHECKOUT("checkout"),
-    LOGIN("login"),
-    REGISTER("register"),
-    PROFILE("profile"),
-    ORDER("order"),
-    SEARCH("search"),
-    ERROR("error");
+    PRODUCT_NEW("/product/productNew"),
+    PRODUCT_DETAIL("/product/productDetail"),
+    ABOUT("/about"),
+    ;
 
     private final String page;
 

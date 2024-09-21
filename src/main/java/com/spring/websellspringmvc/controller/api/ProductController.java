@@ -5,14 +5,14 @@ import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.response.FormProductFilterResponse;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.services.ProductServices;
+import com.spring.websellspringmvc.services.ProductService;
 import com.spring.websellspringmvc.utils.MoneyRange;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +28,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductController {
     ProductCardServices productCardServices;
+    ProductService productService;
 
     @GetMapping("/form-filter")
     public ResponseEntity<FormProductFilterResponse> formProduct() {
@@ -50,14 +51,16 @@ public class ProductController {
 
     @GetMapping("/filter")
     public ResponseEntity<ApiPaging<ProductCardResponse>> filterProduct(
-            @RequestParam(value = "category", required = false) List<Integer> categoryId,
-            @RequestParam(value = "size", required = false) List<Integer> sizeId,
-            @RequestParam(value = "color", required = false) List<Integer> colorId,
+            @RequestParam(value = "categoryId", required = false) List<Integer> categoryId,
+            @RequestParam(value = "sizeNames", required = false) List<String> sizeNames,
+            @RequestParam(value = "codeColors", required = false) List<String> codeColors,
             @RequestParam(value = "money-from", required = false) List<String> moneyRange,
-            @PageableDefault(page = 0, size = 9) Pageable page
+            @RequestParam(value = "page", defaultValue = "1", required = false) Integer page,
+            @RequestParam(value = "size", defaultValue = "9", required = false) Integer size
     ) {
-        ProductFilter productFilter = ProductFilter.of(page, categoryId, sizeId, colorId, moneyRange);
-        Page<ProductCardResponse> productCardResponseList = productCardServices.filter(productFilter);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        ProductFilter productFilter = ProductFilter.of(pageable, categoryId, sizeNames, codeColors, moneyRange);
+        Page<ProductCardResponse> productCardResponseList = productService.filter(productFilter);
 
         return ResponseEntity.ok(ApiPaging.<ProductCardResponse>builder()
                 .content(productCardResponseList.getContent())

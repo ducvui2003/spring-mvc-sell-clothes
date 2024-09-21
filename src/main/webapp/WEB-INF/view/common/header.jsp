@@ -82,7 +82,7 @@
                                         <div class="setting__link">Tài khoản của tôi</div>
                                     </a>
                                     <c:if test="${auth.role == 'ADMIN'}">
-                                        <a href="<c:url value="/public/admin/adminProducts.jsp" />"
+                                        <a href="<c:url value="/admin/product" />"
                                            class="setting__item">
                                             <div class="setting__link">Quản lý</div>
                                         </a>
