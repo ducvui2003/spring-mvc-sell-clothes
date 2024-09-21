@@ -4,18 +4,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
-
+    <jsp:include page="/adminLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url  value="/assets/css/admin/dashboard.css"/>">
     <title>Thống kê</title>
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -110,22 +109,7 @@
         </div>
     </section>
 </main>
-<%--<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.1/apexcharts.min.js"></script>--%>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="<c:url value="/js/admin/dashboard.js" />"></script>
 </body>
-<%--<script>--%>
-<%--    let top5NameProduct = "<%=request.getAttribute("nameTop5")%>";--%>
-<%--    console.log(top5NameProduct)--%>
-
-<%--    let top5QuantityProduct = "<%=request.getAttribute("QuantityTop5")%>";--%>
-<%--    console.log(top5QuantityProduct)--%>
-
-<%--    let totalQuantityByMonth = "<%=request.getAttribute("quantityOrderByMonth")%>";--%>
-<%--    console.log(totalQuantityByMonth)--%>
-
-<%--    let totalRevenueByMonth = "<%=request.getAttribute("revenueOrderByMonth")%>";--%>
-<%--    console.log(totalRevenueByMonth)--%>
-<%--</script>--%>
-
 </html>

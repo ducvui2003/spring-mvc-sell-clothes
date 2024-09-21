@@ -1,6 +1,6 @@
 package com.spring.websellspringmvc.services.admin;
 
-import com.spring.websellspringmvc.config.ImagePath;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.dao.CategoryDAO;
 import com.spring.websellspringmvc.dao.ParameterDAO;
 import com.spring.websellspringmvc.models.Category;
@@ -18,11 +18,12 @@ import java.util.List;
 public class AdminCategoryServices {
     CategoryDAO categoryDAO;
     ParameterDAO parameterDAO;
+    CloudinaryUploadServices cloudinaryUploadServices;
 
     public List<Category> getCategories() {
         List<Category> categories = categoryDAO.getAllCategory();
         for (Category category : categories) {
-            String url = CloudinaryUploadServices.getINSTANCE().getImage(ImagePath.CATEGORY.getPath(), category.getSizeTableImage());
+            String url = cloudinaryUploadServices.getImage(ImagePath.CATEGORY.getPath(), category.getSizeTableImage());
             category.setSizeTableImage(url);
         }
         return categories;
@@ -30,7 +31,7 @@ public class AdminCategoryServices {
 
     public Category getCategoryById(int id) {
         Category category = categoryDAO.getCategoryById(id);
-        String url = CloudinaryUploadServices.getINSTANCE().getImage(ImagePath.CATEGORY.getPath(), category.getSizeTableImage());
+        String url = cloudinaryUploadServices.getImage(ImagePath.CATEGORY.getPath(), category.getSizeTableImage());
         category.setSizeTableImage(url);
         return category;
     }
@@ -58,7 +59,7 @@ public class AdminCategoryServices {
     public List<Parameter> getParametersByCategoryId(int id) {
         List<Parameter> listParameter = parameterDAO.getParameterByCategoryId(id);
         for (Parameter parameter : listParameter) {
-            String url = CloudinaryUploadServices.getINSTANCE().getImage(ImagePath.PARAMETER.getPath(), parameter.getGuideImg());
+            String url = cloudinaryUploadServices.getImage(ImagePath.PARAMETER.getPath(), parameter.getGuideImg());
             parameter.setGuideImg(url);
         }
         return listParameter;

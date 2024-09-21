@@ -10,6 +10,7 @@ import java.util.List;
 public class UploadImageServices {
     private String ROOT_FOLDER;
     private List<String> nameImages;
+    CloudinaryUploadServices cloudinaryUploadServices;
 
     public UploadImageServices(String root) {
         this.ROOT_FOLDER = root;
@@ -44,7 +45,7 @@ public class UploadImageServices {
             String imageName = idCategory + "/" + getFileName(part);
 
             nameImages.add(imageName);
-            CloudinaryUploadServices.getINSTANCE().uploadImage(root, imageName.substring(0, imageName.lastIndexOf(".")), part);
+            cloudinaryUploadServices.uploadImage(root, imageName.substring(0, imageName.lastIndexOf(".")), part);
         }
     }
 
@@ -61,7 +62,7 @@ public class UploadImageServices {
     }
 
     public void deleteImage(String imageName) throws IOException {
-        CloudinaryUploadServices.getINSTANCE().deleteImage(imageName);
+        cloudinaryUploadServices.deleteImage(imageName);
     }
 
     public void deleteImages(List<String> nameImages) throws IOException {

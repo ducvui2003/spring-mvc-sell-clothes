@@ -3,12 +3,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <c:import url="/public/commonLink.jsp"/>
+    <c:import url="/commonLink"/>
     <link rel="stylesheet" href="/assets/css/about.css">
     <title>Giới thiệu</title>
 </head>
 <body>
-<%@include file="header.jsp" %>
+<!--Header-->
+<c:import url="common/header" charEncoding="UTF-8"/>
 <main class="wrapper animate__animated animate__fadeIn">
     <div class="container">
         <div class="about">
@@ -151,15 +152,15 @@
                 </ul>
             </div>
             <div class="pic">
-                <a href="${initParam.contextPath}/public/index.jsp">
-                    <img src="${initParam.contextPath}/assets/img/YourStyleLogo.png"/>
+                <a href="/">
+                    <img src="/assets/img/YourStyleLogo.png"/>
                 </a>
             </div>
         </div>
     </div>
 </main>
-<%@include file="footer.jsp" %>
-<script src="${initParam.contextPath}/js/base.js"></script>
+<c:import url="common/footer"/>
+<script src="/js/base.js"></script>
 <script>
     const diamonds = document.querySelectorAll('.diamond');
     const textCompos = document.querySelectorAll('.text__compo');

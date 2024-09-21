@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.mapper;
 
 import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
+import com.spring.websellspringmvc.dto.mvc.response.ProductDetailResponse;
 import com.spring.websellspringmvc.dto.request.CreateProductRequest;
 import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
 import com.spring.websellspringmvc.models.Product;
@@ -16,4 +17,6 @@ public interface ProductMapper {
     Product toProduct(UpdateProductRequest request);
 
     ProductCardResponse toProductCardResponse(Product product);
+
+    ProductDetailResponse toProductDetailResponse(Product product);
 }

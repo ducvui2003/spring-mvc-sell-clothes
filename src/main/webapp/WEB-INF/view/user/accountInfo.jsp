@@ -1,4 +1,3 @@
-<%@ page import="services.image.CloudinaryUploadServices" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -11,12 +10,12 @@
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <title>Thông tin cá nhân</title>
 </head>
 <body>
-<%@include file="/WEB-INF/public/header.jsp" %>
+<c:import url="/header"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
@@ -25,7 +24,7 @@
                 <div class="card mb-4 mb-xl-0">
                     <div class="card-header">Ảnh đại diện</div>
                     <div class="card-body text-center">
-                       <c:set var="avatar" value="${requestScope.accountInfo.avatar}"/>
+                        <c:set var="avatar" value="${requestScope.accountInfo.avatar}"/>
                         <img id="preview-avatar"
                              class="img-account-profile object-fit-cover rounded-circle overflow-hidden mb-2"
                              src="${not empty requestScope.accountInfo.avatar ? CloudinaryUploadServices.getINSTANCE().getImage("user/", requestScope.accountInfo.avatar) : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}"
@@ -52,7 +51,8 @@
                                     <div class="">
                                         <label class="medium mb-1" for="inputUsername">Họ và tên</label>
                                         <input name="fullName" class="form-control" id="inputUsername" type="text"
-                                               placeholder="Vui lòng nhập tên của bạn" value="${requestScope.accountInfo.fullName}">
+                                               placeholder="Vui lòng nhập tên của bạn"
+                                               value="${requestScope.accountInfo.fullName}">
                                         <div class="valid-feedback">
 
                                         </div>
@@ -93,7 +93,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="medium mb-1" for="inputPhone"> Số điện thoại</label>
-                                    <input class="form-select" name="phone" value="${requestScope.accountInfo.phone}" id="inputPhone"
+                                    <input class="form-select" name="phone" value="${requestScope.accountInfo.phone}"
+                                           id="inputPhone"
                                            type="text">
                                     <div class="valid-feedback">
 
@@ -195,7 +196,7 @@
      style="background-color: rgba(0,0,0,0.5)">
     <span class='position-absolute top-50 start-50 translate-middle loader'></span>
 </div>
-<%@include file="/WEB-INF/public/footer.jsp" %>
+<c:import url="/footer"/>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -217,6 +218,7 @@
             }
         });
     }
+
     selected(1);
 </script>
 </body>

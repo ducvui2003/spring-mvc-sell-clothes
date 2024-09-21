@@ -5,15 +5,21 @@ import com.spring.websellspringmvc.properties.MailProperties;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 
+@Setter
+@Getter
 public class MailVerifyServices implements IMailServices {
     private String emailTo;
     private String username;
     private String tokenVerify;
     private Timestamp dateExpired;
+
     public MailVerifyServices(String emailTo, String username, String tokenVerify) {
         this.emailTo = emailTo;
         this.username = username;
@@ -64,7 +70,7 @@ public class MailVerifyServices implements IMailServices {
         });
     }
 
-    private  String htmlTemplate(InputStream is) {
+    private String htmlTemplate(InputStream is) {
         String template = "";
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String line;
@@ -82,35 +88,4 @@ public class MailVerifyServices implements IMailServices {
         return template;
     }
 
-    public String getEmailTo() {
-        return emailTo;
-    }
-
-    public void setEmailTo(String emailTo) {
-        this.emailTo = emailTo;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getTokenVerify() {
-        return tokenVerify;
-    }
-
-    public void setTokenVerify(String tokenVerify) {
-        this.tokenVerify = tokenVerify;
-    }
-
-    public Timestamp getDateExpired() {
-        return dateExpired;
-    }
-
-    public void setDateExpired(Timestamp dateExpired) {
-        this.dateExpired = dateExpired;
-    }
 }

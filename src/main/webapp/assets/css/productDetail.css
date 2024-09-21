@@ -80,7 +80,6 @@
 }
 
 .product__name {
-    min-height: 120px;
     font-size: 35px;
     line-height: 1.67;
     font-weight: 500;

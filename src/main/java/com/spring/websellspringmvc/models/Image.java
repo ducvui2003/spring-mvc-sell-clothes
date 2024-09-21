@@ -21,9 +21,4 @@ public class Image {
         this.nameImage = nameImage;
         this.productId = productId;
     }
-    
-    public String getNameImage() {
-        return CloudinaryUploadServices.getINSTANCE().getImage("product_img", this.nameImage);
-    }
-
 }

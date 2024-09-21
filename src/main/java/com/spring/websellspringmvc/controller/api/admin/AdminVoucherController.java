@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.spring.websellspringmvc.dto.VoucherDetailRequest;
@@ -11,18 +10,13 @@ import com.spring.websellspringmvc.dto.request.VisibleVoucherRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.mapper.VoucherMapper;
 import com.spring.websellspringmvc.models.Product;
-import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.models.Voucher;
-import com.spring.websellspringmvc.services.ProductServices;
+import com.spring.websellspringmvc.services.ProductServicesImpl;
 import com.spring.websellspringmvc.services.voucher.VoucherServices;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.PrintWriter;
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +26,7 @@ import java.util.List;
 public class AdminVoucherController {
     VoucherServices voucherServices;
     VoucherMapper voucherMapper;
-    ProductServices productServices;
+    ProductServicesImpl productServicesImpl;
 
     @PostMapping("/datatable")
     public ResponseEntity<DatatableResponse<Voucher>> getDatatable(@RequestBody DatatableRequest request) {
@@ -90,7 +84,7 @@ public class AdminVoucherController {
     @PostMapping("/get-product")
     public ResponseEntity<?> getProduct() {
         JsonArray jsonArray = new JsonArray();
-        List<Product> listProduct = productServices.getAllProductSelect();
+        List<Product> listProduct = productServicesImpl.getAllProductSelect();
         for (Product product : listProduct) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("id", product.getId());

@@ -1,42 +1,18 @@
 package com.spring.websellspringmvc.models;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Category {
-    private int id;
-    private String nameType;
+    int id;
+    String nameType;
+    String sizeTableImage;
 
-    private String sizeTableImage;
-
-    public String getSizeTableImage() {
-        return sizeTableImage;
-    }
-
-    public void setSizeTableImage(String sizeTableImage) {
-        this.sizeTableImage = sizeTableImage;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-
-    public String getNameType() {
-        return nameType;
-    }
-
-    public void setNameType(String nameType) {
-        this.nameType = nameType;
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", nameType='" + nameType + '\'' +
-                '}';
-    }
 }

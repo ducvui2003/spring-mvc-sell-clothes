@@ -1,8 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/error404.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/error403.css"/>">
     <title>403</title>

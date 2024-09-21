@@ -15,9 +15,11 @@ public enum ErrorCode {
     ERROR_PARAM_REQUEST(1004, "Param not valid"),
     PARAMETER_ERROR(1005, "Parameter error"),
     IMAGE_ERROR(1005, "Image error"),
-    PRICE_ERROR(1005, "Price error"),;
+    PRICE_ERROR(1005, "Price error");
+
     private Integer code;
     private String message;
+
 
     ErrorCode(Integer code, String message) {
         this.code = code;

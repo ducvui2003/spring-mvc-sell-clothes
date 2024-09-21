@@ -103,7 +103,9 @@ $(document).ready(() => {
                 setTimeout(displayCategoryItem, 100);
             }
         }
+
         displayCategoryItem()
     }
+
     animationShowCategory();
 });

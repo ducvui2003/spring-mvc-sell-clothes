@@ -1,9 +1,6 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.models.Color;
-import com.spring.websellspringmvc.models.Image;
-import com.spring.websellspringmvc.models.Product;
-import com.spring.websellspringmvc.models.Size;
+import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -58,4 +55,30 @@ public interface ProductDAO {
             """)
     public void updateProduct(Product product);
 
+
+    @SqlQuery("""
+            SELECT DISTINCT products.id, products.name, products.description, products.originalPrice, products.salePrice, products.visibility, products.createAt
+            FROM categories 
+            JOIN products ON categories.id = products.categoryId 
+            JOIN colors ON products.id = colors.productId 
+            JOIN sizes ON products.id = sizes.productId
+            WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
+            LIMIT :limit OFFSET :offset
+            """)
+    List<Product> filter(@BindBean ProductFilter productFilter);
+
+
+    @SqlQuery("""
+            SELECT COUNT( DISTINCT products.id) 
+            FROM categories 
+            JOIN products ON categories.id = products.categoryId 
+            JOIN colors ON products.id = colors.productId 
+            JOIN sizes ON products.id = sizes.productId
+            WHERE (:categoryId IS NULL OR categories.id IN (:categoryId))
+            AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))
+            AND (:sizeNames IS NULL OR sizes.nameSize IN (:sizeNames))
+            """)
+    long countFilter(@BindBean ProductFilter productFilter);
 }

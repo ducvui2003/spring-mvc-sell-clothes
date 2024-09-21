@@ -2,7 +2,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <html>
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/productBuying.css"/> ">
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminVoucher.css"/>">
@@ -16,10 +16,10 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

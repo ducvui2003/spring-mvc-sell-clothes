@@ -9,12 +9,12 @@ import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 import java.util.List;
 
-@WebFilter(
-        servletNames = {"formSearch"},
-        urlPatterns = {"/public/product/productBuying.jsp",
-                "/public/admin/adminProducts.jsp",
-                "/filterProductBuying",
-                "/filterProductAdmin"})
+//@WebFilter(
+//        servletNames = {"formSearch"},
+//        urlPatterns = {"/public/product/productBuying.jsp",
+//                "/public/admin/adminProducts.jsp",
+//                "/filterProductBuying",
+//                "/filterProductAdmin"})
 public class FormSearch implements Filter {
     ProductCardServices productCardServices;
 

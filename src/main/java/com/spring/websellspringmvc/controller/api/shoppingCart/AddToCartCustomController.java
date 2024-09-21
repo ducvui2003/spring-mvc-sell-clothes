@@ -17,6 +17,7 @@ import java.io.IOException;
 
 @WebServlet(name = "AddToCartCustomController", value = "/api/cart/add/custom")
 public class AddToCartCustomController extends HttpServlet {
+    SessionManager sessionManager;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -33,7 +34,7 @@ public class AddToCartCustomController extends HttpServlet {
         response.setContentType("application/json");
 
         HttpSession session = request.getSession(true);
-        User userAuth = SessionManager.getInstance(request, response).getUser();
+        User userAuth = sessionManager.getUser();
         if (userAuth == null) {
             response.sendRedirect(ConfigPage.SIGN_IN);
         } else {

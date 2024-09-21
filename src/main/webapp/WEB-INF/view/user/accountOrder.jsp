@@ -9,18 +9,19 @@
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountOrder.css"/>">
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <title>Lịch sử mua hàng</title>
 </head>
 <body>
-<%@include file="/WEB-INF/public/header.jsp" %>
+<c:import url="/header"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="w-100 px-4 mt-4">
         <div class="row">
             <div class="col-3">
                 <div class="list-group">
-                    <div class=" py-3 list-group-item list-group-item-action active" aria-current="true" data-status="1">
+                    <div class=" py-3 list-group-item list-group-item-action active" aria-current="true"
+                         data-status="1">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
                     </div>
                     <div class="py-3 list-group-item list-group-item-action" data-status="2">
@@ -55,7 +56,7 @@
         </div>
     </div>
 </div>
-<%@include file="/WEB-INF/public/footer.jsp" %>
+<c:import url="/footer"/>
 <!--Modal-->
 <div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div id="model" class="modal-dialog modal-dialog-scrollable" style="max-width: 80%">

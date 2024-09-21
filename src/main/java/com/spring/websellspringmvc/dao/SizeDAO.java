@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@RegisterBeanMapper(Size.class)
 public interface SizeDAO {
     @SqlQuery("SELECT DISTINCT nameSize FROM sizes")
     public List<Size> getAllSize();
@@ -30,4 +32,7 @@ public interface SizeDAO {
 
     @SqlUpdate("DELETE FROM sizes WHERE id = :id")
     public void deleteSizeList(List<Integer> listId);
+
+    @SqlQuery("SELECT * FROM sizes WHERE productId = :productId")
+    public List<Size> findSizeByProductId(@Bind("productId") int productId);
 }

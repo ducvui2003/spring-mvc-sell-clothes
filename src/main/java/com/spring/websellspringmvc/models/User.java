@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -20,14 +21,12 @@ public class User implements Serializable {
     String gender;
     String email;
     String phone;
-    String address;
-    Date birthDay;
-    boolean isVerify;
+    LocalDate birthDay;
+    boolean verify;
     String role;
     String avatar;
     String tokenVerify;
     Timestamp tokenVerifyTime;
     String tokenResetPassword;
     Timestamp tokenResetPasswordTime;
-
 }

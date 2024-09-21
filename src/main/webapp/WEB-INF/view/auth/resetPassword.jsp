@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +15,7 @@
     <body>
         <div class="frame">
             <article>
-                <form action="<c:url value="/updatePassword"/>" class="form form--forget-password" method="post">
+                <form:form modelAttribute="form" action="/updatePassword" class="form form--forget-password" method="post">
                     <c:set var="email" value="${requestScope.email}" />
                     <input name="email" type="text" value="${email}" hidden="hidden">
 
@@ -36,7 +38,7 @@
                     </div>
                     <button id="form__submit" type="submit" class="form__submit button button--hover">Đặt lại mật khẩu
                     </button>
-                </form>
+                </form:form>
             </article>
             <c:set var="updateSuccess" value="${requestScope.updateSuccess}" /> <c:if test="${updateSuccess != null}">
             <div class="modal">

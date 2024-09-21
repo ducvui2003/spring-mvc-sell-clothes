@@ -7,7 +7,12 @@ spring:
     username: root
     url: jdbc:mysql://localhost:3306/ltw
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  session:
+    timeout: 30m
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      table-name: SPRING_SESSION
   main:
     allow-bean-definition-overriding: true
 
@@ -16,3 +21,35 @@ server:
     whitelabel:
       enabled: false
     path: /error
+  port: 8080
+
+app:
+  service:
+    cloudinary:
+      cloud-name: yourstyle
+      api-key: 959271713937367
+      api-secret: 3tqA0quB3nZGk6o8qdtOVXN6dP0
+    delivery:
+      url: https://online-gateway.ghn.vn/shiip/public-api/v2/
+    map4d:
+      url: https://api.map4d.vn/sdk/v2/geocode
+      api-key: 508a31b5c17f02ca9530bf6f8110010e
+    google:
+      client-id: 336186921669-k0vb5vt05phajcah47psl3v0t4h3eah0.apps.googleusercontent.com
+      redirect-uri: http://localhost:${server.port}/oauth2/google/login/callback
+      token-uri: https://accounts.google.com/o/oauth2/token
+      user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+      grant-type: authorization_code
+      client-secret: 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
+      login-uri: https://accounts.google.com/o/oauth2/auth?redirect_uri=${app.service.google.redirect-uri}&scope=email%20profile&client_id=${app.service.google.client-id}&response_type=code
+    facebook:
+      client-id: 2825100177629702
+      client-secret: f52c1f23c0884cccf05178bbbe24f810
+      token-uri: https://graph.facebook.com/v19.0/oauth/access_token
+      user-info-uri: https://graph.facebook.com/me?fields=id,name,email&access_token=
+      redirect-uri: http://localhost:${server.port}/oauth2/facebook/login/callback
+      login-uri: https://www.facebook.com/v9.0/dialog/oauth?redirect_uri=${app.service.facebook.redirect-uri}&scope=email&client_id=${app.service.facebook.client-id}
+logging:
+  level:
+    feign:
+      Client=DEBUG: DEBUG

@@ -11,16 +11,13 @@ import com.spring.websellspringmvc.models.Color;
 import com.spring.websellspringmvc.models.Image;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
-import com.spring.websellspringmvc.services.ProductServices;
+import com.spring.websellspringmvc.services.ProductServicesImpl;
 import com.spring.websellspringmvc.services.admin.AdminProductServices;
 import com.spring.websellspringmvc.services.state.ProductState;
 import com.spring.websellspringmvc.utils.ProductFactory;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@RestController("apiAdminProductController")
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/product")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -38,8 +35,9 @@ import java.util.stream.Collectors;
 public class AdminProductController {
     ProductFactory productFactory;
     AdminProductServices adminProductServices;
-    ProductServices productServices;
+    ProductServicesImpl productServicesImpl;
     ProductMapper productMapper = ProductMapper.INSTANCE;
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest createProductRequest) {
@@ -88,7 +86,7 @@ public class AdminProductController {
         if (id == null)
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
 
-        Product product = productServices.getProductByProductId(id);
+        Product product = productServicesImpl.getProductByProductId(id);
 
         if (product == null)
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);

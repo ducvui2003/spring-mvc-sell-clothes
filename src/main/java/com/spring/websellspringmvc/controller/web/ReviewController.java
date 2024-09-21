@@ -7,7 +7,7 @@ import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.models.Review;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.services.ReviewServices;
+import com.spring.websellspringmvc.services.ReviewServicesImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,8 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewController {
-    ReviewServices reviewServices;
+    ReviewServicesImpl reviewServicesImpl;
     ProductCardServices productCardServices;
+    SessionManager sessionManager;
+
     @PostMapping("/createReview")
     public ModelAndView createReview(@RequestParam("orderProductId") int orderProductId,
                                      @RequestParam(value = "ratingStar", defaultValue = "5") int ratingStar,
@@ -38,10 +40,10 @@ public class ReviewController {
     ) {
         ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW_SUCCESS);
 
-        User user = SessionManager.getInstance(request, response).getUser();
+        User user = sessionManager.getUser();
         int userId = user.getId();
 
-        if (!reviewServices.canReview(userId, orderProductId)) {
+        if (!reviewServicesImpl.canReview(userId, orderProductId)) {
             throw new ResourceNotFoundException();
         }
         Review review = new Review();
@@ -49,9 +51,9 @@ public class ReviewController {
         review.setRatingStar(ratingStar);
         review.setFeedback(desc);
         review.setReviewDate(Date.valueOf(LocalDate.now()));
-        reviewServices.createReview(review);
+        reviewServicesImpl.createReview(review);
 
-        String nameProduct = reviewServices.getNameProduct(orderProductId);
+        String nameProduct = reviewServicesImpl.getNameProduct(orderProductId);
         if (nameProduct == null)
             throw new ResourceNotFoundException();
 
@@ -63,12 +65,12 @@ public class ReviewController {
     public ModelAndView reviewPage(@RequestParam("orderDetailId") int orderDetailId) {
         ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW);
 //        Check
-        boolean listReview = reviewServices.hasReview(orderDetailId);
+        boolean listReview = reviewServicesImpl.hasReview(orderDetailId);
         if (!listReview)
             throw new ResourceNotFoundException();
 
 
-        OrderDetail orderDetail = reviewServices.getOrderDetail(orderDetailId);
+        OrderDetail orderDetail = reviewServicesImpl.getOrderDetail(orderDetailId);
 
         String color = orderDetail.getColorRequired();
         String[] sizes = readSizes(orderDetail.getSizeRequired());

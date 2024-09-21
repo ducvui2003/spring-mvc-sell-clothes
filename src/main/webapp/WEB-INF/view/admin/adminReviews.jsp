@@ -1,12 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<jsp:useBean id="productFactory" class="utils.ProductFactory"/>
-<jsp:useBean id="userFactory" class="utils.UserFactory"/>
 <!doctype html>
 <html lang="en">
 <head>
-    <jsp:include page="/public/admin/adminLink.jsp"/>
+    <jsp:include page="/adminLink"/>
     <style>
         .badge__color {
             display: inline-block;
@@ -21,10 +19,10 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

@@ -14,17 +14,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet(name = "AddToCartController", value = "/api/cart/add")
 public class AddToCartController extends HttpServlet {
+    SessionManager sessionManager;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
 
         HttpSession session = request.getSession(true);
-        User userAuth = SessionManager.getInstance(request, response).getUser();
+        User userAuth = sessionManager.getUser();
 
         if (userAuth == null) {
             response.sendRedirect(ConfigPage.SIGN_IN);

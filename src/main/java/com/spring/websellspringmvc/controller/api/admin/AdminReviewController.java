@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.spring.websellspringmvc.controller.exception.ResourceNotFoundException;
 import com.spring.websellspringmvc.dto.response.ReviewDetailResponse;
@@ -9,10 +8,9 @@ import com.spring.websellspringmvc.mapper.ReviewMapper;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Review;
-import com.spring.websellspringmvc.services.ReviewServices;
+import com.spring.websellspringmvc.services.ReviewServicesImpl;
 import com.spring.websellspringmvc.services.admin.AdminReviewServices;
 import com.spring.websellspringmvc.services.state.ReviewState;
-import com.spring.websellspringmvc.utils.ProductFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminReviewController {
     AdminReviewServices adminReviewServices;
-    ReviewServices reviewServices;
+    ReviewServicesImpl reviewServicesImpl;
 
     ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
     OrderMapper orderMapper = OrderMapper.INSTANCE;
@@ -70,8 +68,8 @@ public class AdminReviewController {
         if (review == null)
             throw new ResourceNotFoundException();
 
-        OrderDetail orderDetail = reviewServices.getOrderDetail(review.getOrderDetailId());
-        Order order = reviewServices.getOrder(orderDetail.getOrderId());
+        OrderDetail orderDetail = reviewServicesImpl.getOrderDetail(review.getOrderDetailId());
+        Order order = reviewServicesImpl.getOrder(orderDetail.getOrderId());
 
         return ResponseEntity.ok(ReviewDetailResponse.builder().order(orderMapper.toOrderResponse(order))
                 .orderDetail(orderMapper.toOrderDetailResponse(orderDetail))
