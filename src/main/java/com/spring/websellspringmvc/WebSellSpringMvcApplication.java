@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 @SpringBootApplication
 @EnableJdbcHttpSession
-@EnableFeignClients(basePackages = "com.spring.websellspringmvc.services.http")
+@EnableFeignClients
 public class WebSellSpringMvcApplication {
 
     public static void main(String[] args) {
