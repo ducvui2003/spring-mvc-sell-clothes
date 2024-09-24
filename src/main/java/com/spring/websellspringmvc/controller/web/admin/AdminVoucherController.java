@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.controller.web.admin;
 
+
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller("adminOrderControllerMVC")
+@Controller("adminVoucherControllerMVC")
+@RequestMapping("/admin/voucher")
 @RequiredArgsConstructor
-@RequestMapping("/admin/order")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AdminOrderController {
-
+public class AdminVoucherController {
     @GetMapping
-    public ModelAndView showOrderPage() {
-        ModelAndView modelAndView = new ModelAndView(PageAddress.ADMIN_ORDER.getPage());
-        return modelAndView;
+    public ModelAndView showCategoryPage() {
+        return new ModelAndView(PageAddress.ADMIN_VOUCHER.getPage());
     }
 }

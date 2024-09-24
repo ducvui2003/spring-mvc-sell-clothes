@@ -9,15 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller("adminOrderControllerMVC")
+@Controller("adminCategoryControllerMVC")
+@RequestMapping("/admin/category")
 @RequiredArgsConstructor
-@RequestMapping("/admin/order")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AdminOrderController {
-
+public class AdminCategoryController {
     @GetMapping
-    public ModelAndView showOrderPage() {
-        ModelAndView modelAndView = new ModelAndView(PageAddress.ADMIN_ORDER.getPage());
-        return modelAndView;
+    public ModelAndView showCategoryPage() {
+        return new ModelAndView(PageAddress.ADMIN_CATEGORY.getPage());
     }
 }

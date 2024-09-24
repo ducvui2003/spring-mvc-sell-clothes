@@ -40,6 +40,7 @@ public class AdminProductController {
     ProductService productService;
     ProductMapper productMapper = ProductMapper.INSTANCE;
 
+
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest createProductRequest) {
         try {
