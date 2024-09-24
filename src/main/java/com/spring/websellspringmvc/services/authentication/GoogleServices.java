@@ -62,6 +62,7 @@ public class GoogleServices implements OAuthServices {
                     .email(googleUserAccount.getEmail())
                     .build();
             userDAO.insert(user);
+            sessionManager.addUser(user);
         }
     }
 }

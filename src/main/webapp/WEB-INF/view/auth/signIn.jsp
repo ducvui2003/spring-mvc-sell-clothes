@@ -70,30 +70,30 @@
 <script src="<c:url value="/js/validateForm.js"/>"></script>
 <script>
     // Check nhập không phù hợp
-    $("input.form__input").on({
-        keydown: function (e) {
-            if (e.which === 32)
-                return false;
-        },
-        change: function () {
-            this.value = this.value.replace(/\s/g, "");
-        }
-    });
-    grecaptcha.ready(function () {
-        grecaptcha.execute('6LdSQu4pAAAAAJ0LbzMt-kVSfKqzVZYQtmPo3mHD', {action: 'submit'}).then(function (token) {
-            document.getElementById('recaptchaToken').value = token;
-            var validation = new Validation({
-                formSelector: ".form",
-                formBlockClass: "form__block",
-                errorSelector: ".form__error",
-                rules: [
-                    Validation.isRequired("#username"),
-                    Validation.isRequired("#password"),
-                ],
-                submitSelector: "#form__submit",
-            })
-        });
-    });
+    // $("input.form__input").on({
+    //     keydown: function (e) {
+    //         if (e.which === 32)
+    //             return false;
+    //     },
+    //     change: function () {
+    //         this.value = this.value.replace(/\s/g, "");
+    //     }
+    // });
+    // grecaptcha.ready(function () {
+    //     grecaptcha.execute('6LdSQu4pAAAAAJ0LbzMt-kVSfKqzVZYQtmPo3mHD', {action: 'submit'}).then(function (token) {
+    //         document.getElementById('recaptchaToken').value = token;
+    //         var validation = new Validation({
+    //             formSelector: ".form",
+    //             formBlockClass: "form__block",
+    //             errorSelector: ".form__error",
+    //             rules: [
+    //                 Validation.isRequired("#username"),
+    //                 Validation.isRequired("#password"),
+    //             ],
+    //             submitSelector: "#form__submit",
+    //         })
+    //     });
+    // });
 
 </script>
 </body>

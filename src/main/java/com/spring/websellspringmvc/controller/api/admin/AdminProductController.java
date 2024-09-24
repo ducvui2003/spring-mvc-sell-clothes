@@ -3,21 +3,20 @@ package com.spring.websellspringmvc.controller.api.admin;
 import com.google.gson.JsonObject;
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
+import com.spring.websellspringmvc.dto.request.ChangeVisibilityProductRequest;
 import com.spring.websellspringmvc.dto.request.CreateProductRequest;
 import com.spring.websellspringmvc.dto.request.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
-import com.spring.websellspringmvc.dto.response.ProductDetailResponse;
-import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
+import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;
 import com.spring.websellspringmvc.mapper.ProductMapper;
 import com.spring.websellspringmvc.models.Color;
 import com.spring.websellspringmvc.models.Image;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.services.ProductService;
-import com.spring.websellspringmvc.services.ProductServicesImpl;
 import com.spring.websellspringmvc.services.admin.AdminProductServices;
-import com.spring.websellspringmvc.services.state.ProductState;
 import com.spring.websellspringmvc.utils.ProductFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +36,9 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 
 public class AdminProductController {
-    ProductFactory productFactory;
     AdminProductServices adminProductServices;
-    ProductServicesImpl productServicesImpl;
-    ProductMapper productMapper = ProductMapper.INSTANCE;
     ProductService productService;
-
+    ProductMapper productMapper = ProductMapper.INSTANCE;
 
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest createProductRequest) {
@@ -86,37 +82,20 @@ public class AdminProductController {
         }
     }
 
-    @GetMapping("/detail")
-    public ResponseEntity<ProductDetailResponse> readProduct(@RequestParam("id") Integer id) {
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<ProductDetailAdminResponse> getProductDetail(@PathVariable("id") Integer id) {
         if (id == null)
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
 
-        Product product = productServicesImpl.getProductByProductId(id);
-
-        if (product == null)
-            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-
-        List<Size> sizeList = ProductFactory.getListSizesByProductId(id);
-        List<Color> colorList = ProductFactory.getListColorsByProductId(id);
-        List<Image> imageList = productFactory.getListImagesByProductId(id);
-
-        return ResponseEntity.ok(ProductDetailResponse.builder()
-                .product(product)
-                .sizes(sizeList)
-                .colors(colorList)
-                .images(imageList)
-                .build());
+        ProductDetailAdminResponse product = productService.getProductDetailAdmin(id);
+        return ResponseEntity.ok(product);
     }
 
-    @PostMapping("/visible")
-    public ResponseEntity<?> visibleProduct(@RequestParam("id") Integer id, @RequestParam("type") ProductState state) {
+    @PutMapping(value = "/visible")
+    public ResponseEntity<String> visibleProduct(@RequestBody ChangeVisibilityProductRequest request) {
         JsonObject jsonObject = new JsonObject();
-        if (id == null || state == null) {
-            jsonObject.addProperty("success", false);
-            return ResponseEntity.badRequest().body(jsonObject.toString());
-        }
         try {
-            adminProductServices.updateVisibility(id, state);
+            productService.changeVisibility(request.getId(), request.getState().isValue());
             jsonObject.addProperty("success", true);
             return ResponseEntity.ok(jsonObject.toString());
         } catch (NumberFormatException e) {
@@ -183,8 +162,8 @@ public class AdminProductController {
     }
 
     @PostMapping("/datatable")
-    public ResponseEntity<DatatableResponse<ProductDataTable>> getDatatable(@RequestBody DatatableRequest request) {
-        DatatableResponse<ProductDataTable> response = productService.datatable(request);
+    public ResponseEntity<DatatableResponse<ProductDatatable>> getDatatable(@RequestBody DatatableRequest request) {
+        DatatableResponse<ProductDatatable> response = productService.datatable(request);
         return ResponseEntity.ok(response);
     }
 }

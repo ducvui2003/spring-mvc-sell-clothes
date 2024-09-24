@@ -10,8 +10,8 @@ public enum PageAddress {
     PRODUCT_NEW("/product/productNew"),
     PRODUCT_DETAIL("/product/productDetail"),
     ABOUT("/about"),
-
     ADMIN_PRODUCT("/admin/adminProducts"),
+    ADMIN_REVIEW("/admin/adminReviews"),
     ;
 
     private final String page;

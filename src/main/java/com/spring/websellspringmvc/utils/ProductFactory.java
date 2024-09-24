@@ -2,25 +2,20 @@ package com.spring.websellspringmvc.utils;
 
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.services.ProductServicesImpl;
+import com.spring.websellspringmvc.services.ProductServiceImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class ProductFactory {
-    ProductServicesImpl productServicesImpl;
+    ProductServiceImpl productServiceImpl;
     ProductCardServices productCardServices;
 
     public static Product getProductById(int productId) {
 //        return ProductServices.getINSTANCE().getProductByProductId(productId);
         return null;
     }
-
-    public List<Image> getListImagesByProductId(int productId) {
-        return productServicesImpl.getListImagesByProductId(productId);
-    }
-
     public static List<Color> getListColorsByProductId(int productId) {
 //        return ProductServices.getINSTANCE().getListColorsByProductId(productId);
         return null;

@@ -1,11 +1,14 @@
 package com.spring.websellspringmvc.services;
 
+import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dao.*;
 import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.mvc.response.ProductDetailResponse;
 import com.spring.websellspringmvc.dto.request.DatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
-import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
+import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;
 import com.spring.websellspringmvc.mapper.ProductMapper;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProductServicesImpl implements ProductService {
+public class ProductServiceImpl implements ProductService {
     ProductDAO productDAO;
     ImageDAO imageDAO;
     HomeDAO homeDAO;
@@ -78,16 +81,16 @@ public class ProductServicesImpl implements ProductService {
 
         ProductDetailResponse productDetailResponse = productMapper.toProductDetailResponse(product);
 
-        List<Image> images = imageDAO.getNameImages(product.getId());
-        List<String> urlImage = cloudinaryUploadServices.getImages("product_img", images.stream().map(Image::getNameImage).collect(Collectors.toList()));
+        List<String> images = imageDAO.getNameImages(product.getId());
+        List<String> urlImage = cloudinaryUploadServices.getImages(ImagePath.PRODUCT.getPath(), images);
         productDetailResponse.setImages(urlImage);
 
         setRating(productDetailResponse);
 
-        List<ProductDetailResponse.Size> sizes = sizeDAO.findSizeByProductId(product.getId()).stream().map(size -> ProductDetailResponse.Size.builder().name(size.getNameSize()).price(size.getSizePrice()).id(size.getId()).build()).collect(Collectors.toList());
+        List<ProductDetailResponse.Size> sizes = sizeDAO.getListSizeByProductId(product.getId()).stream().map(size -> ProductDetailResponse.Size.builder().name(size.getNameSize()).price(size.getSizePrice()).id(size.getId()).build()).collect(Collectors.toList());
         productDetailResponse.setSizes(sizes);
 
-        List<ProductDetailResponse.Color> colors = colorDAO.findColorByProductId(product.getId()).stream().map(color -> ProductDetailResponse.Color.builder().code(color.getCodeColor()).id(color.getId()).build()).collect(Collectors.toList());
+        List<ProductDetailResponse.Color> colors = colorDAO.getListColorByProductId(product.getId()).stream().map(color -> ProductDetailResponse.Color.builder().code(color.getCodeColor()).id(color.getId()).build()).collect(Collectors.toList());
         productDetailResponse.setColors(colors);
 
         return productDetailResponse;
@@ -108,15 +111,39 @@ public class ProductServicesImpl implements ProductService {
     }
 
     @Override
-    public DatatableResponse<ProductDataTable> datatable(DatatableRequest datatableRequest) {
-        List<ProductDataTable> products = productDAO.datatable(datatableRequest);
-
-        return DatatableResponse.<ProductDataTable>builder()
+    public DatatableResponse<ProductDatatable> datatable(DatatableRequest datatableRequest) {
+        List<ProductDatatable> products = productDAO.datatable(datatableRequest);
+        long total = productDAO.datatableCount(datatableRequest);
+        return DatatableResponse.<ProductDatatable>builder()
                 .data(products)
-                .recordsTotal(productDAO.datatableCount(datatableRequest))
-                .recordsFiltered(productDAO.datatableCount(datatableRequest))
+                .recordsTotal(total)
+                .recordsFiltered(total)
                 .draw(datatableRequest.getDraw())
                 .build();
+    }
+
+    @Override
+    public void changeVisibility(int productId, boolean visibility) {
+        productDAO.updateVisibility(productId, visibility);
+    }
+
+    @Override
+    public ProductDetailAdminResponse getProductDetailAdmin(int productId) {
+        Product product = productDAO.getProductByProductId(productId);
+        if (product == null)
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+
+        List<Size> sizeList = sizeDAO.getListSizeByProductId(productId);
+        List<Color> colorList = colorDAO.getListColorByProductId(productId);
+        List<Image> imageList = imageDAO.getListImageByProductId(productId);
+
+        imageList.forEach(image -> image.setNameImage(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), image.getNameImage())));
+        ProductDetailAdminResponse response = productMapper.toProductDetailAdminResponse(product);
+
+        response.setSizes(sizeList);
+        response.setColors(colorList);
+        response.setImages(imageList);
+        return response;
     }
 
     private void setRating(ProductCardResponse productCardResponse) {
@@ -130,7 +157,7 @@ public class ProductServicesImpl implements ProductService {
         productCardResponse.setReviewCount(reviewCount);
     }
 
-    private void setRating (ProductDetailResponse productDetailResponse){
+    private void setRating(ProductDetailResponse productDetailResponse) {
         Map<String, Object> calculateRating = reviewService.calculateRating(productDetailResponse.getId());
         int reviewCount = 0, ratingStar = 0;
         if (calculateRating != null) {
@@ -146,18 +173,8 @@ public class ProductServicesImpl implements ProductService {
         productCardResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), thumbnail));
     }
 
-    public List<Image> getListImagesByProductId(int productId) {
-        return productDAO.getListImagesByProductId(productId);
-    }
-
-    public Product getProductByProductId(int productId) {
-        return productDAO.getProductByProductId(productId);
-    }
-
-
     public List<Product> getAllProductSelect() {
         return productCardDAO.getProduct();
     }
-
 }
 

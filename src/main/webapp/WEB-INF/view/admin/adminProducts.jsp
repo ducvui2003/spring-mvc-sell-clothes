@@ -19,7 +19,7 @@
           type='text/css'/>
     <script type='text/javascript'
             src='https://cdn.jsdelivr.net/npm/froala-editor@4.0.10/js/froala_editor.pkgd.min.js'></script>
-    <%--    <c:import url="/filePond"/>--%>
+    <c:import url="/common/filePond"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
@@ -191,8 +191,7 @@
                                    data-bs-title="Tìm kiếm theo màu sắc, nếu không có sẽ tìm tất cả">Màu sắc</label>
                             <select id="color" name="color" multiple>
                                 <c:forEach items="${colorList}" var="item">
-                                    <option name="color" value="${item.codeColor}"
-                                    >${item.codeColor}</option>
+                                    <option name="color" value="${item.codeColor}">${item.codeColor}</option>
                                 </c:forEach>
                             </select>
                         </div>

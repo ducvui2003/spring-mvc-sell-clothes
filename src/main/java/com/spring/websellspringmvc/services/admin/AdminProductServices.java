@@ -180,22 +180,23 @@ public class AdminProductServices {
     }
 
     private List<String> getNameImages(int quantityFromRightToLeft, int productId) {
-        List<Image> imageList = imageDAO.getNameImages(productId);
-        Collections.reverse(imageList);
-
-        List<Image> imageDelete = imageList.subList(0, quantityFromRightToLeft);
-        for (int i = 0; i < imageDelete.size(); i++) {
-            if (keepImageAvailable(imageList, imageDelete.get(i)) > 1) {
-                imageDelete.remove(imageDelete.get(i));
-            }
-        }
-
-        List<String> nameImageList = new ArrayList<>();
-        for (Image img : imageDelete) {
-            nameImageList.add("product_img/" + img.getNameImage());
-        }
-
-        return nameImageList;
+//        List<Image> imageList = imageDAO.getNameImages(productId);
+//        Collections.reverse(imageList);
+//
+//        List<Image> imageDelete = imageList.subList(0, quantityFromRightToLeft);
+//        for (int i = 0; i < imageDelete.size(); i++) {
+//            if (keepImageAvailable(imageList, imageDelete.get(i)) > 1) {
+//                imageDelete.remove(imageDelete.get(i));
+//            }
+//        }
+//
+//        List<String> nameImageList = new ArrayList<>();
+//        for (Image img : imageDelete) {
+//            nameImageList.add("product_img/" + img.getNameImage());
+//        }
+//
+//        return nameImageList;
+        return null;
     }
 
     public int keepImageAvailable(List<Image> imageList, Image image) {

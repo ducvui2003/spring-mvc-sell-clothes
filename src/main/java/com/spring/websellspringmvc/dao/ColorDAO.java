@@ -7,10 +7,8 @@ import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -21,8 +19,7 @@ public interface ColorDAO {
     public List<Color> getAllColor();
 
     @SqlQuery("SELECT * FROM colors WHERE productId = :productId")
-    @RegisterBeanMapper(Color.class)
-    public List<Color> findColorByProductId(@Bind("productId") int productId);
+    public List<Color> getListColorByProductId(@Bind("productId") int productId);
 
     @SqlQuery("SELECT * FROM colors WHERE id = :id")
     @RegisterBeanMapper(Color.class)

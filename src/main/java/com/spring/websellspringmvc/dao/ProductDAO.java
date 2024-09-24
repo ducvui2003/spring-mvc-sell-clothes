@@ -1,12 +1,12 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.dto.request.DatatableRequest;
-import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.customizer.AllowUnusedBindings;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.Define;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -22,9 +22,6 @@ public interface ProductDAO {
 
     @SqlQuery("SELECT id, codeColor, productId FROM colors WHERE productId = :productId")
     public List<Color> getListColorsByProductId(@Bind("productId") int productId);
-
-    @SqlQuery("SELECT id, nameSize, productId, sizePrice FROM sizes WHERE productId = :productId")
-    public List<Size> getListSizesByProductId(@Bind("productId") int productId);
 
     @SqlQuery("SELECT sizePrice FROM sizes WHERE nameSize = :nameSize AND productId = :productId")
     public double getPriceSizeByName(@Bind("nameSize") String nameSize, @Bind("productId") int productId);
@@ -58,6 +55,8 @@ public interface ProductDAO {
             """)
     public void updateProduct(Product product);
 
+    @SqlUpdate("UPDATE products SET visibility = :visibility WHERE id = :id")
+    public void updateVisibility(@Bind("id") int productId, @Bind("visibility") boolean visibility);
 
     @SqlQuery("""
             SELECT DISTINCT products.id, products.name, products.description, products.originalPrice, products.salePrice, products.visibility, products.createAt
@@ -88,20 +87,21 @@ public interface ProductDAO {
     @SqlQuery("""
             SELECT products.id AS id, products.name AS name, categories.nameType AS category, products.originalPrice AS originalPrice, products.salePrice AS salePrice, products.visibility AS visibility 
             FROM products JOIN categories ON products.categoryId = categories.id
-            ORDER BY
-                CASE WHEN :orderColumn = 0 THEN p.id END :orderDir,
-                CASE WHEN :orderColumn = 1 THEN p.name END :orderDir,
-                CASE WHEN :orderColumn = 2 THEN p.category END :orderDir
-            LIMIT :start OFFSET :length
+          
+            LIMIT :length OFFSET :start
             """)
-    @RegisterBeanMapper(ProductDataTable.class)
-    List<ProductDataTable> datatable(@BindBean DatatableRequest datatableRequest);
-
+    @RegisterBeanMapper(ProductDatatable.class)
+    List<ProductDatatable> datatable(@BindBean DatatableRequest datatableRequest);
+//    ORDER BY
+//    CASE WHEN :orderColumn = 0 THEN p.id END :orderDir,
+//    CASE WHEN :orderColumn = 1 THEN p.name END :orderDir,
+//    CASE WHEN :orderColumn = 2 THEN p.category END :orderDir
 
     @SqlQuery("""
-            SELECT COUNT(*)
+            SELECT COUNT(*) 
             FROM products JOIN categories ON products.categoryId = categories.id
-            LIMIT :start OFFSET :length
             """)
-    long datatableCount(@BindBean DatatableRequest datatableRequest);
+    @AllowUnusedBindings(true)
+    long datatableCount( DatatableRequest datatableRequest);
+
 }

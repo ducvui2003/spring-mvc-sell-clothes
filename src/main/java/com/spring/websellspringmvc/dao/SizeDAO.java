@@ -9,7 +9,6 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -34,5 +33,5 @@ public interface SizeDAO {
     public void deleteSizeList(List<Integer> listId);
 
     @SqlQuery("SELECT * FROM sizes WHERE productId = :productId")
-    public List<Size> findSizeByProductId(@Bind("productId") int productId);
+    public List<Size> getListSizeByProductId(@Bind("productId") int productId);
 }

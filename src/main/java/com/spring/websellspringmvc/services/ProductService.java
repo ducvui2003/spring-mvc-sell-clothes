@@ -4,7 +4,8 @@ import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.mvc.response.ProductDetailResponse;
 import com.spring.websellspringmvc.dto.request.DatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
-import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
+import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
+import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;
 import com.spring.websellspringmvc.models.ProductFilter;
 import com.spring.websellspringmvc.models.Slider;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,9 @@ public interface ProductService {
 
     Page<ProductCardResponse> filter(ProductFilter productFilter);
 
-    DatatableResponse<ProductDataTable> datatable(DatatableRequest datatableRequest);
+    DatatableResponse<ProductDatatable> datatable(DatatableRequest datatableRequest);
 
+    void changeVisibility(int productId, boolean visibility);
+
+    ProductDetailAdminResponse getProductDetailAdmin(int productId);
 }
