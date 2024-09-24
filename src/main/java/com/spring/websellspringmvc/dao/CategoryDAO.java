@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.models.Parameter;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,7 @@ public interface CategoryDAO {
     public List<Category> getAllCategory();
 
     @SqlUpdate("INSERT INTO categories (:nameType, :sizeTableImage) VALUES (?, ?) ")
+    @GetGeneratedKeys
     public int add(@BindBean Category category);
 
     @SqlQuery("SELECT id FROM categories WHERE nameType = :nameType")
@@ -38,4 +40,7 @@ public interface CategoryDAO {
 
     @SqlQuery("SELECT id, nameType, sizeTableImage FROM categories WHERE id = :id")
     public Category getCategoryById(@Bind(":id") int id);
+
+    @SqlQuery("SELECT categories.* FROM categories JOIN products ON categories.id = products.categoryId WHERE products.id = :productId")
+    Category getCategoryByProductId(@Bind("productId") int productId);
 }

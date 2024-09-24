@@ -104,7 +104,7 @@ export const endLoading = () => {
     $.LoadingOverlay("hide");
 }
 
-export const http = ({beforeSend, complete, ...rest}, automaticLoading = true) => {
+export const http = ({beforeSend, complete, data, ...rest}, automaticLoading = true) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             ...rest,
@@ -115,6 +115,9 @@ export const http = ({beforeSend, complete, ...rest}, automaticLoading = true) =
                     beforeSend.call(this, xhr, settings);
                 }
             },
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: "json",
             success: function (data) {
                 resolve(data);
             },

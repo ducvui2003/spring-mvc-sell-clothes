@@ -73,7 +73,7 @@
                                         <div class="setting__link">
                                             <div class="account__info">
                                                 <i class="account__icon fa-regular fa-user"></i>
-                                                <p class="account__name"> ${auth.username} </p>
+                                                <p class="account__name"> ${auth.email} </p>
                                             </div>
                                         </div>
                                     </a>

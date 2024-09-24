@@ -2,7 +2,7 @@ package com.spring.websellspringmvc.mapper;
 
 import com.spring.websellspringmvc.dto.mvc.response.ReviewOverallResponse;
 import com.spring.websellspringmvc.dto.response.ReviewDetailResponse;
-import com.spring.websellspringmvc.dto.response.datatable.ReviewDatatableResponse;
+import com.spring.websellspringmvc.dto.response.datatable.ReviewDatatable;
 import com.spring.websellspringmvc.models.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -13,7 +13,7 @@ public interface ReviewMapper {
 
     ReviewDetailResponse.ReviewResponse toReviewResponse(Review review);
 
-    ReviewDatatableResponse toReviewDatatableResponse(Review review);
+    ReviewDatatable toReviewDatatableResponse(Review review);
 
     ReviewOverallResponse toReviewOverallResponse(Review review);
 }

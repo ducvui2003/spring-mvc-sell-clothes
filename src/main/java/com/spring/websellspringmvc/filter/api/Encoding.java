@@ -4,7 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/api/*"})
+//@WebFilter(urlPatterns = {"/api/*"})
 public class Encoding implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

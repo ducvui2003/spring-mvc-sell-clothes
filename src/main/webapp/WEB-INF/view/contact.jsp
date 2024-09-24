@@ -1,18 +1,15 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
-<%@ page import="services.ContactServices" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/contact.css"/>">
     <title>Liên hệ</title>
 </head>
 <body>
-<c:import url="/public/header.jsp"/>
+<c:import url="/header"/>
 <main id="main">
     <div class="container-xl">
         <div class="contact_us row">
@@ -61,7 +58,7 @@
                                 <i class="subject__in fo fa-solid fa-circle-info"></i>
                             </label>
                             <select class="select__box" name="subject" id="subject">
-                                <c:forEach items="${requestScope.listContactSubjects}" var="subjectOption">
+                                <c:forEach items="${listContactSubjects}" var="subjectOption">
                                     <option value="${subjectOption.subjectName}"
                                             <c:if test="${subjectOption.subjectName eq requestScope.subject}"> selected </c:if>
                                             class="option">${subjectOption.subjectName}</option>

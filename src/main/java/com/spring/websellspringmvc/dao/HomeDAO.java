@@ -23,6 +23,13 @@ public interface HomeDAO {
     @RegisterBeanMapper(Product.class)
     public List<Product> getListNewProducts();
 
+    @SqlQuery("""
+            SELECT COUNT(*) 
+            FROM products 
+            WHERE visibility = 1 AND createAt >= DATE_SUB('2023-12-01', INTERVAL 1 MONTH)
+            """)
+    public long countNewProducts();
+
     @SqlQuery("SELECT nameSlide, nameImage FROM sliders WHERE visibility = 1")
     @RegisterBeanMapper(Slider.class)
     public List<Slider> getListSlideShow();
@@ -60,5 +67,5 @@ public interface HomeDAO {
             HAVING SUM(order_details.quantityRequired) >= 10
             ORDER BY SUM(order_details.quantityRequired) DESC
             """)
-    public int countTrendProducts();
+    public long countTrendProducts();
 }

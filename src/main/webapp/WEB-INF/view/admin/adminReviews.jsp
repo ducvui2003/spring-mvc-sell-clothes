@@ -22,7 +22,7 @@
 <c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="adminNavigator.jsp"/>
+    <c:import url="../common/adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

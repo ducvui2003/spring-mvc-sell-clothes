@@ -23,7 +23,11 @@ public interface ImageDAO {
     public void addImages(@BindBean List<Image> images);
 
     @SqlQuery("SELECT nameImage FROM images WHERE productId = :productId")
-    public List<Image> getNameImages(@Bind("productId") int productId);
+    @RegisterBeanMapper(String.class)
+    public List<String> getNameImages(@Bind("productId") int productId);
+
+    @SqlQuery("SELECT * FROM images WHERE productId = :productId")
+    public List<Image> getListImageByProductId(@Bind("productId") int productId);
 
     @SqlQuery("SELECT id FROM images WHERE productId = :productId")
     public List<Image> getIdImages(@Bind("productId") int productId);
