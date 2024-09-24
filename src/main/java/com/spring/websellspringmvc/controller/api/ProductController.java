@@ -54,7 +54,7 @@ public class ProductController {
             @RequestParam(value = "categoryId", required = false) List<Integer> categoryId,
             @RequestParam(value = "sizeNames", required = false) List<String> sizeNames,
             @RequestParam(value = "codeColors", required = false) List<String> codeColors,
-            @RequestParam(value = "money-from", required = false) List<String> moneyRange,
+            @RequestParam(value = "moneyRange", required = false) List<String> moneyRange,
             @RequestParam(value = "page", defaultValue = "1", required = false) Integer page,
             @RequestParam(value = "size", defaultValue = "9", required = false) Integer size
     ) {

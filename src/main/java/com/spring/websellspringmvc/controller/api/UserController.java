@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PostMapping("/info")
-    protected void changeInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void changeInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = sessionManager.getUser();
         int userId = user.getId();
         String fullName = request.getParameter("fullName");

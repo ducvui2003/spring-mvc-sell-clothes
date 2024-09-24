@@ -9,15 +9,19 @@ import com.spring.websellspringmvc.dto.response.datatable.ProductDataTable;
 import com.spring.websellspringmvc.mapper.ProductMapper;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
+import com.spring.websellspringmvc.utils.constraint.KeyAttribute;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,63 +29,60 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductServicesImpl implements ProductService {
     ProductDAO productDAO;
-    ProductCardServices productCardServices;
     ImageDAO imageDAO;
+    HomeDAO homeDAO;
     ColorDAO colorDAO;
     SizeDAO sizeDAO;
-    ReviewDAO reviewDAO;
     ProductMapper productMapper = ProductMapper.INSTANCE;
     CloudinaryUploadServices cloudinaryUploadServices;
-
+    ReviewService reviewService;
     ProductCardDAO productCardDAO;
 
-    public List<Image> getListImagesByProductId(int productId) {
-        return productDAO.getListImagesByProductId(productId);
+    @Override
+    public Page<ProductCardResponse> getListNewProducts(Pageable pageable) {
+        List<Product> products = homeDAO.getListNewProducts();
+        List<ProductCardResponse> response = new ArrayList<>();
+        for (Product product : products) {
+            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
+            setRating(productCardResponse);
+            setThumbnail(productCardResponse);
+            response.add(productCardResponse);
+        }
+        return new PageImpl(response, pageable, homeDAO.countTrendProducts());
     }
 
-    public List<Color> getListColorsByProductId(int productId) {
-        return productDAO.getListColorsByProductId(productId);
+    @Override
+    public List<Slider> getListSlideShow() {
+        return homeDAO.getListSlideShow();
     }
 
-    public List<Size> getListSizesByProductId(int productId) {
-        return productDAO.getListSizesByProductId(productId);
+    @Override
+    public Page<ProductCardResponse> getListTrendProducts(Pageable pageable) {
+        List<Product> products = homeDAO.getListTrendProducts(pageable.getPageSize(), pageable.getOffset());
+        List<ProductCardResponse> response = new ArrayList<>();
+        for (Product product : products) {
+            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
+            setRating(productCardResponse);
+            setThumbnail(productCardResponse);
+            response.add(productCardResponse);
+        }
+        return new PageImpl(response, pageable, homeDAO.countTrendProducts());
     }
 
-    public double getPriceSizeByName(String nameSize, int productId) {
-        return productDAO.getPriceSizeByName(nameSize, productId);
-    }
-
-    public Size getSizeByNameSizeWithProductId(String nameSize, int productId) {
-        return productDAO.getSizeByNameSizeWithProductId(nameSize, productId);
-    }
-
-
-    public Product getProductByProductId(int productId) {
-        return productDAO.getProductByProductId(productId);
-    }
-
-    public Color getColorByCodeColorWithProductId(String codeColor, int productId) {
-        return productDAO.getColorByCodeColorWithProductId(codeColor, productId);
-    }
-
-    public List<Product> getAllProductSelect() {
-        return productCardDAO.getProduct();
-    }
 
     @Override
     public ProductDetailResponse getProductDetail(int productId) {
         Product product = productDAO.getProductByProductId(productId);
-        if (product == null) {
+        if (product == null)
             return null;
-        }
-        List<Image> images = imageDAO.getNameImages(product.getId());
-        int reviewCount = productCardServices.getReviewCount(product.getId());
-        int rating = productCardServices.calculateStar(product.getId());
+
         ProductDetailResponse productDetailResponse = productMapper.toProductDetailResponse(product);
+
+        List<Image> images = imageDAO.getNameImages(product.getId());
         List<String> urlImage = cloudinaryUploadServices.getImages("product_img", images.stream().map(Image::getNameImage).collect(Collectors.toList()));
         productDetailResponse.setImages(urlImage);
-        productDetailResponse.setRating(rating);
-        productDetailResponse.setReviewCount(reviewCount);
+
+        setRating(productDetailResponse);
 
         List<ProductDetailResponse.Size> sizes = sizeDAO.findSizeByProductId(product.getId()).stream().map(size -> ProductDetailResponse.Size.builder().name(size.getNameSize()).price(size.getSizePrice()).id(size.getId()).build()).collect(Collectors.toList());
         productDetailResponse.setSizes(sizes);
@@ -97,33 +98,13 @@ public class ProductServicesImpl implements ProductService {
         List<Product> products = productDAO.filter(productFilter);
         List<ProductCardResponse> response = new ArrayList<>();
         for (Product product : products) {
-            String thumbnail = imageDAO.getThumbnail(product.getId());
-            int reviewCount = getReviewCount(product.getId());
-            int rating = calculateStar(product.getId());
             ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
-            productCardResponse.setThumbnail(cloudinaryUploadServices.getImage("product_img", thumbnail));
-            productCardResponse.setRating(rating);
-            productCardResponse.setReviewCount(reviewCount);
+            setRating(productCardResponse);
+            setThumbnail(productCardResponse);
             response.add(productCardResponse);
         }
         long total = productDAO.countFilter(productFilter);
         return new PageImpl<>(response, productFilter.getPageable(), total);
-    }
-
-    private int getReviewCount(int productId) {
-        List<Review> list = reviewDAO.getReviewStar(productId);
-        if (list.isEmpty()) return 0;
-        return list.size();
-    }
-
-    private int calculateStar(int productId) {
-        List<Review> list = reviewDAO.getReviewStar(productId);
-        if (list.isEmpty()) return 0;
-        int totalStar = 0;
-        for (Review item : list) {
-            totalStar += item.getRatingStar();
-        }
-        return totalStar / list.size();
     }
 
     @Override
@@ -137,5 +118,46 @@ public class ProductServicesImpl implements ProductService {
                 .draw(datatableRequest.getDraw())
                 .build();
     }
+
+    private void setRating(ProductCardResponse productCardResponse) {
+        Map<String, Object> calculateRating = reviewService.calculateRating(productCardResponse.getId());
+        int reviewCount = 0, ratingStar = 0;
+        if (calculateRating != null) {
+            reviewCount = calculateRating.get(KeyAttribute.REVIEW_COUNT.name()) != null ? (int) calculateRating.get(KeyAttribute.REVIEW_COUNT.name()) : 0;
+            ratingStar = calculateRating.get(KeyAttribute.RATING_STAR.name()) != null ? (int) calculateRating.get(KeyAttribute.RATING_STAR.name()) : 0;
+        }
+        productCardResponse.setRating(ratingStar);
+        productCardResponse.setReviewCount(reviewCount);
+    }
+
+    private void setRating (ProductDetailResponse productDetailResponse){
+        Map<String, Object> calculateRating = reviewService.calculateRating(productDetailResponse.getId());
+        int reviewCount = 0, ratingStar = 0;
+        if (calculateRating != null) {
+            reviewCount = calculateRating.get(KeyAttribute.REVIEW_COUNT.name()) != null ? (int) calculateRating.get(KeyAttribute.REVIEW_COUNT.name()) : 0;
+            ratingStar = calculateRating.get(KeyAttribute.RATING_STAR.name()) != null ? (int) calculateRating.get(KeyAttribute.RATING_STAR.name()) : 0;
+        }
+        productDetailResponse.setRating(ratingStar);
+        productDetailResponse.setReviewCount(reviewCount);
+    }
+
+    private void setThumbnail(ProductCardResponse productCardResponse) {
+        String thumbnail = imageDAO.getThumbnail(productCardResponse.getId());
+        productCardResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), thumbnail));
+    }
+
+    public List<Image> getListImagesByProductId(int productId) {
+        return productDAO.getListImagesByProductId(productId);
+    }
+
+    public Product getProductByProductId(int productId) {
+        return productDAO.getProductByProductId(productId);
+    }
+
+
+    public List<Product> getAllProductSelect() {
+        return productCardDAO.getProduct();
+    }
+
 }
 
