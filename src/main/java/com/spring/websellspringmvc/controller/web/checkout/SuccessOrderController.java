@@ -1,29 +1,7 @@
 package com.spring.websellspringmvc.controller.web.checkout;
 
-import com.google.gson.Gson;
-import com.spring.websellspringmvc.config.ConfigPage;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.models.shoppingCart.AbstractCartProduct;
-import com.spring.websellspringmvc.models.shoppingCart.ShoppingCart;
-import com.spring.websellspringmvc.services.CheckoutServices;
-import com.spring.websellspringmvc.session.SessionManager;
-
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @WebServlet(name = "SuccessOrderController", value = "/public/user/successOrder")
 public class SuccessOrderController extends HttpServlet {
