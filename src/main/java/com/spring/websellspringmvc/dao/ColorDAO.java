@@ -21,8 +21,7 @@ public interface ColorDAO {
     public List<Color> getAllColor();
 
     @SqlQuery("SELECT * FROM colors WHERE productId = :productId")
-    @RegisterBeanMapper(Color.class)
-    public List<Color> findColorByProductId(@Bind("productId") int productId);
+    public List<Color> getListColorByProductId(@Bind("productId") int productId);
 
     @SqlQuery("SELECT * FROM colors WHERE id = :id")
     @RegisterBeanMapper(Color.class)

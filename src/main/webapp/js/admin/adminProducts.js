@@ -58,32 +58,13 @@ $(document).ready(() => {
         searching: false,
         ordering: false,
         ajax: {
-            url: "/filterProductAdmin",
+            url: "/api/admin/product/datatable",
+            type: "POST",
+            contentType: 'application/json',
             data: function (d) {
-                d.page = d.start / d.length + 1;
-                delete d.start;
-                delete d.length
-                return d;
-            },
-            dataSrc: function (json) {
-                json.draw = json.draw;
-                json.recordsTotal = json.quantity * json.products.length;
-                json.recordsFiltered = json.quantity * json.products.length;
-                json.data = json.products.map(function (item) {
-                    return {
-                        id: item.product.id,
-                        name: item.product.name,
-                        category: item.nameCategory,
-                        originalPrice: item.product.originalPrice,
-                        salePrice: item.product.salePrice,
-                        stars: item.stars,
-                        reviewCounts: item.reviewCounts,
-                        image: item.images.length > 0 ? item.images[0].nameImage : '',
-                        state: item.product.visibility
-                    };
-                })
-                return json.data;
-            },
+                // Modify the data sent by DataTables to be in JSON format
+                return JSON.stringify(d);
+            }
         }, columns: [
             {data: "id"},
             {data: "name"},
@@ -143,7 +124,7 @@ $(document).ready(() => {
         initComplete: function (settings, json) {
             initEventDatatable();
             setupFormSearch();
-            handleSubmitFormSearch();
+            // handleSubmitFormSearch();
             configModal();
             initFileInput();
             initTextEditor();
@@ -594,11 +575,11 @@ $(document).ready(() => {
             if (result.isConfirmed) {
                 http({
                     url: "/api/admin/product/visible",
+                    type: "PUT",
                     data: {
                         id: id,
-                        type: type,
+                        type: type.toUpperCase(),
                     },
-                    type: "POST",
                 }).then(data => {
                     if (data.success) {
                         Swal.fire({
@@ -692,11 +673,8 @@ $(document).ready(() => {
     // Thực thi xem sản phẩm
     function handleRead(id) {
         http({
-            url: "/api/admin/product/detail",
+            url: "/api/admin/product/detail/" + id,
             type: "GET",
-            data: {
-                id: id
-            },
         }).then((response) => {
             handleFieldData(response);
         });
@@ -705,7 +683,7 @@ $(document).ready(() => {
     // -------------------------------
     // Thực thi field data sản phẩm vào form
     function handleFieldData(data) {
-        const product = data.product;
+        const product = data;
         form.find("input[name=name]").val(product.name);
         form.find("select[name=idCategory]").val(product.categoryId);
         form.find("input[name=originalPrice]").val(product.originalPrice);

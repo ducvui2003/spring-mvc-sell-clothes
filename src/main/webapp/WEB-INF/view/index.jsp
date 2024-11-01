@@ -13,7 +13,7 @@
 
 <body>
 <!--Header-->
-<c:import url="common/header.jsp" charEncoding="UTF-8"/>
+<c:import url="/header" charEncoding="UTF-8"/>
 <!--Main: chứa nội dung chính, các section như giới thiệu sản phầm, các cổ đông,...-->
 <!--Hero-->
 <main id="main" class="animate__animated animate__zoomIn">

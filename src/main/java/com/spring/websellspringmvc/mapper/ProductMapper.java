@@ -4,8 +4,10 @@ import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.mvc.response.ProductDetailResponse;
 import com.spring.websellspringmvc.dto.request.CreateProductRequest;
 import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
+import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
 import com.spring.websellspringmvc.models.Product;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -19,4 +21,6 @@ public interface ProductMapper {
     ProductCardResponse toProductCardResponse(Product product);
 
     ProductDetailResponse toProductDetailResponse(Product product);
+
+    ProductDetailAdminResponse toProductDetailAdminResponse(Product product);
 }

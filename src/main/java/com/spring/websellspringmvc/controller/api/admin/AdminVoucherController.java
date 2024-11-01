@@ -11,7 +11,7 @@ import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.mapper.VoucherMapper;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Voucher;
-import com.spring.websellspringmvc.services.ProductServicesImpl;
+import com.spring.websellspringmvc.services.ProductServiceImpl;
 import com.spring.websellspringmvc.services.voucher.VoucherServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ import java.util.List;
 public class AdminVoucherController {
     VoucherServices voucherServices;
     VoucherMapper voucherMapper;
-    ProductServicesImpl productServicesImpl;
+    ProductServiceImpl productServiceImpl;
 
     @PostMapping("/datatable")
     public ResponseEntity<DatatableResponse<Voucher>> getDatatable(@RequestBody DatatableRequest request) {
@@ -84,7 +84,7 @@ public class AdminVoucherController {
     @PostMapping("/get-product")
     public ResponseEntity<?> getProduct() {
         JsonArray jsonArray = new JsonArray();
-        List<Product> listProduct = productServicesImpl.getAllProductSelect();
+        List<Product> listProduct = productServiceImpl.getAllProductSelect();
         for (Product product : listProduct) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("id", product.getId());

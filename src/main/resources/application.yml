@@ -4,17 +4,18 @@ spring:
   profiles:
     default: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    username: root
     url: jdbc:mysql://localhost:3306/ltw
+    username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: update
   session:
-    timeout: 30m
     store-type: jdbc
     jdbc:
       initialize-schema: always
-      table-name: SPRING_SESSION
-  main:
-    allow-bean-definition-overriding: true
+    timeout: 3600
 
 server:
   error:

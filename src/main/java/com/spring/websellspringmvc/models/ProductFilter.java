@@ -1,9 +1,11 @@
 package com.spring.websellspringmvc.models;
 
+import com.spring.websellspringmvc.dto.request.DatatableRequest;
 import com.spring.websellspringmvc.utils.MoneyRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;

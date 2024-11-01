@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.dto.response.datatable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +9,7 @@ import java.sql.Date;
 @Data
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ReviewDatatableResponse {
+public class ReviewDatatable {
     int id;
     int userId;
     String productName;

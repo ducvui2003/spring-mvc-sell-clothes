@@ -9,7 +9,7 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="common/header" charEncoding="UTF-8"/>
+<c:import url="/header" charEncoding="UTF-8"/>
 <main class="wrapper animate__animated animate__fadeIn">
     <div class="container">
         <div class="about">
@@ -159,7 +159,7 @@
         </div>
     </div>
 </main>
-<c:import url="common/footer"/>
+<c:import url="/footer"/>
 <script src="/js/base.js"></script>
 <script>
     const diamonds = document.querySelectorAll('.diamond');

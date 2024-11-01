@@ -8,7 +8,7 @@ import com.spring.websellspringmvc.mapper.ReviewMapper;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Review;
-import com.spring.websellspringmvc.services.ReviewServicesImpl;
+import com.spring.websellspringmvc.services.ReviewServiceImpl;
 import com.spring.websellspringmvc.services.admin.AdminReviewServices;
 import com.spring.websellspringmvc.services.state.ReviewState;
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminReviewController {
     AdminReviewServices adminReviewServices;
-    ReviewServicesImpl reviewServicesImpl;
+    ReviewServiceImpl reviewServiceImpl;
 
     ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
     OrderMapper orderMapper = OrderMapper.INSTANCE;
@@ -68,8 +68,8 @@ public class AdminReviewController {
         if (review == null)
             throw new ResourceNotFoundException();
 
-        OrderDetail orderDetail = reviewServicesImpl.getOrderDetail(review.getOrderDetailId());
-        Order order = reviewServicesImpl.getOrder(orderDetail.getOrderId());
+        OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(review.getOrderDetailId());
+        Order order = reviewServiceImpl.getOrder(orderDetail.getOrderId());
 
         return ResponseEntity.ok(ReviewDetailResponse.builder().order(orderMapper.toOrderResponse(order))
                 .orderDetail(orderMapper.toOrderDetailResponse(orderDetail))

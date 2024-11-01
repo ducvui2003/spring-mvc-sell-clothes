@@ -189,15 +189,13 @@
                 errorSelector: ".form__error",
                 rules: [
                     Validation.isRequired("#username"),
-                    Validation.isExistsUsername("#username"),
                     Validation.isRequired("#email"),
                     Validation.isEmail("#email"),
-                    Validation.isExistsEmail("#email"),
                     Validation.isRequired("#password"),
                     Validation.isUnique("#password"),
                     Validation.isRequired("#fullName"),
                     Validation.isRequired("#phone"),
-                    // Validation.isRequired("#birthday"),
+                    Validation.isRequired("#birthday"),
                     Validation.isRequired("#confirm-password"),
                     Validation.isConfirm("#confirm-password", function () {
                         return document.querySelector("#password").value;

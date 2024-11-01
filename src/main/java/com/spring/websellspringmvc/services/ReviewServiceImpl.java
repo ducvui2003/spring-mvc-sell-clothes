@@ -3,13 +3,12 @@ package com.spring.websellspringmvc.services;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderDetailDAO;
 import com.spring.websellspringmvc.dao.ReviewDAO;
-import com.spring.websellspringmvc.dao.UserDAO;
-import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.mvc.response.ReviewOverallResponse;
 import com.spring.websellspringmvc.mapper.ReviewMapper;
 import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
+import com.spring.websellspringmvc.utils.constraint.KeyAttribute;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,15 +16,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ReviewServicesImpl implements ReviewService {
+public class ReviewServiceImpl implements ReviewService {
     ReviewDAO reviewDAO;
     OrderDAO orderDAO;
     OrderDetailDAO orderDetailDAO;
@@ -76,5 +75,16 @@ public class ReviewServicesImpl implements ReviewService {
         }
         long total = reviewDAO.countFilter(productFilter);
         return new PageImpl<>(response, productFilter.getPageable(), total);
+    }
+
+    @Override
+    public Map<String, Object> calculateRating(int productId) {
+        List<Review> list = reviewDAO.getReviewStar(productId);
+        if (list.isEmpty()) return Map.of();
+        int totalStar = 0;
+        for (Review item : list) {
+            totalStar += item.getRatingStar();
+        }
+        return Map.of(KeyAttribute.RATING_STAR.name(), totalStar / list.size(), KeyAttribute.REVIEW_COUNT.name(), list.size());
     }
 }

@@ -112,14 +112,14 @@ public class ProductCardServices {
         return list.size();
     }
 
-    public int calculateStar(int productId) {
+    public Map<String, Object> calculateStar(int productId) {
         List<Review> list = reviewDAO.getReviewStar(productId);
-        if (list.isEmpty()) return 0;
+        if (list.isEmpty()) return null;
         int totalStar = 0;
         for (Review item : list) {
             totalStar += item.getRatingStar();
         }
-        return totalStar / list.size();
+        return Map.of("ratingStar", totalStar / list.size(), "reviewCount", list.size());
     }
 
     public List<Product> getProductByCategoryId(int categoryId, int quantity, boolean isRandom) {

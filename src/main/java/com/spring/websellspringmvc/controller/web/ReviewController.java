@@ -7,7 +7,7 @@ import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.models.Review;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.services.ReviewServicesImpl;
+import com.spring.websellspringmvc.services.ReviewServiceImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewController {
-    ReviewServicesImpl reviewServicesImpl;
+    ReviewServiceImpl reviewServiceImpl;
     ProductCardServices productCardServices;
     SessionManager sessionManager;
 
@@ -43,7 +43,7 @@ public class ReviewController {
         User user = sessionManager.getUser();
         int userId = user.getId();
 
-        if (!reviewServicesImpl.canReview(userId, orderProductId)) {
+        if (!reviewServiceImpl.canReview(userId, orderProductId)) {
             throw new ResourceNotFoundException();
         }
         Review review = new Review();
@@ -51,9 +51,9 @@ public class ReviewController {
         review.setRatingStar(ratingStar);
         review.setFeedback(desc);
         review.setReviewDate(Date.valueOf(LocalDate.now()));
-        reviewServicesImpl.createReview(review);
+        reviewServiceImpl.createReview(review);
 
-        String nameProduct = reviewServicesImpl.getNameProduct(orderProductId);
+        String nameProduct = reviewServiceImpl.getNameProduct(orderProductId);
         if (nameProduct == null)
             throw new ResourceNotFoundException();
 
@@ -65,12 +65,12 @@ public class ReviewController {
     public ModelAndView reviewPage(@RequestParam("orderDetailId") int orderDetailId) {
         ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW);
 //        Check
-        boolean listReview = reviewServicesImpl.hasReview(orderDetailId);
+        boolean listReview = reviewServiceImpl.hasReview(orderDetailId);
         if (!listReview)
             throw new ResourceNotFoundException();
 
 
-        OrderDetail orderDetail = reviewServicesImpl.getOrderDetail(orderDetailId);
+        OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(orderDetailId);
 
         String color = orderDetail.getColorRequired();
         String[] sizes = readSizes(orderDetail.getSizeRequired());

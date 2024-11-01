@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.Contact;
 import com.spring.websellspringmvc.models.SubjectContact;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -11,12 +12,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+@RegisterBeanMapper(Contact.class)
 public interface ContactDAO {
 
     @SqlQuery("SELECT id, fullName, phone, email, `subject` FROM contacts")
     public List<Contact> getListUserContacts();
 
     @SqlQuery("SELECT id, subjectName FROM contact_subjects")
+    @RegisterBeanMapper(SubjectContact.class)
     public List<SubjectContact> getListContactSubjects();
 
     @SqlUpdate("SELECT id FROM contact_subjects WHERE subjectName = :subjectName")

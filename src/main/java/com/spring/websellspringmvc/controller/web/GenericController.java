@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -20,23 +21,21 @@ public class GenericController {
 
     @GetMapping("/header")
     public String getHeader() {
-        return "common/header";
+        return "/common/header";
     }
 
     @GetMapping("/footer")
     public String getFooter() {
-        return "common/footer";
+        return "/common/footer";
     }
 
     @GetMapping("/commonLink")
     public String getCommonLink() {
-        return "common/commonLink";
+        return "/common/commonLink";
     }
 
     @GetMapping("/adminLink")
     public String getAdminLink() {
-        return "common/adminLink";
+        return "/common/adminLink";
     }
-
-
 }
