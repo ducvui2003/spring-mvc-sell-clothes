@@ -1,7 +1,6 @@
 package com.spring.websellspringmvc.session;
 
 import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.UserServices;
 import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
