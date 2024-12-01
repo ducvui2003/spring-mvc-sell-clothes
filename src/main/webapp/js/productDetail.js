@@ -182,7 +182,7 @@ $(document).ready(() => {
                         </a>
                         
                         <div class="product__info">
-                            <a class="product__name" target="_blank" href="/showProductDetail?id=${id}">${name}</a>
+                            <a class="product__name" target="_blank" href="/product/${id}">${name}</a>
                         
                             <div class="product__review">
                                 <div class="product__review-stars">
@@ -190,7 +190,7 @@ $(document).ready(() => {
                                     ${noStarResult}
                                 </div>
                                 
-                                   <a class="product__review-num" target="_blank" href="/showProductDetail?id=${id}">
+                                   <a class="product__review-num" target="_blank" href="/product/${id}">
                                        ${reviewCounts} nhận xét
                                    </a>
                             </div> 
