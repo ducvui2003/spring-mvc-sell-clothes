@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCategoryServices {
     CategoryDAO categoryDAO;
     ParameterDAO parameterDAO;

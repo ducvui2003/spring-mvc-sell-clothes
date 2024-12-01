@@ -86,9 +86,6 @@ public class AuthenticateServicesImpl implements AuthenticationService {
         Timestamp timestampCurrent = Timestamp.valueOf(LocalDateTime.now());
         if (timestampCurrent.compareTo(userTokenExpired) > 0) throw new AppException(ErrorView.ERROR_404);
 
-        userDAO.updateTokenVerify(user.getId(), null, null);
-        userDAO.updateVerify(user.getId(), true);
+        userDAO.updateTokenVerify(user.getId(), true, null, null);
     }
-
-
 }

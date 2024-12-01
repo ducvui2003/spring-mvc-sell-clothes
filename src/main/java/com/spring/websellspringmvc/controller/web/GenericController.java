@@ -38,4 +38,6 @@ public class GenericController {
     public String getAdminLink() {
         return "/common/adminLink";
     }
+
+
 }

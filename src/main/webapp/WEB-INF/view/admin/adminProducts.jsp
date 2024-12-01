@@ -47,7 +47,7 @@
 <c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="../common/adminNavigator.jsp"/>
+    <c:import url="/common/adminNavigator"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

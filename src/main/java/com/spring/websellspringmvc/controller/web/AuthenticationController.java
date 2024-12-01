@@ -66,6 +66,7 @@ public class AuthenticationController {
         return new ModelAndView("redirect:/");
     }
 
+
     @PostMapping("/verify")
     public ModelAndView verify(HttpServletRequest request) {
         String username = request.getParameter("username");
@@ -73,7 +74,7 @@ public class AuthenticationController {
         log.info("username {} tokenVerify {}", username, token);
         request.setAttribute("username", username);
         authenticationService.verify(username, token);
-        return new ModelAndView("redirect:/").addObject("username", username);
+        return new ModelAndView("redirect:" + ConfigPage.VERIFY_SUCCESS).addObject("username", username);
     }
 
     @GetMapping("/signOut")
