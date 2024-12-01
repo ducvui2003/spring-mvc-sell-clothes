@@ -52,16 +52,12 @@
                     <span>Thống kê</span></a>
             </li>
             <li>
-                <a href="<c:url value="/public/admin/adminVoucher.jsp"/>" data-link="adminVoucher.jsp"
+                <a href="/admin/voucher" data-link="adminVoucher.jsp"
                    class="sidebar_item">
                     <i class="fa-solid fa-ticket-simple"></i>
                     <span>Mã giảm giá</span></a>
             </li>
-            <li>
-                <a href="<c:url value="/public/admin/adminLogs.jsp"/>" data-link="adminLogs.jsp" class="sidebar_item">
-                    <i class="fa-solid fa-book"></i>
-                    <span>Nhật ký hệ thống</span></a>
-            </li>
+
         </ul>
     </div>
     <%--    <div class="ps__rail-x" style="left: 0px; bottom: 0px;">--%>

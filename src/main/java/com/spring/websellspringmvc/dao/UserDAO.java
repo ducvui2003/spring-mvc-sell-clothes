@@ -37,11 +37,8 @@ public interface UserDAO {
     @SqlQuery("SELECT id, tokenVerifyTime, tokenVerify FROM users WHERE username = ? AND isVerify = 0")
     Optional<User> selectTokenVerify(String username);
 
-    @SqlUpdate("UPDATE users SET tokenVerify = :tokenVerify, tokenVerifyTime = :tokenVerifyTime WHERE id = :id")
-    void updateTokenVerify(@Bind("id") int id, @Bind("tokenVerify") String tokenVerify, @Bind("timeTokenExpired") Timestamp timeTokenExpired);
-
-    @SqlUpdate("UPDATE users SET isVerify = :isVerify WHERE id = :id")
-    void updateVerify(@Bind(":id") int id, @Bind("status") boolean isVerify);
+    @SqlUpdate("UPDATE users SET isVerify = :isVerify, tokenVerify = :tokenVerify, tokenVerifyTime = :tokenVerifyTime WHERE id = :id")
+    void updateTokenVerify(@Bind("id") int id, @Bind("isVerify") boolean isVerify, @Bind("tokenVerify") String tokenVerify, @Bind("tokenVerifyTime") Timestamp timeTokenExpired);
 
     @SqlQuery("SELECT id, tokenResetPassword, tokenResetPasswordTime FROM users WHERE email = :email")
     List<User> selectTokenResetPassword(@Bind("email") String email);
