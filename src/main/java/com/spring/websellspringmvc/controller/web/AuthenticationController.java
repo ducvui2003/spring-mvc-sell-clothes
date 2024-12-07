@@ -3,6 +3,7 @@ package com.spring.websellspringmvc.controller.web;
 import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.controller.exception.ErrorForm;
+import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dto.mvc.request.SignInRequest;
 import com.spring.websellspringmvc.dto.mvc.request.SignUpRequest;
 import com.spring.websellspringmvc.models.User;
@@ -29,6 +30,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     SessionManager sessionManager;
 
+
     @GetMapping("/signIn")
     public ModelAndView signInPage() {
         ModelAndView mav = new ModelAndView();
@@ -43,8 +45,8 @@ public class AuthenticationController {
             throw new ErrorForm(bindingResult, new ErrorView(ErrorView.SIGN_IN_FAILED,
                     "user", request));
         }
-        User user = authenticationService.signIn(request);
-        sessionManager.addUser(user);
+        authenticationService.signIn(request);
+
         return new ModelAndView("redirect:/");
     }
 

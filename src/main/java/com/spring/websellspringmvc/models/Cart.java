@@ -4,18 +4,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@Data
 @NoArgsConstructor
+@Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Address {
+public class Cart {
     Integer id;
     Integer userId;
-    String detail;
-    String province;
-    String district;
-    String ward;
-
-    public String exportAddressString() {
-        return String.format("%s, %s, %s, %s", detail, ward, district, province);
-    }
 }

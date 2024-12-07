@@ -43,7 +43,7 @@ public class VoucherProductStrategy implements IVoucherStrategy {
         for (CartItem cartItem : cartItems) {
             Product product = productDao.getProductByProductId(cartItem.getProductId());
             double price = product.getSalePrice() == 0.0 ? product.getOriginalPrice() : product.getSalePrice();
-            double priceSize = (isSizeCustom(cartItem)) ? 0.0 : getSizePrice(cartItem.getSize());
+            double priceSize = (isSizeCustom(cartItem)) ? 0.0 : getSizePrice(cartItem.getSizeId());
             totalPrice += (price + priceSize) * cartItem.getQuantity();
             if (totalPrice >= voucher.getMinimumPrice()) {
                 return true;

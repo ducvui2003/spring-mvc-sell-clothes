@@ -47,20 +47,14 @@
                         <div class="account__wrapper">
                             <!--Giỏ hàng-->
                             <div class="cart__wrapper">
-                                <a href="<c:url value="/public/user/shoppingCart.jsp" />" class="cart">
+                                <a href="/cart" class="cart">
                                         <span class="cart__content">
                                             <i class="cart__icon fa-solid fa-cart-shopping"></i>
                                             Giỏ hàng
                                         </span>
                                     <span class="qlt__swapper">
                                             <span class="qlt__value">
-<%--                                                <c:set var="userIdCart" value="${String.valueOf(auth.id)}"/>--%>
-<%--                                                <c:choose>--%>
-<%--                                                    <c:when test="${sessionScope[userIdCart] == null}"> 0 </c:when>--%>
-<%--                                                    <c:otherwise>--%>
-<%--                                                        ${sessionScope[userIdCart].getTotalItems()}--%>
-<%--                                                    </c:otherwise>--%>
-<%--                                                </c:choose>--%>
+                                                    ${empty sessionScope.quantity ? sessionScope.quantity : 0}
                                             </span>
                                         </span>
                                 </a>

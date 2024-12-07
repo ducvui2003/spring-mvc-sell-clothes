@@ -1,3 +1,5 @@
+import {BASE_URL, http} from "./base.js";
+
 $(document).ready(() => {
     // Animation for head title
     const idTitle = '#product__name'
@@ -106,30 +108,28 @@ $(document).ready(() => {
         console.log("call method ajax")
         const form = $('#form__product');
         let productId = $(form).find('input[name=productId]').val();
+        let sizeId = $(form).find('input[name=size]:checked').val();
+        let colorId = $(form).find('input[name=color]:checked').val();
         let quantity = $(form).find('input[name=quantity]').val();
-        let size = $(form).find('input[name=size]:checked').val();
-        let color = $(form).find('input[name=color]:checked').val();
-        $.ajax({
-            url: form.attr('action'),
-            type: form.attr('method'),
+        http({
+            url: `${BASE_URL}/api/cart/add`,
+            type: "POST",
             data: {
                 productId: productId,
-                size: size,
-                color: color,
+                sizeId: sizeId,
+                colorId: colorId,
                 quantity: quantity
             },
-            success: function (response) {
-                console.log("run ajax success")
-                let addToCartSuccessHTML = `<div class="notification__cart">
+        }).then(() => {
+            console.log("run ajax success")
+            let addToCartSuccessHTML = `<div class="notification__cart">
                                                                 <div class="status__success">
                                                                     <span><i class="fa-solid fa-circle-check icon__success"></i>Đã thêm vào giỏ hàng thành công</span>
                                                                     <span onclick="handleCloseNotificationCart()"><i class="fa-solid fa-xmark close__notification"></i></span>
                                                                 </div>
-                                                                <a class="view__cart" href="/public/user/shoppingCart.jsp">Xem giỏ hàng và thanh toán</a>
+                                                                <a class="view__cart" href="/cart">Xem giỏ hàng và thanh toán</a>
                                                             </div>`;
-                $('.cart__wrapper').append(addToCartSuccessHTML)
-                $('.qlt__value').text(response);
-            }
+            $('.cart__wrapper').append(addToCartSuccessHTML)
         })
     }
 

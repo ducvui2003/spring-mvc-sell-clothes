@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dto.OrderDetailResponseDTO;
 import com.spring.websellspringmvc.dto.OrderItemResponseDTO;
 import com.spring.websellspringmvc.dto.OrderResponseDTO;
 import com.spring.websellspringmvc.models.*;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -87,6 +88,7 @@ public interface OrderDAO {
             WHERE orders.orderStatusId = :statusOrder AND orders.userId = :userId 
             GROUP BY order_details.orderId 
             """)
+    @RegisterBeanMapper(OrderResponseDTO.class)
     public List<OrderResponseDTO> getOrder(@Bind("userId") int userId, @Bind("statusOrder") int statusOrder);
 
     @SqlQuery("""

@@ -1,3 +1,5 @@
+export const BASE_URL = 'http://localhost:8080';
+
 export const addParam = (form, {key, value}) => {
     let formDataArray = $(form).serializeArray();
     formDataArray.push({name: key, value: value}); // Add your custom parameter
@@ -104,7 +106,7 @@ export const endLoading = () => {
     $.LoadingOverlay("hide");
 }
 
-export const http = ({beforeSend, complete, data, ...rest}, automaticLoading = true) => {
+export const http = ({beforeSend, complete, data = null, ...rest}, automaticLoading = true) => {
     return new Promise((resolve, reject) => {
         $.ajax({
             ...rest,
@@ -115,7 +117,7 @@ export const http = ({beforeSend, complete, data, ...rest}, automaticLoading = t
                     beforeSend.call(this, xhr, settings);
                 }
             },
-            data: JSON.stringify(data),
+            data: data === null ? null : JSON.stringify(data),
             contentType: 'application/json',
             dataType: "json",
             success: function (data) {

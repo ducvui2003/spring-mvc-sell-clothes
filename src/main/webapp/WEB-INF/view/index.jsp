@@ -24,24 +24,11 @@
             <p>Cùng chúng tôi tạo nên thiết kế khác biệt cho quần áo của bạn</p>
             <a href="<c:url value="/product/productBuying" />"
                class="hero__button button button--hover hvr-radial-out">
-                Bắt đầu đặt may
+                Bắt đầu mua hàng
             </a>
         </div>
     </div>
     <div class="container-xl">
-        <div class="mt-3 p-5 search">
-            <div class="form-inline my-2 my-lg-0 d-flex">
-                <input style="z-index: 2;" class="search__inp form-control mr-sm-2 p-3 me-2" type="search"
-                       placeholder="Search"
-                       aria-label="Search" name="keyword">
-                <button class="search__btn btn btn-outline-success my-2 my-sm-0 ps-4 pe-4 hvr-rectangle-out"
-                        type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </div>
-            <ul class="search__box shadow"></ul>
-        </div>
-
         <div id="slider__category--section">
             <div class="slider__container">
                 <div class="slider__items">
@@ -106,7 +93,7 @@
                                     </button>
                                     <a class="see__detail"
                                        target="_blank"
-                                       href="/showProductDetail?id=${product.id}">
+                                       href="/product/${product.id}">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </form>
@@ -130,7 +117,7 @@
                                         </c:forEach>
                                     </div>
                                     <a class="number__turns--ratting"
-                                       href="/showProductDetail?id=${product.id}"> ${product.reviewCount}
+                                       href="/product/${product.id}"> ${product.reviewCount}
                                         nhận xét
                                     </a>
                                 </div>
@@ -173,7 +160,7 @@
                                     </button>
                                     <a class="see__detail"
                                        target="_blank"
-                                       href="/showProductDetail?id=${product.id}">
+                                       href="/product/${product.id}">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </form>
@@ -181,7 +168,7 @@
 
                             <div class="product__info">
                                 <a class="product__name" target="_blank"
-                                   href="/showProductDetail?id=${product.id}">${product.name}
+                                   href="/product/${product.id}">${product.name}
                                 </a>
                                 <div class="product__review">
                                     <div class="review__icon">
@@ -197,11 +184,28 @@
                                         </c:forEach>
                                     </div>
                                     <a class="number__turns--ratting"
-                                       href="/showProductDetail?id=${product.id}"> ${product.reviewCount}
+                                       href="/product/${product.id}"> ${product.reviewCount}
                                         nhận xét
                                     </a>
                                 </div>
-
+                                <span class="product__price">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${product.salePrice == null}">
+                                            <strong class="priority__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </strong>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <strong class="sale__price">
+                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                            </strong>
+                                            <s class="original__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </s>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                         </div>
                     </div>
