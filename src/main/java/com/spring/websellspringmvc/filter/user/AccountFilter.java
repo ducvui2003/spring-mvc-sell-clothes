@@ -1,15 +1,8 @@
 package com.spring.websellspringmvc.filter.user;
 
-import com.spring.websellspringmvc.models.Address;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.models.shoppingCart.ShoppingCart;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
-import com.spring.websellspringmvc.session.SessionManager;
-
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 //@WebFilter(filterName = "AccountFilter", urlPatterns = {"/public/user/accountInfo.jsp", "/api/user/*"})

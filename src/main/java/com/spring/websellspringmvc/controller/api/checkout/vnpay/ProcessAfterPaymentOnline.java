@@ -1,23 +1,7 @@
 package com.spring.websellspringmvc.controller.api.checkout.vnpay;
 
-import com.google.gson.Gson;
-import com.spring.websellspringmvc.config.ConfigPage;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.models.shoppingCart.ShoppingCart;
-import com.spring.websellspringmvc.services.CheckoutServices;
-import com.spring.websellspringmvc.session.SessionManager;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.io.IOException;
 
 @WebServlet(name = "ProcessAfterPaymentOnline", value = "/ProcessAfterPaymentOnline")
 public class ProcessAfterPaymentOnline extends HttpServlet {
