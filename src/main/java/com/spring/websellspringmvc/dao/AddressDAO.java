@@ -15,7 +15,13 @@ import java.util.List;
 @RegisterBeanMapper(Address.class)
 public interface AddressDAO {
 
-    @SqlQuery("SELECT id, province, ward, district, detail FROM address WHERE userId = :userId")
+    @SqlQuery("""
+            SELECT id as id,
+            wardName as ward, 
+            districtName as district, 
+            provinceName  as  province, 
+            detail
+            FROM address WHERE userId = :userId""")
     public List<Address> getAddress(@Bind("userId") int userId);
 
     @SqlUpdate("""

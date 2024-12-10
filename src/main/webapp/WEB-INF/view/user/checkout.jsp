@@ -1,4 +1,3 @@
-<%@ page import="services.CheckoutServices" %>
 <%@ page import="java.lang.String" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -6,15 +5,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="/assets/css/user/account.css">
-    <link rel="stylesheet" href="/assets/css/user/accountInfo.css">
-    <jsp:include page="/public/commonLink.jsp"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/checkout.css" />">
     <title>Thanh toán</title>
 </head>
 
 <body>
-<c:import url="/public/header.jsp"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <div class="container-xl">
         <div class="checkout__container row">
@@ -23,8 +20,8 @@
                     <h1 class="checkout__title">Thanh toán</h1>
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
                     <div class="row" id="address-list">
-                        <c:if test="${not empty requestScope.address}">
-                            <c:forEach items="${requestScope.address}" var="address" varStatus="status">
+                        <c:if test="${not empty requestScope.addresses}">
+                            <c:forEach items="${requestScope.addressss}" var="address" varStatus="status">
                                 <div class="col-sm-12 mb-3">
                                     <input type="hidden" name="id-address" value="${address.id}"/>
                                     <div class="card">
@@ -89,13 +86,15 @@
                 </div>
 
                 <!-- New update template -->
-                <c:set var="freeShip" value="5000000"/> <c:choose>
-                <c:when test="${sessionScope[userIdCart].getTotalPrice(false) >= freeShip}">
-                    <p class="free__ship"><i class="fa-solid fa-circle-check"></i>Miễn phí vận chuyển cho hóa
-                        đơn từ
-                        <fmt:setLocale value="vi_VN"/> <fmt:formatNumber value="${freeShip}" type="currency"/>
-                    </p>
-                </c:when> <c:otherwise>
+                <c:set var="freeShip" value="5000000"/>
+                <%--                <c:choose>--%>
+                <%--                    <c:when test="${sessionScope[userIdCart].getTotalPrice(false) >= freeShip}">--%>
+                <%--                        <p class="free__ship"><i class="fa-solid fa-circle-check"></i>Miễn phí vận chuyển cho hóa--%>
+                <%--                            đơn từ--%>
+                <%--                            <fmt:setLocale value="vi_VN"/> <fmt:formatNumber value="${freeShip}" type="currency"/>--%>
+                <%--                        </p>--%>
+                <%--                    </c:when>--%>
+                <%--                    <c:otherwise>--%>
                 <div class="delivery__method--container">
                     <h2 class="checkout__subtitle">Phương thức vận chuyển</h2>
                     <form id="delivery__method--form" class="radio__section">
@@ -103,24 +102,26 @@
                         <c:forEach items="${applicationScope.listDeliveryMethod}" var="deliveryMethod">
                             <div class="method__content">
                                 <div class="method__item section__info--selection">
-                                    <input
-                                            <c:if test="${deliveryMethod eq sessionScope[userIdCart].deliveryMethod}">checked</c:if>
-                                            type="radio" name="delivery__method" class="radio__button"
-                                            value="${deliveryMethod.id}"
-                                            id="delivery__method${deliveryMethod.id}">
+                                    <input type="radio" name="delivery__method" class="radio__button"
+                                           value="${deliveryMethod.id}"
+                                           id="delivery__method${deliveryMethod.id}">
                                     <label class="label__selection" for="delivery__method${deliveryMethod.id}">
                                         <span>${deliveryMethod.typeShipping}</span>
-                                        <span><fmt:setLocale value="vi_VN"/><fmt:formatNumber type="currency"
-                                                                                              value="${deliveryMethod.shippingFee}"/></span>
+                                        <span>
+                                            <fmt:setLocale value="vi_VN"/>
+                                            <fmt:formatNumber type="currency" value="${deliveryMethod.shippingFee}"/>
+                                        </span>
                                     </label>
                                 </div>
-                                <span class="description__method"><p>${deliveryMethod.description}</p></span>
+                                <span class="description__method">
+                                            <p>${deliveryMethod.description}</p>
+                                        </span>
                             </div>
                         </c:forEach>
                     </form>
                 </div>
-            </c:otherwise>
-            </c:choose>
+                <%--                    </c:otherwise>--%>
+                <%--                </c:choose>--%>
                 <!-- New update template -->
                 <div class="payment__method--container">
                     <h2 class="checkout__subtitle">Phương thức thanh toán</h2>
@@ -130,7 +131,6 @@
                             <div class="method__content">
                                 <div class="method__item section__info--selection">
                                     <input
-                                            <c:if test="${paymentMethod eq sessionScope[userIdCart].paymentMethod}">checked</c:if>
                                             type="radio" name="payment__method" class="radio__button"
                                             value="${paymentMethod.id}"
                                             id="payment__method${paymentMethod.id}">
@@ -138,78 +138,78 @@
                                            for="payment__method${paymentMethod.id}">${paymentMethod.typePayment}</label>
                                 </div>
                                 <div class="description__method information__transaction">
-                                    <c:choose>
-                                        <c:when test="${paymentMethod.id > 1}">
-                                            <c:set value="${CheckoutServices.getINSTANCE().getPaymentOwnerByPaymentMethodId(paymentMethod.id)}"
-                                                   var="paymentOwner"/>
-                                            <table class="table__transaction">
-                                                <tbody>
-                                                <tr class="owner__name">
-                                                    <td>Chủ tài khoản</td>
-                                                    <td><span>${paymentOwner.ownerName}</span></td>
-                                                </tr>
-                                                <tr class="account__number">
-                                                    <td>Số tài khoản</td>
-                                                    <td>
-                                                        <div>
-                                                            <span>${paymentOwner.accountNumber}</span>
-                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="payment__platform">
-                                                    <c:if test="${paymentMethod.id eq 2}">
-                                                        <img src=""
-                                                             alt="https://cdn-icons-png.flaticon.com/512/2830/2830155.png"/>
-                                                        <td>Ngân hàng</td>
-                                                    </c:if>
-                                                    <c:if test="${paymentMethod.id eq 3}">
-                                                        <img src="https://cdn-icons-png.flaticon.com/512/1796/1796874.png"
-                                                             alt="Ví điện tử"/>
-                                                        <td>Ví điện tử</td>
-                                                    </c:if>
-                                                    <td><span>${paymentOwner.paymentPlatform}</span></td>
-                                                </tr>
-                                                <tr class="amount__pay">
-                                                    <td>Số tiền</td>
-                                                    <td>
-                                                        <div>
-                                                            <span class="amount">${sessionScope[userIdCart].totalPriceFormat(true)}</span>
-                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="transaction__content">
-                                                    <td>Nội dung giao dịch</td>
-                                                    <td>
-                                                        <div>
-                                                            <span class="content">${sessionScope.contentForPay}</span>
-                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                            <div class="payment__qr">
-                                                <img class="qr__code"
-                                                     src="<c:url value="/assets/img/paymentQR/${qrImage}" />">
-                                                <div>
-                                                    <span>Hoặc bạn có thể quét QR code bên cạnh để tiến hành thanh toán một cách nhanh chóng và chính xác hơn</span>
-                                                    <span><strong style="font-weight: 500">* Lưu ý:</strong> Trước khi thanh toán vui lòng kiểm tra thật kỹ số tiền cần thanh toán và nội dung chuyển khoản. Trong trường hợp chuyển khoản sai nội dung hoặc thanh toán với số tiền không đúng thì chúng tôi hoàn toàn không chịu trách nhiệm với số tiền bạn đã chuyển và đơn hàng không thể đóng gói đến bạn</span>
-                                                </div>
-                                            </div>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="cod">Khi chọn phương thức trả tiền mặt khi nhận hàng (COD), vui lòng bạn chuẩn bị đầy đủ số tiền cần thanh toán cho nhà vận chuyển khi nhận hàng</span>
-                                        </c:otherwise>
-                                    </c:choose>
+                                        <%--                                    <c:choose>--%>
+                                        <%--                                        <c:when test="${paymentMethod.id > 1}">--%>
+                                        <%--                                            <c:set value="${CheckoutServices.getINSTANCE().getPaymentOwnerByPaymentMethodId(paymentMethod.id)}"--%>
+                                        <%--                                                   var="paymentOwner"/>--%>
+                                        <%--                                            <table class="table__transaction">--%>
+                                        <%--                                                <tbody>--%>
+                                        <%--                                                <tr class="owner__name">--%>
+                                        <%--                                                    <td>Chủ tài khoản</td>--%>
+                                        <%--                                                    <td><span>${paymentOwner.ownerName}</span></td>--%>
+                                        <%--                                                </tr>--%>
+                                        <%--                                                <tr class="account__number">--%>
+                                        <%--                                                    <td>Số tài khoản</td>--%>
+                                        <%--                                                    <td>--%>
+                                        <%--                                                        <div>--%>
+                                        <%--                                                            <span>${paymentOwner.accountNumber}</span>--%>
+                                        <%--                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>--%>
+                                        <%--                                                        </div>--%>
+                                        <%--                                                    </td>--%>
+                                        <%--                                                </tr>--%>
+                                        <%--                                                <tr class="payment__platform">--%>
+                                        <%--                                                    <c:if test="${paymentMethod.id eq 2}">--%>
+                                        <%--                                                        <img src=""--%>
+                                        <%--                                                             alt="https://cdn-icons-png.flaticon.com/512/2830/2830155.png"/>--%>
+                                        <%--                                                        <td>Ngân hàng</td>--%>
+                                        <%--                                                    </c:if>--%>
+                                        <%--                                                    <c:if test="${paymentMethod.id eq 3}">--%>
+                                        <%--                                                        <img src="https://cdn-icons-png.flaticon.com/512/1796/1796874.png"--%>
+                                        <%--                                                             alt="Ví điện tử"/>--%>
+                                        <%--                                                        <td>Ví điện tử</td>--%>
+                                        <%--                                                    </c:if>--%>
+                                        <%--                                                    <td><span>${paymentOwner.paymentPlatform}</span></td>--%>
+                                        <%--                                                </tr>--%>
+                                        <%--                                                <tr class="amount__pay">--%>
+                                        <%--                                                    <td>Số tiền</td>--%>
+                                        <%--                                                    <td>--%>
+                                        <%--                                                        <div>--%>
+                                        <%--                                                            <span class="amount">${sessionScope[userIdCart].totalPriceFormat(true)}</span>--%>
+                                        <%--                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>--%>
+                                        <%--                                                        </div>--%>
+                                        <%--                                                    </td>--%>
+                                        <%--                                                </tr>--%>
+                                        <%--                                                <tr class="transaction__content">--%>
+                                        <%--                                                    <td>Nội dung giao dịch</td>--%>
+                                        <%--                                                    <td>--%>
+                                        <%--                                                        <div>--%>
+                                        <%--                                                            <span class="content">${sessionScope.contentForPay}</span>--%>
+                                        <%--                                                            <span class="copy__button"><i class="fa-solid fa-copy"></i> Sao chép</span>--%>
+                                        <%--                                                        </div>--%>
+                                        <%--                                                    </td>--%>
+                                        <%--                                                </tr>--%>
+                                        <%--                                                </tbody>--%>
+                                        <%--                                            </table>--%>
+                                        <%--                                            <div class="payment__qr">--%>
+                                        <%--                                                <img class="qr__code"--%>
+                                        <%--                                                    &lt;%&ndash;                                                     src="<c:url value="/assets/img/paymentQR/${qrImage}" />">&ndash;%&gt;--%>
+                                        <%--                                                <div>--%>
+                                        <%--                                                    <span>Hoặc bạn có thể quét QR code bên cạnh để tiến hành thanh toán một cách nhanh chóng và chính xác hơn</span>--%>
+                                        <%--                                                    <span><strong style="font-weight: 500">* Lưu ý:</strong> Trước khi thanh toán vui lòng kiểm tra thật kỹ số tiền cần thanh toán và nội dung chuyển khoản. Trong trường hợp chuyển khoản sai nội dung hoặc thanh toán với số tiền không đúng thì chúng tôi hoàn toàn không chịu trách nhiệm với số tiền bạn đã chuyển và đơn hàng không thể đóng gói đến bạn</span>--%>
+                                        <%--                                                </div>--%>
+                                        <%--                                            </div>--%>
+                                        <%--                                        </c:when>--%>
+                                        <%--                                        <c:otherwise>--%>
+                                        <%--                                            <span class="cod">Khi chọn phương thức trả tiền mặt khi nhận hàng (COD), vui lòng bạn chuẩn bị đầy đủ số tiền cần thanh toán cho nhà vận chuyển khi nhận hàng</span>--%>
+                                        <%--                                        </c:otherwise>--%>
+                                        <%--                                    </c:choose>--%>
                                 </div>
                             </div>
                         </c:forEach>
                     </form>
                 </div>
             </div>
-            <div class="checkout__info--right col">
+            <form class="checkout__info--right col" method="post">
                 <span class="summary__cart">Tóm tắt giỏ hàng</span>
                 <div class="order__detail--info">
                     <table class="order__table">
@@ -221,6 +221,25 @@
                         </tr>
                         </thead>
                         <tbody class="order__list">
+                        <c:forEach var="item" items="${requestScope.cartItems}">
+                            <tr class="row__content">
+                                <td class="td__item">
+                                    <div class="product__item">
+                                        <img src="${item.thumbnail}" alt="${item.name}"/>
+                                        <div class="order__product--info">
+                                            <p class="product__name">${item.name}</p>
+                                            <span>
+                                                Màu sắc:
+                                                <p class="order__color d-inline">${item.color}</p>
+                                            </span>
+                                            <p class="order__size">${item.size}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="td__item">${item.quantity}</td>
+                                <td class="td__item">${item.salePrice !=0 ? item.salePrice : item.price}</td>
+                            </tr>
+                        </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -229,21 +248,22 @@
                         <div class="price__item--detail">
                             <div class="temporary__container">
                                 <span>Tạm tính ( <span class="count__product"></span> sản phẩm)</span>
-                                <span>${sessionScope[userIdCart].temporaryPriceFormat()}</span>
+                                <%--                                <span>${sessionScope[userIdCart].temporaryPriceFormat()}</span>--%>
                             </div>
-                            <c:if test="${sessionScope[userIdCart].voucherApplied != null}">
-                                <div class="discount__container">
-                                    <span>Giảm giá</span>
-                                    <span>${sessionScope[userIdCart].discountPriceFormat()}</span>
-                                </div>
-                            </c:if>
-                            <c:if test="${sessionScope[userIdCart].deliveryMethod != null}">
-                                <div class="shipping__container">
-                                    <span>Phí vận chuyển</span>
-                                    <span><fmt:setLocale value="vi_VN"/><fmt:formatNumber type="currency"
-                                                                                          value="${sessionScope[userIdCart].deliveryMethod.shippingFee}"/></span>
-                                </div>
-                            </c:if>
+                            <%--                            <c:if test="${sessionScope[userIdCart].voucherApplied != null}">--%>
+                            <%--                                <div class="discount__container">--%>
+                            <%--                                    <span>Giảm giá</span>--%>
+                            <%--                                    <span>${sessionScope[userIdCart].discountPriceFormat()}</span>--%>
+                            <%--                                </div>--%>
+                            <%--                            </c:if>--%>
+                            <%--                            <c:if test="${sessionScope[userIdCart].deliveryMethod != null}">--%>
+                            <%--                                <div class="shipping__container">--%>
+                            <%--                                    <span>Phí vận chuyển</span>--%>
+                            <%--                                    <span>--%>
+                            <%--                                        <fmt:setLocale value="vi_VN"/><fmt:formatNumber type="currency"/>--%>
+                            <%--                                    </span>--%>
+                            <%--                                </div>--%>
+                            <%--                            </c:if>--%>
                         </div>
                         <div class="total__price--final">
                             <span class="total__label">Tổng tiền</span>
@@ -251,13 +271,13 @@
                         </div>
                     </div>
                     <div class="ground__button--forward">
-                        <button class="place__order">Đặt hàng</button>
-                        <a href="<c:url value="/public/user/shoppingCart.jsp" />">
-                            <button class="back--shopping__cart">Quay lại giỏ hàng</button>
+                        <button type="submit" class="place__order">Đặt hàng</button>
+                        <a href="<c:url value="/cart" />" class="back--shopping__cart">
+                            Quay lại giỏ hàng
                         </a>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </main>
@@ -324,7 +344,7 @@
         </form>
     </div>
 </div>
-<c:import url="/public/footer.jsp"/>
+<jsp:include page="/WEB-INF/view/common/footer.jsp"/>
 </body>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
@@ -382,10 +402,10 @@
         totalPrice.text(totalCost.toLocaleString('vi-VN'))
     }
 
-    var jsonOrder =
-        <c:if test="${not empty requestScope.models}">
-        <c:set value="${requestScope.models}" var="jsonOrder" />
-        updateCheckout(${jsonOrder})
+    <%--var jsonOrder =--%>
+    <%--    <c:if test="${not empty requestScope.models}">--%>
+    <%--    <c:set value="${requestScope.models}" var="jsonOrder" />--%>
+    <%--    updateCheckout(${jsonOrder})--%>
 
     function handlePlaceOrder() {
         $('#delivery__method--form input[class=radio__button][name=delivery__method]').change(function () {
@@ -460,7 +480,7 @@
     }
 
     handlePlaceOrder();
-    </c:if>
+    <%--    </c:if>--%>
     $(document).ready(function () {
         // Thiết lập lựa chọn mặc định
         $('input[class=radio__button][name=delivery__method]')[0].checked = true

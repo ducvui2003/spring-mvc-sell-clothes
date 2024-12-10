@@ -1,11 +1,11 @@
-import {getImageProduct} from "../uploadImage.js";
 import {getFeeAndLeadTime} from "../shipping.js";
 import {http} from "../base.js";
 
 $(document).ready(function () {
     // Lấy ra trạng thái đơn hàng chưa xác nhận khi mới vào trang
     let statusId = 1;
-    let totalPrice = 0;
+    const modal = $('#modal');
+
     getOrders(statusId);
     $('.list-group-item-action').click(function () {
         $('.list-group-item-action').removeClass('active');
@@ -14,12 +14,11 @@ $(document).ready(function () {
         getOrders(statusId);
     });
 
-    // Hư
     function getOrders(statusId) {
         http({
-            url: '/api/user/order',
+            url: '/api/user/order/:statusId',
             type: 'GET',
-            data: {
+            pathVariables: {
                 statusId: statusId,
             },
         }).then(function (response) {
@@ -30,7 +29,9 @@ $(document).ready(function () {
     function loadDataToTable(data) {
         const table = $('#orderList tbody');
         table.empty();
-        if (data) return;
+        if (!data) {
+            return;
+        }
         const htmls = data.map(function (order) {
             return `<tr>
                         <td>${order.id}</td>
@@ -43,13 +44,38 @@ $(document).ready(function () {
         addEventViewDetail();
     }
 
-    const modal = $('#modal');
 
     function loadDataModal(order, orderId) {
-        function loadItem(item) {
+        function loadAddress(address) {
+            modal.find("#order__province").text(address.province);
+            modal.find("#order__district").text(address.district);
+            modal.find("#order__ward").text(address.ward);
+            modal.find("#order__detail").text(address.detail);
+        }
+
+        function loadPrice(order) {
+            const temporary = order.items.reduce(function (total, item) {
+                return total + item.price * item.quantity;
+            }, 0);
+            modal.find("#order__temporary").text(formatCurrency(temporary));
+
+            getFeeAndLeadTime(address).then(data => {
+                modal.find("#order__shipping-fee").text(formatCurrency(data.feeShipping));
+                modal.find("#order__lead-date").text(convertUnixToDate(data.leadDate));
+                modal.find("#order__total").text(formatCurrency(temporary + data.feeShipping));
+            })
+        }
+
+        function loadContact(order) {
+            modal.find("#order__name").text(order.fullName ?? "");
+            modal.find("#order__phone").text(order.phone ?? "");
+            modal.find("#order__email").text(order.email ?? "");
+        }
+
+        const htmls = order.items.map(function (item) {
             return `<div class="order__item align-items-center mt-2 row">
                         <div class="item__thumbnail col-2">
-                            <img src="${getImageProduct(item.thumbnail)}" class="rounded border img-thumbnail object-fit-cover" style="width: 100px; height: 100px" alt="...">
+                            <img src="${item.thumbnail}" class="rounded border img-thumbnail object-fit-cover" style="width: 100px; height: 100px" alt="...">
                         </div>
                         <div class="item__detail col-8">
                             <h3 class="h4 item__name pb-1s fw-4">${item.name}</h3>
@@ -63,75 +89,44 @@ $(document).ready(function () {
                             <p class="item__price pb-2 fs-5 fw-bold">Giá: <span>${formatCurrency(item.price)}</span></p>
                             <p class="item__quantity pt-2 fs-6">Số lượng: <span>${item.quantity}</span> cái</p>
                         </div>
-                    </div>`
-        }
-
-        function loadAddress(address) {
-            modal.find("#order__province").text(address.province);
-            modal.find("#order__district").text(address.district);
-            modal.find("#order__ward").text(address.ward);
-            modal.find("#order__detail").text(address.detail);
-        }
-
-        function loadPrice(order) {
-            const temporary = order.items.reduce(function (total, item) {
-                return total + item.price * item.quantity;
-            }, 0);
-            totalPrice += temporary;
-            modal.find("#order__temporary").text(formatCurrency(temporary));
-        }
-
-        function loadContact(order) {
-            modal.find("#order__name").text(order.name ?? "");
-            modal.find("#order__phone").text(order.phone ?? "");
-            modal.find("#order__email").text(order.email ?? "");
-        }
-
-        const htmls = order.items.map(function (item) {
-            return loadItem(item);
+                    </div>`;
         });
         modal.find("#order__id").text(orderId);
-        modal.find("#order__date").text(formatDate(order.dateOrder));
+        modal.find("#order__date").text(order.orderDate);
         modal.find("#order__status").text(order.status ?? 'Chưa xác nhận');
         modal.find("#order__list").html(htmls.join(''));
-        loadAddress(order.address)
-        loadPrice(order);
+
+        const address = {
+            province: order.province,
+            district: order.district,
+            ward: order.ward,
+            detail: order.detail,
+        }
+
+        loadAddress(address)
         loadContact(order);
-        console.log(JSON.stringify(order.address))
-        getFeeAndLeadTime(order.address).then(data => {
-            console.log(data.feeShipping, data.leadDate);
-            totalPrice -= data.feeShipping
-            modal.find("#order__shipping-fee").text(formatCurrency(data.feeShipping));
-            modal.find("#order__lead-date").text(convertUnixToDate(data.leadDate));
-        })
-        modal.find("#order__total").text(formatCurrency(totalPrice))
+        loadPrice(order);
     }
 
     function addEventViewDetail() {
         $('.btn__order-detail').click(function () {
             const orderId = $(this).data('id');
-            $.ajax({
-                url: "/api/user/order/detail",
-                data: {
+            http({
+                url: "/api/user/order/detail/:orderId",
+                pathVariables: {
                     orderId: orderId
                 },
                 type: 'GET',
-                success: function (response) {
-                    const success = response.success;
-                    if (success) {
-                        const data = response.data;
-                        loadDataModal(data, orderId);
-                    } else {
+            }).then((response) => {
+                const success = response.code === 200;
+                if (success) {
+                    const data = response.data;
+                    loadDataModal(data, orderId);
+                } else {
 
-                    }
                 }
             })
         })
-    }
-
-    function formatDate(dateString) {
-        const components = dateString.split('-');
-        return components[2] + '-' + components[1] + '-' + components[0];
     }
 
     function formatCurrency(value) {

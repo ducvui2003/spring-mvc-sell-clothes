@@ -1,5 +1,6 @@
-package com.spring.websellspringmvc.dto;
+package com.spring.websellspringmvc.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class OrderDetailResponseDTO implements Serializable {
+public class OrderDetailResponse implements Serializable {
     private String orderId;
     private String status;
     private String fullName;
@@ -25,6 +26,7 @@ public class OrderDetailResponseDTO implements Serializable {
     private String detail;
     private String payment;
     private String voucherId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date orderDate;
-    List<OrderItemResponseDTO> orderItems;
+    List<OrderDetailItemResponse> items;
 }
