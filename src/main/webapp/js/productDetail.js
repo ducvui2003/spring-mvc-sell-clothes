@@ -52,8 +52,8 @@ $(document).ready(() => {
             productDesc.style.display = "none";
             productReview.style.display = "block";
         }
-        var reviewPara = document.querySelectorAll(".review__para");
-        reviewPara.forEach(function (element) {
+        var reviewParam = document.querySelectorAll(".review__para");
+        reviewParam.forEach(function (element) {
             element.onclick = function () {
                 this.classList.toggle("line-clamp");
             }
@@ -130,10 +130,14 @@ $(document).ready(() => {
                                                                 <a class="view__cart" href="/cart">Xem giỏ hàng và thanh toán</a>
                                                             </div>`;
             $('.cart__wrapper').append(addToCartSuccessHTML)
+            const quantityItemCartElement = $(".qlt__value")
+            const quantityItemCart = parseInt(quantityItemCartElement.text()) || 0;
+            quantityItemCartElement.text(quantityItemCart + 1);
         })
     }
 
     const moreProducts = $("#product-related");
+
     const getMoreProducts = () => {
         $.ajax({
             url: '/api/product/filter?size=4',

@@ -27,7 +27,6 @@
                         </a>
                     </li>
                 </ul>
-                <%--                <c:set var="sessionId" value="${cookie['sessionId'].value}"/>--%>
                 <c:set var="auth" value="${sessionScope.user}"/>
                 <c:choose>
                     <c:when test="${empty auth}"> <!--cta == call to action-->
@@ -54,7 +53,7 @@
                                         </span>
                                     <span class="qlt__swapper">
                                             <span class="qlt__value">
-                                                    ${empty sessionScope.quantity ? sessionScope.quantity : 0}
+                                                    ${empty sessionScope.quantity ? 0: sessionScope.quantity }
                                             </span>
                                         </span>
                                 </a>
