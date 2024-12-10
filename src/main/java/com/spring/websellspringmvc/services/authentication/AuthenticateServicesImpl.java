@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.services.authentication;
 
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
+import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.dto.mvc.request.SignInRequest;
 import com.spring.websellspringmvc.dto.mvc.request.SignUpRequest;
@@ -11,6 +12,7 @@ import com.spring.websellspringmvc.properties.MailProperties;
 import com.spring.websellspringmvc.services.mail.IMailServices;
 import com.spring.websellspringmvc.services.mail.MailResetPasswordServices;
 import com.spring.websellspringmvc.services.mail.MailVerifyServices;
+import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
 import com.spring.websellspringmvc.utils.Token;
 import com.spring.websellspringmvc.utils.Validation;
@@ -35,9 +37,11 @@ import java.util.Optional;
 public class AuthenticateServicesImpl implements AuthenticationService {
     UserDAO userDAO;
     UserMapper userMapper = UserMapper.INSTANCE;
+    CartDAO cartDAO;
+    SessionManager sessionManager;
 
     @Override
-    public User signIn(SignInRequest dto) {
+    public void signIn(SignInRequest dto) {
         User user = userDAO.findByUsername(dto.getUsername(), true);
         if (user == null)
             throw new AppException(new ErrorView(ErrorView.SIGN_IN_FAILED, "user", dto));
@@ -45,8 +49,9 @@ public class AuthenticateServicesImpl implements AuthenticationService {
         String encode = Encoding.getINSTANCE().toSHA1(dto.getPassword());
         if (!user.getPasswordEncoding().equals(encode))
             throw new AppException(ErrorView.SIGN_IN_FAILED);
-
-        return user;
+        int quantityCart = cartDAO.getQuantityCart(user.getId());
+        sessionManager.addUser(user);
+        sessionManager.setQuantityCart(quantityCart);
     }
 
     @Override

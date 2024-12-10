@@ -12,21 +12,6 @@
 <c:import url="/header"/>
 <main class="main">
     <div class="modal_hidden_search__box"></div>
-    <div class="p-5 animate__animated animate__slideInDown" style="position: relative; z-index: 10;">
-        <div class="p-5 search">
-            <form class="form-inline my-2 my-lg-0 d-flex">
-                <input style="z-index: 2;" class="search__inp form-control mr-sm-2 p-3 me-2" type="search"
-                       placeholder="Search"
-                       aria-label="Search" name="keyword">
-                <button class="search__btn btn btn-outline-success my-2 my-sm-0 ps-4 pe-4 hvr-rectangle-out"
-                        type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-                <ul class="search__box shadow"></ul>
-            </form>
-        </div>
-    </div>
-
     <section class="products">
         <div class="container-xl">
             <div class="row ">

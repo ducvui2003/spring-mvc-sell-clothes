@@ -1,14 +1,6 @@
 package com.spring.websellspringmvc.filter;
 
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.models.shoppingCart.ShoppingCart;
-import com.spring.websellspringmvc.session.SessionManager;
-
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 

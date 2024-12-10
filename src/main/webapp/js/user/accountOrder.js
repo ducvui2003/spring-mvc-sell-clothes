@@ -1,5 +1,6 @@
 import {getImageProduct} from "../uploadImage.js";
 import {getFeeAndLeadTime} from "../shipping.js";
+import {http} from "../base.js";
 
 $(document).ready(function () {
     // Lấy ra trạng thái đơn hàng chưa xác nhận khi mới vào trang
@@ -13,22 +14,23 @@ $(document).ready(function () {
         getOrders(statusId);
     });
 
+    // Hư
     function getOrders(statusId) {
-        $.ajax({
+        http({
             url: '/api/user/order',
             type: 'GET',
             data: {
                 statusId: statusId,
             },
-            success: function (response) {
-                loadDataToTable(response.data)
-            }
-        })
+        }).then(function (response) {
+            loadDataToTable(response.data)
+        });
     }
 
     function loadDataToTable(data) {
         const table = $('#orderList tbody');
         table.empty();
+        if (data) return;
         const htmls = data.map(function (order) {
             return `<tr>
                         <td>${order.id}</td>

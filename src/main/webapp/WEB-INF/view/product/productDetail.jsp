@@ -1,4 +1,3 @@
-<%@ page import="java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -12,7 +11,10 @@
     <link rel="stylesheet" href="<c:url value="/assets/css/splide/index.css" />">
     <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/productDetail.css"/>">
+    <meta name="product-id" value="${product.id}"/>
+    <meta name="product-name" value="${product.name}"/>
     <title>${product.name}</title>
+
 </head>
 
 <body>
@@ -47,10 +49,10 @@
                 </div>
                 <div class="offset-1 col-5">
                     <div class="product__info">
-                        <form action="${pageContext.request.contextPath}/api/cart/add" method="post" id="form__product"
+                        <form action="/api/cart/add" method="post" id="form__product"
                               class="product__form">
                             <h1 class="product__name" id="product__name">${product.name}</h1>
-                            <input type="text" hidden="hidden" name="productId" value="${image.id}">
+                            <input type="text" hidden="hidden" name="productId" value="${product.id}">
 
                             <c:forEach var="star" begin="1" end="5">
                                 <c:choose>
@@ -93,7 +95,7 @@
                                         <label class="form__color-check shadow rounded"
                                                style="background-color: ${color.code}">
                                             <input type="radio" name="color" hidden="hidden"
-                                                   value="${color.code}">
+                                                   value="${color.id}">
                                         </label>
                                     </c:forEach>
                                 </div>
@@ -108,7 +110,7 @@
                                     <c:forEach var="size" items="${product.sizes}">
                                         <div class="form__size-item hvr-skew-forward">
                                             <label> <input type="radio" name="size" class="form__radio"
-                                                           hidden="hidden" value="${size.name}"
+                                                           hidden="hidden" value="${size.id}"
                                                            size-price="${size.price}"
                                                            onclick="addSizePrice(this)"/> ${size.name}
                                             </label>
@@ -116,7 +118,8 @@
                                     </c:forEach>
                                 </div>
 
-                                <span class="size__price"></span> <span class="form__error"></span>
+                                <span class="size__price"></span>
+                                <span class="form__error"></span>
                             </div>
 
                             <div class="separate"></div>
@@ -137,12 +140,6 @@
                                     <p class="form__error"></p>
                                 </div>
                             </div>
-                            <%--                            <a href="<c:url value="/showProductOrder?id="/><%=product.getId()%>"--%>
-                            <%--                               type="submit"--%>
-                            <%--                               class="form__submit form__submit--order button text-secondary"--%>
-                            <%--                               data="Đặt may theo số đo">--%>
-                            <%--                            </a>--%>
-
                             <button type="submit" class="form__submit form__submit--add button "
                                     data="Thêm vào giỏ hàng">
                             </button>
@@ -238,7 +235,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <article class="dialog__size-guide"></article>
 <script src="<c:url value="/js/validateForm.js"/>"></script>
-<script src="<c:url value="/js/productDetail.js"/>"></script>
+<script type="module" src="<c:url value="/js/productDetail.js"/>"></script>
 <script type="module" src="<c:url value="/js/slick.js" />"></script>
 </body>
 </html>

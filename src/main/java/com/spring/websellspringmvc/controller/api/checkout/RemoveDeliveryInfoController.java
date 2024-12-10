@@ -3,9 +3,7 @@ package com.spring.websellspringmvc.controller.api.checkout;
 import com.spring.websellspringmvc.models.DeliveryInfo;
 import com.spring.websellspringmvc.models.DeliveryInfoStorage;
 import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.models.shoppingCart.ShoppingCart;
 import com.spring.websellspringmvc.session.SessionManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,15 +26,15 @@ public class RemoveDeliveryInfoController extends HttpServlet {
 
         User user = sessionManager.getUser();
         String userIdCart = String.valueOf(user.getId());
-        ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);
-        if (statusChoice.equals("Đã chọn")) {
-            DeliveryInfo deliveryInfoAuth = deliveryInfoStorage.getDeliveryInfoByKey("defaultDeliveryInfo");
-//            cart.setDeliveryInfo(deliveryInfoAuth);
-            session.setAttribute(userIdCart, cart);
-        }
-
-        session.setAttribute("deliveryInfoStorage", deliveryInfoStorage);
-        response.getWriter().write("Xóa thành công");
+//        ShoppingCart cart = (ShoppingCart) session.getAttribute(userIdCart);
+//        if (statusChoice.equals("Đã chọn")) {
+//            DeliveryInfo deliveryInfoAuth = deliveryInfoStorage.getDeliveryInfoByKey("defaultDeliveryInfo");
+////            cart.setDeliveryInfo(deliveryInfoAuth);
+//            session.setAttribute(userIdCart, cart);
+//        }
+//
+//        session.setAttribute("deliveryInfoStorage", deliveryInfoStorage);
+//        response.getWriter().write("Xóa thành công");
     }
 
     @Override

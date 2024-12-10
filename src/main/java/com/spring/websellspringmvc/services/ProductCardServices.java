@@ -30,7 +30,6 @@ public class ProductCardServices {
     ColorDAO colorDAO;
     CategoryDAO categoryDAO;
     ProductMapper productMapper = ProductMapper.INSTANCE;
-    CloudinaryUploadServices cloudinaryUploadServices;
 
     public List<Category> getAllCategory() {
         return categoryDAO.getAllCategory();
