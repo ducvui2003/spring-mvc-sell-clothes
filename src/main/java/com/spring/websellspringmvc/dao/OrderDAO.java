@@ -1,14 +1,13 @@
 package com.spring.websellspringmvc.dao;
 
+import com.spring.websellspringmvc.dto.request.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
+import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
-import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.BindBeanList;
-import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.customizer.*;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -177,4 +176,30 @@ public interface OrderDAO {
             VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
             """)
     public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
+
+    @SqlQuery("""
+            SELECT id, userId, dateOrder,  paymentMethodId,
+                             fullName, email, phone, address, orderStatusId, transactionStatusId, 
+                             voucherId FROM orders WHERE 1=1
+                             And if(:searchSelect = 'orderId', id LIKE :contentSearch, fullName LIKE :contentSearch)
+                             And if(:paymentMethod != null, paymentMethodId IN (:paymentMethod), 1=1)
+                             And if(:orderStatus != null, orderStatusId IN (:orderStatus), 1=1)
+                             And if(:transactionStatus != null, transactionStatusId IN (:transactionStatus), 1=1)\
+                             And if(:startDate != null AND :endDate != null, dateOrder BETWEEN :startDate AND :endDate, 1=1)
+            """)
+    @RegisterBeanMapper(OrderDatatable.class)
+    public List<OrderDatatable> datatable(@BindBean OrderDatatableRequest request);
+
+    @SqlQuery("""
+            SELECT count(*)
+                             fullName, email, phone, address, orderStatusId, transactionStatusId, 
+                             voucherId FROM orders WHERE 1=1
+                             And if(:searchSelect = 'orderId', id LIKE :contentSearch, fullName LIKE :contentSearch)
+                             And if(:paymentMethod != null, paymentMethodId IN (:paymentMethod), 1=1)
+                             And if(:orderStatus != null, orderStatusId IN (:orderStatus), 1=1)
+                             And if(:transactionStatus != null, transactionStatusId IN (:transactionStatus), 1=1)\
+                             And if(:startDate != null AND :endDate != null, dateOrder BETWEEN startDate AND endDate, 1=1)
+            """)
+    @AllowUnusedBindings(true)
+    long datatableCount(OrderDatatableRequest request);
 }

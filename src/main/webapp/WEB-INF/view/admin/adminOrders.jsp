@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/adminLink"/>
+    <jsp:include page="/WEB-INF/view/common/adminLink.jsp"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
@@ -14,7 +14,7 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
     <c:import url="/common/adminNavigator"/>

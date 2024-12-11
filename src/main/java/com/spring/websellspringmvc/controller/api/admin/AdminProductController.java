@@ -17,7 +17,6 @@ import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.services.ProductService;
 import com.spring.websellspringmvc.services.admin.AdminProductServices;
-import com.spring.websellspringmvc.utils.ProductFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

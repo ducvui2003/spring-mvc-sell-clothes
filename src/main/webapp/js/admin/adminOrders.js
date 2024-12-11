@@ -25,10 +25,12 @@ $(document).ready(function () {
             searching: false,
             ordering: false,
             ajax: {
-                url: "/api/admin/order/search",
+                url: "/api/admin/order/datatable",
+                type: "POST",
+                contentType: "application/json",
                 data: function (d) {
                     d.searchSelect = searchSelect.val();
-                    return d;
+                    return JSON.stringify(d);
                 },
             }, columns: [
                 {data: "id"},
