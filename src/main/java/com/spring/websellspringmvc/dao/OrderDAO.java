@@ -36,7 +36,7 @@ public interface OrderDAO {
             @Bind("endDate") String endDate);
 
 
-    @SqlQuery("SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId FROM orders")
+    @SqlQuery("SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId FROM orders")
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")

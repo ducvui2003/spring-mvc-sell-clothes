@@ -17,29 +17,45 @@ public interface AddressDAO {
 
     @SqlQuery("""
             SELECT id as id,
-            wardName as ward, 
-            districtName as district, 
-            provinceName  as  province, 
+            wardName,
+            districtName,
+            provinceName,
+            provinceId,
+            districtId,
+            wardId,
             detail
-            FROM address WHERE userId = :userId""")
+            FROM address WHERE userId = :userId
+            """)
     public List<Address> getAddress(@Bind("userId") int userId);
 
     @SqlUpdate("""
-            INSERT INTO address (userId, province, district, ward, detail) 
-            VALUES (:userId, :province, :district, :ward, :detail)
+            INSERT INTO address (userId, provinceId, districtId, wardId, detail, provinceName, districtName, wardName) 
+            VALUES (:address.userId, :address.provinceId, :address.districtId, :address.wardId, :address.detail, 
+                    :address.provinceName, :address.districtName, :address.wardName)
             """)
     @GetGeneratedKeys
-    public Integer insertAddress(@BindBean Address address);
+    public int insertAddress(@BindBean("address") Address address);
 
     @SqlUpdate("""
-            UPDATE address SET province = :province, district = :district, ward = :ward, detail = :detail 
-            WHERE userId = :userId AND id = :id
+            UPDATE address 
+            SET provinceId = :address.provinceId, 
+                districtId = :address.districtId, 
+                wardId = :address.wardId, 
+                detail = :address.detail,
+                provinceName = :address.provinceName, 
+                districtName = :address.districtName, 
+                wardName = :address.wardName
+            WHERE userId = :address.userId AND id = :address.id
             """)
-    public void updateAddress(@BindBean Address address);
+    public int updateAddress(@BindBean("address") Address address);
 
-    @SqlUpdate("DELETE FROM address WHERE id = :id")
-    public void deleteAddress(@Bind("addressId") int addressId);
+    @SqlUpdate("DELETE FROM address WHERE id = :addressId AND userId = :userId")
+    public int deleteAddress(@Bind("addressId") int addressId, @Bind("userId") int userId);
 
-    @SqlQuery("SELECT id, province, ward, district, detail FROM address WHERE id = :addressId")
+    @SqlQuery("""
+            SELECT id, provinceId, wardId, districtId, detail, 
+            provinceName, districtName, wardName
+            FROM address WHERE id = :addressId
+            """)
     public List<Address> getAddressById(@Bind("addressId") String addressId);
 }

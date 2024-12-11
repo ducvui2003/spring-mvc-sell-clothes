@@ -22,7 +22,13 @@ server:
     whitelabel:
       enabled: false
     path: /error
-  port: 8080
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:key/keystore.p12
+    key-store-password: 123
+    key-alias: local-https
+    key-store-type: PKCS12
 
 app:
   service:

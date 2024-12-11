@@ -175,3 +175,17 @@ export const configSweetAlert2 = {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
 }
+
+export const formDataToJson = function (form, additionalFields = {}) {
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // Convert FormData to a JSON object
+    const jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Add additional fields to the JSON object
+    return {...jsonObject, ...additionalFields};
+}

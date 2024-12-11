@@ -2,9 +2,9 @@ package com.spring.websellspringmvc.controller.web;
 
 import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
+import com.spring.websellspringmvc.dto.response.AddressResponse;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
-import com.spring.websellspringmvc.models.Address;
-import com.spring.websellspringmvc.services.AddressServices;
+import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +22,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CheckoutController {
-    AddressServices addressServices;
+    AddressServices addressService;
     CheckoutServices checkoutServices;
     SessionManager sessionManager;
 
     @PostMapping("/checkout")
     public ModelAndView checkout(@ModelAttribute("checkout") CheckoutRequest request) {
         int userId = sessionManager.getUser().getId();
-        List<Address> addresses = addressServices.getAddress(userId);
+        List<AddressResponse> addresses = addressService.getAddress(userId);
         List<CartItemResponse> cartItems = checkoutServices.getCarts(request.getCartItemId(), userId);
         ModelAndView mov = new ModelAndView();
         mov.setViewName(ConfigPage.CHECKOUT);

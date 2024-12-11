@@ -4,7 +4,7 @@ import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.CheckoutDAO;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.*;
-import com.spring.websellspringmvc.services.AddressServices;
+import com.spring.websellspringmvc.services.address.AddressServicesImpl;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
@@ -20,7 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CheckoutServicesImpl implements CheckoutServices {
     CheckoutDAO checkoutDAO;
-    AddressServices addressServices;
+    AddressServicesImpl addressServicesImpl;
     CartDAO cartDAO;
     SessionManager sessionManager;
     CloudinaryUploadServices cloudinaryUploadServices;
@@ -52,7 +52,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
     }
 
     public void addNewOrder(int orderId, int userId, String dateOrder, String fullName, String email, String phone, String address, Integer deliveryMethodId, int paymentMethodId, Integer voucherId) {
-        Address adr = addressServices.getAddressById(address);
+        Address adr = addressServicesImpl.getAddressById(address);
         checkoutDAO.addOrder(orderId, userId, dateOrder, fullName, email, phone, adr, deliveryMethodId, paymentMethodId, voucherId);
     }
 

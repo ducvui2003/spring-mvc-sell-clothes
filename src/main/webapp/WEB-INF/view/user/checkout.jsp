@@ -21,7 +21,7 @@
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
                     <div class="row" id="address-list">
                         <c:if test="${not empty requestScope.addresses}">
-                            <c:forEach items="${requestScope.addressss}" var="address" varStatus="status">
+                            <c:forEach items="${requestScope.addresses}" var="address" varStatus="status">
                                 <div class="col-sm-12 mb-3">
                                     <input type="hidden" name="id-address" value="${address.id}"/>
                                     <div class="card">
@@ -29,7 +29,7 @@
                                              onclick="selectCard(this)" style="cursor: pointer">
                                             <input id="card-address" type="hidden" value="${address.id}"/>
                                             <h5 class="card-title">Địa chỉ giao hàng</h5>
-                                            <p class="card-text">${address.exportAddressString()}</p>
+                                            <p class="card-text">${address.detail}, ${address.wardName}, ${address.districtName}, ${address.provinceName}</p>
                                         </div>
                                     </div>
                                 </div>

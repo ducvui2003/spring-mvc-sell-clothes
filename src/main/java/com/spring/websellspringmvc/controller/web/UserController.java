@@ -15,7 +15,9 @@ public class UserController {
             "/"
     })
     public ModelAndView getInfoPage() {
-        return new ModelAndView(PageAddress.USER_INFO.getPage());
+        ModelAndView mov = new ModelAndView();
+        mov.setViewName(PageAddress.USER_INFO.getPage());
+        return mov;
     }
 
     @GetMapping("/security")
