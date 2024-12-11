@@ -1,12 +1,12 @@
 package com.spring.websellspringmvc.services.cart;
 
 import com.spring.websellspringmvc.dto.request.AddCartRequest;
-import com.spring.websellspringmvc.dto.response.CartResponse;
+import com.spring.websellspringmvc.dto.response.CartItemResponse;
 
 import java.util.List;
 
 public interface CartService {
-    List<CartResponse> getCart();
+    List<CartItemResponse> getCart();
 
     void create(AddCartRequest addCartRequest);
 

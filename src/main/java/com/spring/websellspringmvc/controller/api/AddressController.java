@@ -1,23 +1,20 @@
 package com.spring.websellspringmvc.controller.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.AddressRequest;
+import com.spring.websellspringmvc.dto.response.AddressResponse;
 import com.spring.websellspringmvc.models.Address;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.AddressServices;
+import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.session.SessionManager;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,112 +25,42 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AddressController {
-    String ADDRESS_ADD = "create";
-    String ADDRESS_DELETE = "delete";
-    String ADDRESS_UPDATE = "update";
     AddressServices addressServices;
     SessionManager sessionManager;
-    Gson gson = new GsonBuilder().create();
 
     @GetMapping
-    public void getAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ResponseEntity<ApiResponse<List<AddressResponse>>> getAll() {
         int userId = sessionManager.getUser().getId();
-        List<Address> addressList = addressServices.getAddress(userId);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("status", HttpServletResponse.SC_OK);
-        response.setStatus(HttpServletResponse.SC_OK);
-        JsonArray jsonArray = new JsonArray();
-        if (addressList != null)
-            jsonArray = gson.toJsonTree(addressList).getAsJsonArray();
-
-        jsonObject.add("address", jsonArray);
-        response.getWriter().write(gson.toJson(jsonObject));
+        List<AddressResponse> addressList = addressServices.getAddress(userId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Get address", addressList));
     }
 
     @PostMapping
-    public void updateAddress(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String id = request.getParameter("id");
-        String province = request.getParameter("provinceName");
-        String district = request.getParameter("districtName");
-        String ward = request.getParameter("wardName");
-        String detail = request.getParameter("detail");
-        String action = request.getParameter("action");
-        JsonObject jsonObject = new JsonObject();
-        if (province == null || district == null || ward == null || detail == null) {
-            jsonObject.addProperty("status", false);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println(gson.toJson(jsonObject));
-            return;
+    public ResponseEntity<ApiResponse<?>> addAddress(@RequestBody @Valid AddressRequest request) throws URISyntaxException, IOException {
+        int userId = sessionManager.getUser().getId();
+        boolean isValid = addressServices.validate(request);
+        if (!isValid) {
+            throw new AppException(ErrorCode.NOT_VALID);
         }
-
-        try {
-            User user = sessionManager.getUser();
-            Address address = new Address();
-            address.setProvince(province);
-            address.setDistrict(district);
-            address.setWard(ward);
-            address.setDetail(detail);
-            address.setUserId(user.getId());
-            switch (action) {
-                case ADDRESS_ADD:
-                    Integer idAdded = addressServices.insertAddress(address);
-                    jsonObject.addProperty("status", true);
-                    jsonObject.addProperty("id", idAdded);
-                    break;
-                case ADDRESS_UPDATE:
-                    address.setId(Integer.parseInt(id));
-                    addressServices.updateAddress(address);
-                    jsonObject.addProperty("status", true);
-                    break;
-            }
-        } catch (NumberFormatException e) {
-            jsonObject.addProperty("status", false);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println(gson.toJson(jsonObject));
-            return;
-        } catch (URISyntaxException e) {
-            jsonObject.addProperty("status", false);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println(gson.toJson(jsonObject));
-            return;
-        }
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(gson.toJson(jsonObject));
+        addressServices.createAddress(request, userId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Add address", null));
     }
 
-    @PostMapping("/delete")
-    public void deleteVoucher(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        JsonObject jsonObject = new JsonObject();
-        String id = req.getParameter("id");
-        if (id == null) {
-            jsonObject.addProperty("status", false);
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson(jsonObject));
-            return;
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> updateAddress(@RequestBody @Valid AddressRequest request, @PathVariable("id") int addressId) throws IOException, URISyntaxException {
+        int userId = sessionManager.getUser().getId();
+        boolean isValid = addressServices.validate(request);
+        if (!isValid) {
+            throw new AppException(ErrorCode.NOT_VALID);
         }
+        addressServices.updateAddress(request, userId, addressId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Add address", null));
+    }
 
-        try {
-            Integer addressId = Integer.parseInt(id);
-            User user = sessionManager.getUser();
-            if (user == null) {
-                jsonObject.addProperty("status", false);
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.getWriter().write(gson.toJson(jsonObject));
-                return;
-            }
-            if (addressServices.deleteAddress(addressId, user.getId())) {
-                jsonObject.addProperty("status", true);
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write(gson.toJson(jsonObject));
-                return;
-            }
-            jsonObject.addProperty("status", false);
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson(jsonObject));
-        } catch (Exception e) {
-            jsonObject.addProperty("status", false);
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson(jsonObject));
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> deleteVoucher(@PathVariable("id") Integer addressId) {
+        int userId = sessionManager.getUser().getId();
+        addressServices.deleteAddress(addressId, userId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Delete address", null));
     }
 }

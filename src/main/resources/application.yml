@@ -22,7 +22,13 @@ server:
     whitelabel:
       enabled: false
     path: /error
-  port: 8080
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:key/keystore.p12
+    key-store-password: 123
+    key-alias: local-https
+    key-store-type: PKCS12
 
 app:
   service:
@@ -31,7 +37,14 @@ app:
       api-key: 959271713937367
       api-secret: 3tqA0quB3nZGk6o8qdtOVXN6dP0
     delivery:
-      url: https://online-gateway.ghn.vn/shiip/public-api/v2/
+      url: https://online-gateway.ghn.vn/shiip/public-api
+      province-id: 202
+      district-id: 1442
+      ward-code: 20101
+      weight: 500
+      service-type-id: 2
+      shop-id: 4969655
+      token: 015940b9-e810-11ee-b290-0e922fc774da
     map4d:
       url: https://api.map4d.vn/sdk/v2/geocode
       api-key: 508a31b5c17f02ca9530bf6f8110010e

@@ -16,16 +16,16 @@ import java.io.IOException;
 @Slf4j
 @Order(1)
 public class RequestLoggingFilter extends OncePerRequestFilter {
-	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, @Nullable HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		String path = request.getRequestURI();
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request, @Nullable HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String path = request.getRequestURI();
 
-		// Log the request path
-		log.warn("Incoming request path: {} ", path);
+        // Log the request path
+        log.info("Incoming request path: {}, method {}", path, request.getMethod());
 
-		// Continue with the next filter in the chain
-		filterChain.doFilter(request, response);
-	}
+        // Continue with the next filter in the chain
+        filterChain.doFilter(request, response);
+    }
 }

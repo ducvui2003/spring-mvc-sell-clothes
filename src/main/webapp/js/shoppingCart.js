@@ -56,64 +56,100 @@ $(document).ready(function () {
     }
 
     function handlePay() {
-        $('#continue--directional').on('click', function (event) {
-            event.preventDefault()
-
-            let checked = false
-            let data = []
-            const checks = $('.check__pay')
-            checks.each(function () {
-                const check = $(this)
-                const parent = $(this).parents("tr")
-                if (check.prop('checked')) {
-                    if (!checked)
-                        checked = true
-                    let obj = {
-                        id: check.val(),
-                        ind: parent.data("cartProductIndex"),
-                        name: parent.find("a.product__name").text().trim(),
-                        color: parent.find("p.order__color").text().trim(),
-                        size: parent.find("p.order__size--specification").text().trim(),
-                        count: parent.find("input.quality__required").val(),
-                        price: parent.find("td.subtotal__item").text().replace('₫', '').replace('.', '').trim(),
-                        voucher: voucherApply.voucher
-                    }
-                    data.push({
-                        name: check.attr('name'),
-                        value: JSON.stringify(obj),
-                    });
-                }
-            })
-
-            if (checked) {
-                // Đã lựa chọn hàng
-                let formData = $.param(data);
-                let url = this.href
-                $.ajax({
-                    url: url,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: (data) => {
-                        // Ghi lại toàn bộ nội dung của document
-                        document.open();
-                        document.write(data);
-                        history.pushState(null, null, url);
-                        document.close();
-                    },
-                    error: (err) => {
-                        console.log(err)
+        const form = $('#form__checkout');
+        form.validate({
+            submitHandler: function (form) {
+                const checks = $('.check__pay')
+                let checked = false
+                checks.each(function () {
+                    const check = $(this)
+                    const parent = $(this).parents("tr")
+                    if (check.prop('checked')) {
+                        if (!checked)
+                            checked = true
+                        let obj = {
+                            id: check.val(),
+                            ind: parent.data("cartProductIndex"),
+                            name: parent.find("a.product__name").text().trim(),
+                            color: parent.find("p.order__color").text().trim(),
+                            size: parent.find("p.order__size--specification").text().trim(),
+                            count: parent.find("input.quality__required").val(),
+                            price: parent.find("td.subtotal__item").text().replace('₫', '').replace('.', '').trim(),
+                            voucher: voucherApply.voucher
+                        }
                     }
                 })
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Vui lòng lựa chọn món hàng muốn thanh toán",
-                });
+                if (checked) {
+                    return true
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Vui lòng lựa chọn món hàng muốn thanh toán",
+                    });
+                    return false;
+                }
             }
-
         })
+        // form.on('submit', function (event) {
+        //     event.preventDefault()
+        //
+        //     let checked = false
+        //     let data = []
+        //     const checks = $('.check__pay')
+        //     checks.each(function () {
+        //         const check = $(this)
+        //         const parent = $(this).parents("tr")
+        //         if (check.prop('checked')) {
+        //             if (!checked)
+        //                 checked = true
+        //             let obj = {
+        //                 id: check.val(),
+        //                 ind: parent.data("cartProductIndex"),
+        //                 name: parent.find("a.product__name").text().trim(),
+        //                 color: parent.find("p.order__color").text().trim(),
+        //                 size: parent.find("p.order__size--specification").text().trim(),
+        //                 count: parent.find("input.quality__required").val(),
+        //                 price: parent.find("td.subtotal__item").text().replace('₫', '').replace('.', '').trim(),
+        //                 voucher: voucherApply.voucher
+        //             }
+        //             data.push({
+        //                 name: check.attr('name'),
+        //                 value: JSON.stringify(obj),
+        //             });
+        //         }
+        //     })
+        //
+        //     if (checked) {
+        //         // Đã lựa chọn hàng
+        //         let formData = $.param(data);
+        //         let url = this.href
+        //         form.submit()
+        //         // $.ajax({
+        //         //     url: url,
+        //         //     data: formData,
+        //         //     processData: false,
+        //         //     contentType: false,
+        //         //     success: (data) => {
+        //         //         // Ghi lại toàn bộ nội dung của document
+        //         //         document.open();
+        //         //         document.write(data);
+        //         //         history.pushState(null, null, url);
+        //         //         document.close();
+        //         //     },
+        //         //     error: (err) => {
+        //         //         console.log(err)
+        //         //     }
+        //         // })
+        //     } else {
+        //         Swal.fire({
+        //             icon: "error",
+        //             title: "Oops...",
+        //             text: "Vui lòng lựa chọn món hàng muốn thanh toán",
+        //         });
+        //     }
+        //
+        // })
     }
 
     function handleCheckBox() {
@@ -234,7 +270,9 @@ $(document).ready(function () {
 
 
     function applyCodeVoucher() {
-        $('#promotion__form').on('submit', function (event) {
+        const promotionForm = $("#promotion__form");
+        const submitPromotion = promotionForm.find("#promotion_submit")
+        submitPromotion.on('click', function (event) {
             event.preventDefault();
             // Không có sản phẩm chọn để áp dụng mã giảm giá
             const totalItem = $(".cart__item:has(input.check__pay:checked)").length;
@@ -246,9 +284,8 @@ $(document).ready(function () {
                 });
                 return;
             }
-            const promotionForm = $(this);
-            const promotionCodeInput = $(promotionForm).find('#promotion__code')
-            if (promotionCodeInput.val().trim() == "") {
+            const promotionCode = promotionForm.find('#promotion__code')
+            if (promotionCode.val().trim() === "") {
                 Swal.fire({
                     icon: "info",
                     title: "Oops...",
@@ -260,7 +297,7 @@ $(document).ready(function () {
                 url: promotionForm.attr('action'),
                 type: promotionForm.attr('method'),
                 data: {
-                    code: promotionCodeInput.val(),
+                    code: promotionCode.val(),
                     id: getProductListId(),
                 },
                 dataType: 'json',

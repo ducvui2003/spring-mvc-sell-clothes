@@ -1,6 +1,8 @@
 package com.spring.websellspringmvc.controller.api;
 
-import com.spring.websellspringmvc.dto.OrderResponseDTO;
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
@@ -17,10 +19,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -126,13 +127,29 @@ public class UserController {
         return sqlDate;
     }
 
-    @GetMapping("/order")
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int statusId = Integer.parseInt(request.getParameter("statusId"));
+    @GetMapping("/order/{statusId}")
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrder(@PathVariable("statusId") Integer statusId) throws ServletException, IOException {
         User user = sessionManager.getUser();
-        List<OrderResponseDTO> orders = historyService.getOrder(user.getId(), statusId);
-        JSONObject json = new JSONObject();
-        json.put("data", orders);
-        response.getWriter().print(json);
+        List<OrderResponse> orders = historyService.getOrder(user.getId(), statusId);
+        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), "success", orders));
+    }
+
+    @GetMapping("/order/detail/{orderId}")
+    public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") String orderId) throws ServletException, IOException {
+        User user = sessionManager.getUser();
+        int userId = user.getId();
+        OrderDetailResponse orderDetail = historyService.getOrderByOrderId(orderId, userId);
+        if (orderDetail == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<OrderDetailResponse>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Order found")
+                    .build());
+        } else {
+            return ResponseEntity.ok(ApiResponse.<OrderDetailResponse>builder()
+                    .code(HttpServletResponse.SC_OK)
+                    .message("Order found")
+                    .data(orderDetail)
+                    .build());
+        }
     }
 }

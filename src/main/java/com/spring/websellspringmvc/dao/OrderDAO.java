@@ -1,26 +1,26 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.dto.OrderDetailResponseDTO;
-import com.spring.websellspringmvc.dto.OrderItemResponseDTO;
-import com.spring.websellspringmvc.dto.OrderResponseDTO;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.BindBeanList;
 import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public interface OrderDAO {
     @SqlQuery("""
-            SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId,
+            SELECT id, userId, dateOrder,  paymentMethodId,
                              fullName, email, phone, address, orderStatusId, transactionStatusId, 
                              voucherId FROM orders WHERE 1=1
                              And if(:searchSelect = 'orderId', id LIKE :contentSearch, fullName LIKE :contentSearch)
@@ -39,7 +39,7 @@ public interface OrderDAO {
             @Bind("endDate") String endDate);
 
 
-    @SqlQuery("SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId FROM orders")
+    @SqlQuery("SELECT id, userId, dateOrder,  paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId FROM orders")
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
@@ -88,8 +88,8 @@ public interface OrderDAO {
             WHERE orders.orderStatusId = :statusOrder AND orders.userId = :userId 
             GROUP BY order_details.orderId 
             """)
-    @RegisterBeanMapper(OrderResponseDTO.class)
-    public List<OrderResponseDTO> getOrder(@Bind("userId") int userId, @Bind("statusOrder") int statusOrder);
+    @RegisterBeanMapper(OrderResponse.class)
+    public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("statusOrder") int statusOrder);
 
     @SqlQuery("""
             SELECT id,  productId, quantityRequired, price 
@@ -125,18 +125,32 @@ public interface OrderDAO {
             FROM orders JOIN order_details ON orders.id = order_details.orderId 
             WHERE orders.userId = :userId AND orders.orderStatusId = 4 
             AND order_details.id IN (SELECT reviews.orderDetailId FROM reviews) 
-             """)
+            """)
     public List<OrderDetail> getOrderDetailHasReview(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT orders.id, order_statuses.typeStatus, orders.fullName, orders.phone, orders.email, orders.province, orders.district, orders.ward, orders.detail, orders.voucherId, orders.dateOrder AS orderDate 
+            SELECT orders.id, 
+            order_statuses.typeStatus, 
+            orders.fullName, 
+            orders.phone, 
+            orders.email, 
+            orders.province, 
+            orders.district, 
+            orders.ward, orders.detail, orders.voucherId, orders.dateOrder AS orderDate 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
-    public Optional<OrderDetailResponseDTO> getOrderByOrderDetailId(@Bind("orderId") String orderId);
+    @RegisterBeanMapper(OrderDetailResponse.class)
+    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId);
 
     @SqlQuery("""
-            SELECT order_details.productName AS name, order_details.quantityRequired AS quantity, order_details.sizeRequired AS size, order_details.colorRequired AS color, order_details.price AS price, images.nameImage AS thumbnail \\n" +
+            SELECT 
+            order_details.productName AS name, 
+            order_details.quantityRequired AS quantity, 
+            order_details.sizeRequired AS size, 
+            order_details.colorRequired AS color, 
+            order_details.price AS price, 
+            images.nameImage AS thumbnail 
             FROM (
                 SELECT productId, MIN(images.id) AS minImageId 
                 FROM images
@@ -144,8 +158,23 @@ public interface OrderDAO {
                 ) AS minImages
             JOIN images ON images.productId = minImages.productId AND images.id = minImages.minImageId
             JOIN order_details ON order_details.productId = images.productId
-            WHERE order_details.orderId = ?"
+            WHERE order_details.orderId = ?
             """)
-    public List<OrderItemResponseDTO> getOrderDetailsByOrderId(String orderId);
+    @RegisterBeanMapper(OrderDetailItemResponse.class)
+    public List<OrderDetailItemResponse> getOrderDetailsByOrderId(String orderId);
 
+
+    @SqlUpdate("""
+            INSERT INTO orders 
+            (id, userId, dateOrder, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId, fee) 
+            VALUES 
+            (:id, :userId, :dateOrder, :paymentMethodId, :fullName, :email, :phone, :address, :orderStatusId, :transactionStatusId, :voucherId, :fee)
+            """)
+    public int createOrder(@BindBean Order order);
+
+    @SqlBatch("""
+            INSERT INTO order_details (orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price)
+            VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
+            """)
+    public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
 }

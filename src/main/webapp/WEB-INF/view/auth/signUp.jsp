@@ -120,7 +120,8 @@
                 </div>
                 <div class="form__block">
                     <label for="confirm-password" class="form__label">Xác nhận lại mật khẩu</label>
-                    <form:input path="confirmPassword" id="confirm-password" name="confirm-password" type="password" class="form__input"/>
+                    <form:input path="confirmPassword" id="confirm-password" name="confirm-password" type="password"
+                                class="form__input"/>
                     <p class="form__error">
                         <c:if test="${not empty errors['confirmPassword'] != null}">${errors['confirmPassword']}</c:if>
                     </p>

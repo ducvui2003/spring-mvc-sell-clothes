@@ -106,36 +106,58 @@ export const endLoading = () => {
     $.LoadingOverlay("hide");
 }
 
-export const http = ({beforeSend, complete, data = null, ...rest}, automaticLoading = true) => {
+export const http = ({
+                         beforeSend,
+                         complete,
+                         data = null,
+                         contentType = 'application/json',
+                         dataType = 'json',
+                         queryParams = {},
+                         pathVariables = {},
+                         ...rest
+                     }, automaticLoading = true) => {
     return new Promise((resolve, reject) => {
+        let finalUrl = rest.url;
+        if (pathVariables && typeof pathVariables === 'object') {
+            Object.entries(pathVariables).forEach(([key, value]) => {
+                finalUrl = finalUrl.replace(`:${key}`, encodeURIComponent(value));
+            });
+        }
+        // Build the query string if queryParams is provided
+        const queryString = new URLSearchParams(queryParams).toString();
+        // Append query string to the URL if it exists
+        if (queryString) {
+            finalUrl += `${finalUrl.includes('?') ? '&' : '?'}${queryString}`;
+        }
+
         $.ajax({
             ...rest,
+            url: finalUrl, // Use the updated URL with query string
             beforeSend: function (xhr, settings) {
-                if (automaticLoading)
-                    startLoading();
+                if (automaticLoading) startLoading();
                 if (typeof beforeSend === 'function') {
                     beforeSend.call(this, xhr, settings);
                 }
             },
-            data: data === null ? null : JSON.stringify(data),
-            contentType: 'application/json',
-            dataType: "json",
-            success: function (data) {
-                resolve(data);
+            data: data && contentType === 'application/json' ? JSON.stringify(data) : data,
+            dataType,
+            contentType,
+            success: function (response) {
+                resolve(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reject(new Error(`Error: ${textStatus}, ${errorThrown}`));
             },
             complete: function (xhr, status) {
-                if (automaticLoading)
-                    endLoading();
+                if (automaticLoading) endLoading();
                 if (typeof complete === 'function') {
                     complete.call(xhr, status);
                 }
             }
-        })
+        });
     });
-}
+};
+
 
 export const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -152,4 +174,18 @@ export const formatCurrency = (value) => {
 export const configSweetAlert2 = {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
+}
+
+export const formDataToJson = function (form, additionalFields = {}) {
+    // Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // Convert FormData to a JSON object
+    const jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Add additional fields to the JSON object
+    return {...jsonObject, ...additionalFields};
 }

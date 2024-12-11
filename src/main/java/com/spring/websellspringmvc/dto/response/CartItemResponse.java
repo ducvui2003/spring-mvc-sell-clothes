@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartResponse {
+public class CartItemResponse {
     int id;
     int productId;
     String name;

@@ -1,7 +1,5 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt"
            uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -75,9 +73,10 @@
 
     <div class="container-xl">
         <h1 class="cart__title">Giỏ hàng</h1>
-        <div class="cart__container row">
+        <form:form id="form__checkout" class="cart__container row" modelAttribute="checkout" method="post"
+                   action="/checkout">
             <c:choose>
-                <c:when test="${carts.size() == 0}">
+                <c:when test="${requestScope.carts.size() == 0}">
                     <div class="cart__container--empty">
                         <p>Không có sản phẩm nào
                             trong giỏ hàng của
@@ -92,10 +91,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="cart__content col">
-                        <form
-                                class="shopping__cart--form"
-                                action="<c:url value="/api/cart"/>"
-                                method="post">
+                        <div class="shopping__cart--form">
                             <div
                                     class="d-flex w-100 check__header">
                                 <input
@@ -144,15 +140,15 @@
                                 </thead>
                                 <tbody class="cart__items">
                                 <!--Cart-->
-                                <c:forEach var="item" items="${carts}">
+                                <c:forEach var="item" varStatus="status" items="${requestScope.carts}">
                                     <tr class="cart__item"
                                         data-card-item-id="${item.id}"
                                         data-product-id="${item.productId}">
                                         <td class="container__check__pay">
-                                            <input
+                                            <form:checkbox
+                                                    path="cartItemId"
                                                     name="product"
-                                                    value="${item.productId}"
-                                                    type="checkbox"
+                                                    value="${item.id}"
                                                     class="check__pay"/>
                                         </td>
                                         <td class="product__item">
@@ -232,7 +228,7 @@
                                 </c:forEach>
                                 </tbody>
                             </table>
-                        </form>
+                        </div>
                     </div>
                     <div
                             class="invoice__promotion col">
@@ -241,10 +237,7 @@
                                 value="${sessionScope[userIdCart].getTemporaryPrice()}"/>
                         <div class="apply__promotion">
                             <h2>Khuyến mãi </h2>
-                            <form
-                                    id="promotion__form"
-                                <%--                                    action="<c:url value="/api/voucher/apply"/>"--%>
-                                    method="post">
+                            <div id="promotion__form">
                                 <!-- New update template -->
                                 <div class="promotion__all">
                                      <span>
@@ -258,28 +251,25 @@
                                 </div>
                                 <!-- New update template -->
                                 <div>
-                                    <input
-                                            type="hidden"
-                                            name="temporaryPrice"
-                                            value="">
-                                    <input
+                                        <%--                                    <input--%>
+                                        <%--                                            type="hidden"--%>
+                                        <%--                                            name="temporaryPrice"--%>
+                                        <%--                                            value="">--%>
+                                    <form:input
+                                            path="voucher"
                                             type="text"
                                             name="promotionCode"
-                                            id="promotion__code"
-                                            value="" required>
-                                    <button
-                                            type="submit"
-                                            name="action"
-                                            value="applyVoucher"
-                                            id="apply">
+                                            id="promotion__code"/>
+                                    <span
+                                            id="promotion_submit">
                                         Áp dụng
-                                    </button>
+                                    </span>
                                 </div>
                                 <div class="mt-2 w-100 d-block">
                                     <div id="apply__status">
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                         <div
                                 class="summary__invoice">
@@ -325,38 +315,21 @@
                         </div>
                         <div class="group__button--forward">
                             <a id="continue--directional" href="/checkout">
-                                <button id="continue--checkout">
+                                <button type="submit" id="continue--checkout">
                                     Tiến hành thanh toán
                                 </button>
                             </a>
-                            <a href="/product">
-                                <button id="continue--shopping">
-                                    Tiến tục mua sắm
-                                </button>
+                            <a href="/product" id="continue--shopping">
+                                Tiến tục mua sắm
                             </a>
                         </div>
                     </div>
                 </c:otherwise>
             </c:choose>
-        </div>
+        </form:form>
     </div>
 </main>
 <c:import url="/footer"/>
 </body>
-<script src="<c:url value="/js/validateContactForm.js"/>">
-    ValidatorContactForm({
-        form: '#contact_us-form',
-        formBlockSelector: '.form__block',
-        errorSelector: '.error-notice',
-        rules: [
-            ValidatorContactForm.isRequired('#fullname'),
-            ValidatorContactForm.isRequired('#email'),
-            ValidatorContactForm.isEmail('#email')
-        ],
-        onSubmit: function (data) {
-            console.log(data)
-        }
-    });
-</script>
 <script type="module" src="<c:url value="/js/shoppingCart.js" />"></script>
 </html>

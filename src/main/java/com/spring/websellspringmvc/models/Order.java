@@ -17,12 +17,10 @@ public class Order {
       String id;
       int userId;
       Date dateOrder;
-      int deliveryMethodId;
       int paymentMethodId;
       String fullName;
       String email;
       String phone;
-      String address;
       int orderStatusId;
       int transactionStatusId;
       int voucherId;
@@ -31,4 +29,5 @@ public class Order {
       String district;
       String ward;
       String detail;
+      double fee;
 }

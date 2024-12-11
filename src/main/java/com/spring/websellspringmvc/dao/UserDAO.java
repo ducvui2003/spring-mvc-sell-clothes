@@ -75,7 +75,7 @@ public interface UserDAO {
     @SqlQuery("SELECT COUNT(*) count FROM users")
     public long getQuantity();
 
-    @SqlQuery("Select id, username, email, fullName, gender, phone, address, birthDay, role from users limit :limit offset :offset")
+    @SqlQuery("Select id, username, email, fullName, gender, phone, birthDay, role from users limit :limit offset :offset")
     public List<User> getLimit(@Bind("limit") int limit, @Bind("offset") int offset);
 
     @SqlQuery("""

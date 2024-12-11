@@ -3,17 +3,17 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountOrder.css"/>">
-    <jsp:include page="/commonLink"/>
+
     <title>Lịch sử mua hàng</title>
 </head>
 <body>
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="w-100 px-4 mt-4">
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-6">Email</div>
-                                        <div class="text-end col-6" id="order__address"></div>
+                                        <div class="text-end col-6" id="order__email"></div>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                                     <div class="text-end col-6" id="order__ward"></div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-6">Chi tiết</div>
+                                    <div class="col-6">Đường, thị trấn, số nhà,... </div>
                                     <div class="text-end col-6" id="order__detail"></div>
                                 </div>
                             </div>
@@ -189,11 +189,6 @@
 </div>
 </body>
 
-<%--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"--%>
-<%--      integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="--%>
-<%--      crossorigin="anonymous" referrerpolicy="no-referrer"/>--%>
-<%--<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>--%>
-<%--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>--%>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

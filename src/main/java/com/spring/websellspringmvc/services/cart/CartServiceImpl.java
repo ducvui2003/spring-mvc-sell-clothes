@@ -4,7 +4,7 @@ import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dto.request.AddCartRequest;
-import com.spring.websellspringmvc.dto.response.CartResponse;
+import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.CartItem;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.session.SessionManager;
@@ -12,7 +12,6 @@ import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -26,9 +25,9 @@ public class CartServiceImpl implements CartService {
     SessionManager sessionManager;
 
     @Override
-    public List<CartResponse> getCart() {
+    public List<CartItemResponse> getCart() {
         int userId = userManager.getUser().getId();
-        List<CartResponse> carts = cartDAO.getCart(userId).stream().peek(cartResponse -> cartResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), cartResponse.getThumbnail()))).toList();
+        List<CartItemResponse> carts = cartDAO.getCart(userId).stream().peek(cartResponse -> cartResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), cartResponse.getThumbnail()))).toList();
         return carts;
     }
 

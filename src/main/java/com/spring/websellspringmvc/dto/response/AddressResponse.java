@@ -1,24 +1,21 @@
-package com.spring.websellspringmvc.models;
+package com.spring.websellspringmvc.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Address {
+@AllArgsConstructor
+@NoArgsConstructor
+public class AddressResponse {
     Integer id;
-    Integer userId;
-    String wardId;
     String wardName;
-    String districtId;
     String districtName;
-    String provinceId;
     String provinceName;
+    String wardId;
+    String districtId;
+    String provinceId;
     String detail;
 }

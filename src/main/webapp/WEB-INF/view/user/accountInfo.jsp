@@ -4,18 +4,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
-    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <title>Thông tin cá nhân</title>
 </head>
 <body>
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
@@ -196,7 +194,7 @@
      style="background-color: rgba(0,0,0,0.5)">
     <span class='position-absolute top-50 start-50 translate-middle loader'></span>
 </div>
-<c:import url="/footer"/>
+<jsp:include page="/WEB-INF/view/common/footer.jsp"/>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

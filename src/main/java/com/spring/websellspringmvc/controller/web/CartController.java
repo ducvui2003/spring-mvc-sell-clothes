@@ -2,7 +2,8 @@ package com.spring.websellspringmvc.controller.web;
 
 
 import com.spring.websellspringmvc.config.ConfigPage;
-import com.spring.websellspringmvc.dto.response.CartResponse;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.services.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,8 +26,10 @@ public class CartController {
     @GetMapping
     public ModelAndView getCartPage() {
         ModelAndView modelAndView = new ModelAndView(ConfigPage.USER_CART);
-        List<CartResponse> carts = cartService.getCart();
+        List<CartItemResponse> carts = cartService.getCart();
+        CheckoutFormData checkoutFormData = new CheckoutFormData();
         modelAndView.addObject("carts", carts);
+        modelAndView.addObject("checkout", checkoutFormData);
         return modelAndView;
     }
 }
