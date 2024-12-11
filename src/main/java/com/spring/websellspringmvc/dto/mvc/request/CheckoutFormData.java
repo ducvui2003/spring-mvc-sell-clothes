@@ -6,13 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CheckoutRequest {
+public class CheckoutFormData {
     List<Integer> cartItemId;
     String voucher;
+    Integer addressId;
+    String email;
+    String fullName;
+    String phone;
+    Integer paymentMethodId;
 }

@@ -2,7 +2,7 @@ package com.spring.websellspringmvc.controller.web;
 
 
 import com.spring.websellspringmvc.config.ConfigPage;
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.services.cart.CartService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller("cartControllerWeb")
@@ -28,9 +27,9 @@ public class CartController {
     public ModelAndView getCartPage() {
         ModelAndView modelAndView = new ModelAndView(ConfigPage.USER_CART);
         List<CartItemResponse> carts = cartService.getCart();
-        CheckoutRequest checkoutRequest = new CheckoutRequest();
+        CheckoutFormData checkoutFormData = new CheckoutFormData();
         modelAndView.addObject("carts", carts);
-        modelAndView.addObject("checkout", checkoutRequest);
+        modelAndView.addObject("checkout", checkoutFormData);
         return modelAndView;
     }
 }

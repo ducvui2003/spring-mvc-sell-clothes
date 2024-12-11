@@ -26,7 +26,7 @@ public interface AddressDAO {
             detail
             FROM address WHERE userId = :userId
             """)
-    public List<Address> getAddress(@Bind("userId") int userId);
+    public List<Address> getAddressByUserId(@Bind("userId") int userId);
 
     @SqlUpdate("""
             INSERT INTO address (userId, provinceId, districtId, wardId, detail, provinceName, districtName, wardName) 
@@ -57,5 +57,5 @@ public interface AddressDAO {
             provinceName, districtName, wardName
             FROM address WHERE id = :addressId
             """)
-    public List<Address> getAddressById(@Bind("addressId") String addressId);
+    public Address getAddressById(@Bind("addressId") int addressId);
 }

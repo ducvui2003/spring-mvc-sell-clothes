@@ -37,17 +37,10 @@ public class AddressServicesImpl implements AddressServices {
 
     @Override
     public List<AddressResponse> getAddress(int userId) {
-        List<Address> addressList = addressDAO.getAddress(userId);
+        List<Address> addressList = addressDAO.getAddressByUserId(userId);
         if (addressList.isEmpty())
             return null;
         return addressList.stream().map(addressMapper::toAddressResponse).toList();
-    }
-
-    public Address getAddressById(String address) {
-        List<Address> addressList = addressDAO.getAddressById(address);
-        if (addressList.isEmpty())
-            return null;
-        return addressList.get(0);
     }
 
     @Override

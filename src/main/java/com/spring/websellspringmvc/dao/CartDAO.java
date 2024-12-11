@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.CartItem;
+import com.spring.websellspringmvc.models.OrderDetail;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -112,4 +113,31 @@ public interface CartDAO {
             WHERE cart.user_id = :userId
             """)
     public int getQuantityCart(@Bind("userId") int userId);
+
+    @SqlQuery("""
+            SELECT *
+            FROM cart
+            WHERE user_id = :userId
+            AND cart.id IN (<cartItems>)
+            """)
+    public CartItem getCartIdIn(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
+
+
+    @SqlQuery("""
+            SELECT 
+                   c.product_id AS productId,
+                   p.name AS productName,
+                   s.nameSize AS sizeRequired,
+                   co.codeColor AS colorRequired,
+                   c.quantity AS quantityRequired,
+                   (s.sizePrice + IF(p.saleDisable = TRUE, p.salePrice, p.originalPrice)) AS price
+            FROM cart_items c
+                     JOIN products p ON c.product_id = p.id
+                     JOIN sizes s ON c.size_id = s.id
+                     JOIN colors co ON c.color_id = co.id
+            WHERE c.cart_id IN (<cartItems>)
+              AND c.cart_id = :userId
+            """)
+    @RegisterBeanMapper(OrderDetail.class)
+    public List<OrderDetail> getOrderDetailPreparedAdded(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
 }

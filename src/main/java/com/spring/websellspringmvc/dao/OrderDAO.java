@@ -6,7 +6,10 @@ import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.BindBeanList;
 import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
@@ -17,7 +20,7 @@ import java.util.Optional;
 @Repository
 public interface OrderDAO {
     @SqlQuery("""
-            SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId,
+            SELECT id, userId, dateOrder,  paymentMethodId,
                              fullName, email, phone, address, orderStatusId, transactionStatusId, 
                              voucherId FROM orders WHERE 1=1
                              And if(:searchSelect = 'orderId', id LIKE :contentSearch, fullName LIKE :contentSearch)
@@ -36,7 +39,7 @@ public interface OrderDAO {
             @Bind("endDate") String endDate);
 
 
-    @SqlQuery("SELECT id, userId, dateOrder, deliveryMethodId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId FROM orders")
+    @SqlQuery("SELECT id, userId, dateOrder,  paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId FROM orders")
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
@@ -160,4 +163,18 @@ public interface OrderDAO {
     @RegisterBeanMapper(OrderDetailItemResponse.class)
     public List<OrderDetailItemResponse> getOrderDetailsByOrderId(String orderId);
 
+
+    @SqlUpdate("""
+            INSERT INTO orders 
+            (id, userId, dateOrder, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId, fee) 
+            VALUES 
+            (:id, :userId, :dateOrder, :paymentMethodId, :fullName, :email, :phone, :address, :orderStatusId, :transactionStatusId, :voucherId, :fee)
+            """)
+    public int createOrder(@BindBean Order order);
+
+    @SqlBatch("""
+            INSERT INTO order_details (orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price)
+            VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
+            """)
+    public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
 }
