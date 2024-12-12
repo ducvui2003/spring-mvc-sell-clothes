@@ -182,8 +182,36 @@ export const formDataToJson = function (form, additionalFields = {}) {
 
     // Convert FormData to a JSON object
     const jsonObject = {};
+    const elements = form.elements;
+
     formData.forEach((value, key) => {
-        jsonObject[key] = value;
+        const element = elements[key]; // Get the form element by name
+        const type = element?.type || null; // Get the type of the input
+
+        if (type === "checkbox") {
+            // Handle checkboxes
+            if (!jsonObject[key]) {
+                jsonObject[key] = [];
+            }
+            if (element.checked) {
+                jsonObject[key].push(value);
+            }
+        } else if (type === "radio") {
+            // Handle radio buttons
+            if (element.checked) {
+                jsonObject[key] = value;
+            }
+        } else {
+            // Handle other input types
+            if (jsonObject[key]) {
+                if (!Array.isArray(jsonObject[key])) {
+                    jsonObject[key] = [jsonObject[key]];
+                }
+                jsonObject[key].push(value);
+            } else {
+                jsonObject[key] = value;
+            }
+        }
     });
 
     // Add additional fields to the JSON object

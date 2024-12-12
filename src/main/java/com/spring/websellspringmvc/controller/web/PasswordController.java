@@ -1,10 +1,9 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.dto.mvc.request.ForgetPasswordRequest;
 import com.spring.websellspringmvc.dto.mvc.request.ResetPasswordRequest;
-import com.spring.websellspringmvc.services.authentication.AuthenticationService;
 import com.spring.websellspringmvc.services.authentication.PasswordService;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -20,19 +19,18 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PasswordController {
-    AuthenticationService authenticationService;
     PasswordService passwordService;
 
     @GetMapping("/forgetPassword")
     public ModelAndView forgetPassword() {
-        return new ModelAndView(ConfigPage.FORGET_PASSWORD)
+        return new ModelAndView(PageAddress.FORGET_PASSWORD.getPage())
                 .addObject("form", new ForgetPasswordRequest());
     }
 
     @PostMapping("/forgetPassword")
     public ModelAndView forgetPassword(@ModelAttribute("form") ForgetPasswordRequest request) {
         passwordService.forgetPassword(request);
-        return new ModelAndView(ConfigPage.FORGET_PASSWORD)
+        return new ModelAndView(PageAddress.FORGET_PASSWORD.getPage())
                 .addObject("sendMail", "Email đã được gửi đến hộp thư của bạn")
                 .addObject("form", new ForgetPasswordRequest());
     }
@@ -50,13 +48,13 @@ public class PasswordController {
 //                    .addObject("token", tokenResetPassword)
 //                    .addObject("form", ResetPasswordRequest.builder().email(email).build());
 //        } else
-            return new ModelAndView("redirect:/error-404");
+        return new ModelAndView("redirect:/error-404");
     }
 
     @PostMapping("/updatePassword")
     public ModelAndView updatePassword(@ModelAttribute("form") ResetPasswordRequest request) {
         passwordService.resetPassword(request);
-        return new ModelAndView(ConfigPage.RESET_PASSWORD)
+        return new ModelAndView(PageAddress.RESET_PASSWORD.getPage())
                 .addObject("form", new ResetPasswordRequest())
                 .addObject("updateSuccess", "Cập nhập mật khẩu thành công.");
     }

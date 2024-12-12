@@ -5,7 +5,7 @@ import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dto.request.ChangeVisibilityProductRequest;
 import com.spring.websellspringmvc.dto.request.CreateProductRequest;
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;

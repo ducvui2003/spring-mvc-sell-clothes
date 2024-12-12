@@ -1,7 +1,7 @@
 package com.spring.websellspringmvc.services.admin;
 
 import com.spring.websellspringmvc.dao.*;
-import com.spring.websellspringmvc.dto.request.OrderDatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
@@ -52,10 +52,12 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return order;
     }
 
+    @Override
     public List<OrderStatus> getListAllOrderStatus() {
         return orderStatusDao.getListAllOrderStatus();
     }
 
+    @Override
     public List<TransactionStatus> getListAllTransactionStatus() {
         return transactionStatusDao.getListAllTransactionStatus();
     }
@@ -75,7 +77,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     public List<Order> getListOrdersBySearchFilter(String[] paymentMethod, String[] orderStatus, String[] transactionStatus, String contentSearch, String searchSelect, String startDate, String endDate) {
         return orderDAO.getListOrdersBySearchFilter(paymentMethod, orderStatus, transactionStatus, contentSearch, searchSelect, startDate, endDate);
     }
-
+    @Override
     public List<PaymentMethod> getListAllPaymentMethodManage() {
         return orderDAO.getListAllPaymentMethodManage();
     }

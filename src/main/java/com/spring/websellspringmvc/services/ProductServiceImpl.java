@@ -5,7 +5,7 @@ import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dao.*;
 import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.dto.mvc.response.ProductDetailResponse;
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
 import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;

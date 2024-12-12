@@ -1,6 +1,6 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.response.datatable.ProductDatatable;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;

@@ -121,6 +121,8 @@ $(document).ready(function () {
             opens: 'right',
             autoUpdateInput: false,
             showDropdowns: true,
+            startDate: null,
+            endDate: null,
             locale: {
                 cancelLabel: 'Hủy ',
                 applyLabel: 'Chọn',
@@ -128,6 +130,7 @@ $(document).ready(function () {
                 monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
                     'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
                 firstDay: 1,
+                format: 'DD/MM/YYYY',
             }
         });
 
@@ -142,12 +145,21 @@ $(document).ready(function () {
 
     function getDataSearch() {
         const formDataJson = formDataToJson(formSearch[0]);
-        if (formDataJson.createdAt) {
-            const [startDate, endDate] = formDataJson.createdAt.split(" - ");
-            formDataJson.startDate = startDate;
-            formDataJson.endDate = endDate;
+        const picker = createdAt.data('daterangepicker');
+        const startDate = picker?.startDate?.format('YYYY-MM-DD');
+        const endDate = picker?.endDate?.format('YYYY-MM-DD');
+
+        formDataJson.startDate = startDate != 'Invalid date' ? startDate : null;
+        formDataJson.endDate = endDate != 'Invalid date' ? endDate : null;
+        if (formDataJson.createdAt)
             delete formDataJson.createdAt;
+        if (formDataJson.orderStatus) {
+            formDataJson.orderStatus = formDataJson.orderStatus.map(Number);
         }
+        if (formDataJson.paymentMethod) {
+            formDataJson.paymentMethod = formDataJson.paymentMethod.map(Number);
+        }
+
         return formDataJson
     }
 
@@ -155,6 +167,7 @@ $(document).ready(function () {
         formSearch.on("submit", function (e) {
             e.preventDefault();
 
+            console.log(getDataSearch())
 
             datatable.ajax.reload();
 

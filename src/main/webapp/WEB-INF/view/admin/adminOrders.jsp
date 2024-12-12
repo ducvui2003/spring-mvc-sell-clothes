@@ -48,15 +48,15 @@
                         <div class="table__wrapper">
                             <table id="table" class="table">
                                 <thead>
-                                    <tr class="table__row">
-                                        <th class="table__head">#</th>
-                                        <th class="table__head">Ngày tạo</th>
-                                        <th class="table__head">Khách hàng</th>
-                                        <th class="table__head">Phương thức thanh toán</th>
-                                        <th class="table__head">Tình trạng đơn hàng</th>
-                                        <th class="table__head">Xem</th>
-                                        <th class="table__head">Cập nhật</th>
-                                    </tr>
+                                <tr class="table__row">
+                                    <th class="table__head">#</th>
+                                    <th class="table__head">Ngày tạo</th>
+                                    <th class="table__head">Khách hàng</th>
+                                    <th class="table__head">Phương thức thanh toán</th>
+                                    <th class="table__head">Tình trạng đơn hàng</th>
+                                    <th class="table__head">Xem</th>
+                                    <th class="table__head">Cập nhật</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
@@ -110,7 +110,7 @@
                             <h2 class="filler__heading">Phương thức thanh toán</h2>
                             <div class="filter__content">
                                 <c:forEach
-                                        items="${pageContext.servletContext.getAttribute('listAllPaymentMethodManage')}"
+                                        items="${requestScope.paymentMethod}"
                                         var="paymentMethod">
                                     <label class="filter__label check">
                                         <input type="checkbox" name="paymentMethod" id="paymentMethod" hidden="hidden"
@@ -123,7 +123,7 @@
                         <div class="col-4">
                             <h2 class="filler__heading">Tình trạng đơn hàng</h2>
                             <div class="filter__content">
-                                <c:forEach items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}"
+                                <c:forEach items="${requestScope.orderStatus}"
                                            var="orderStatus">
                                     <label class="filter__label check">
                                         <input type="checkbox" name="orderStatus"
@@ -256,7 +256,7 @@
             <div class="col-6">
                 <label class="form-label">Tình trạng đơn hàng</label>
                 <select class="orderStatus" name="orderStatus">
-                    <c:forEach var="item" items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}">
+                    <c:forEach var="item" items="${requestScope.orderStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
@@ -265,7 +265,7 @@
                 <label class="form-label">Tình trạng giao dịch</label>
                 <select class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
-                               items="${pageContext.servletContext.getAttribute('listAllTransactionStatus')}">
+                               items="${requestScope.transactionStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>

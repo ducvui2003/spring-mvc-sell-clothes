@@ -1,12 +1,5 @@
-import {
-    http,
-    objectToQueryString,
-    convertFormDataToObject,
-    configSweetAlert2,
-    startLoading,
-    endLoading
-} from "../base.js";
-import {deleteImage, uploadImage} from "../uploadImage.js";
+import {configSweetAlert2, convertFormDataToObject, endLoading, formDataToJson, http, startLoading} from "../base.js";
+import {uploadImage} from "../uploadImage.js";
 
 $(document).ready(() => {
     // Enable tooltip bootstrap
@@ -54,6 +47,8 @@ $(document).ready(() => {
         serverSide: true,
         page: 1,
         pageLength: 15,
+        scrollY: "300px",
+        scrollCollapse: true,
         lengthChange: false,
         searching: false,
         ordering: false,
@@ -62,8 +57,7 @@ $(document).ready(() => {
             type: "POST",
             contentType: 'application/json',
             data: function (d) {
-                // Modify the data sent by DataTables to be in JSON format
-                return JSON.stringify(d);
+                return JSON.stringify({...d, ...getDataSearch()});
             }
         }, columns: [
             {data: "id"},
@@ -124,7 +118,7 @@ $(document).ready(() => {
         initComplete: function (settings, json) {
             initEventDatatable();
             setupFormSearch();
-            // handleSubmitFormSearch();
+            handleSubmitFormSearch();
             configModal();
             initFileInput();
             initTextEditor();
@@ -250,26 +244,22 @@ $(document).ready(() => {
 
     const table = $('#table');
     const datatable = table.DataTable(configDatatable);
-    const searchForm = $('#form-filter');
+    const formSearch = $('#form-filter');
+
+    function getDataSearch(){
+        const formDataJson = formDataToJson(formSearch[0]);
+        formDataJson.moneyRange = formDataJson.moneyRange.replace(";", '-');
+        return formDataJson;
+    }
 
     function handleSubmitFormSearch() {
-        searchForm.submit(function (e) {
+        formSearch.submit(function (e) {
             e.preventDefault();
-            const formDataArray = $(this).serializeArray();
-            const formDataJson = {};
-            $.each(formDataArray, function () {
-                if (formDataJson[this.name]) {
-                    if (!formDataJson[this.name].push) {
-                        formDataJson[this.name] = [formDataJson[this.name]];
-                    }
-                    formDataJson[this.name].push(this.value || '');
-                } else {
-                    formDataJson[this.name] = this.value || '';
-                }
-            });
-            formDataJson.moneyRange = formDataJson.moneyRange.replace(";", '-');
-            const queryString = objectToQueryString(formDataJson);
-            datatable.ajax.url(`/filterProductAdmin?${queryString}`).load();
+
+            console.log(getDataSearch())
+
+            datatable.ajax.reload()
+
             modalFilter.modal("hide");
             Swal.fire({
                 ...configSweetAlert2,
@@ -673,8 +663,11 @@ $(document).ready(() => {
     // Thực thi xem sản phẩm
     function handleRead(id) {
         http({
-            url: "/api/admin/product/detail/" + id,
+            url: "/api/admin/product/detail/:id",
             type: "GET",
+            pathVariables: {
+                id: id
+            }
         }).then((response) => {
             handleFieldData(response);
         });

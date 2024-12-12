@@ -43,6 +43,7 @@ public interface OrderDAO {
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
+    @RegisterBeanMapper(PaymentMethod.class)
     public List<PaymentMethod> getListAllPaymentMethodManage();
 
     @SqlQuery("SELECT id, typeShipping, description, shippingFee FROM delivery_methods")

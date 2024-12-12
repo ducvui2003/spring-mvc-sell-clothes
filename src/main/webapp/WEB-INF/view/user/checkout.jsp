@@ -29,7 +29,6 @@
                                              data-province="${address.provinceId}"
                                              data-district="${address.districtId}"
                                              data-ward="${address.wardId}">
-                                            >
                                             <h5 class=" card-title">Địa chỉ giao hàng</h5>
                                             <p class="card-text">${address.detail}, ${address.wardName}, ${address.districtName}, ${address.provinceName}</p>
                                         </div>
