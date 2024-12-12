@@ -1,16 +1,10 @@
 package com.spring.websellspringmvc.controller.web;
 
 import com.spring.websellspringmvc.config.ConfigPage;
-import com.spring.websellspringmvc.controller.exception.AppException;
-import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.dto.mvc.request.ForgetPasswordRequest;
 import com.spring.websellspringmvc.dto.mvc.request.ResetPasswordRequest;
-import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.authentication.AuthenticateServicesImpl;
 import com.spring.websellspringmvc.services.authentication.AuthenticationService;
 import com.spring.websellspringmvc.services.authentication.PasswordService;
-import com.spring.websellspringmvc.services.authentication.PasswordServiceImpl;
-import com.spring.websellspringmvc.utils.Validation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;

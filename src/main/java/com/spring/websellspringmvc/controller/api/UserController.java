@@ -142,7 +142,7 @@ public class UserController {
         if (orderDetail == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<OrderDetailResponse>builder()
                     .code(HttpStatus.NOT_FOUND.value())
-                    .message("Order found")
+                    .message("Order not found")
                     .build());
         } else {
             return ResponseEntity.ok(ApiResponse.<OrderDetailResponse>builder()

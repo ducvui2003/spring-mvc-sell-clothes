@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.spring.websellspringmvc.utils.constraint.SearchSelect;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,14 +15,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDatatableRequest extends DatatableRequest {
-    String searchSelect;
+    SearchSelect searchSelect;
     String contentSearch;
     String startDate;
     String endDate;
     @JsonProperty("deliveryMethod[]")
-    String[] paymentMethod;
+    int[] paymentMethod;
     @JsonProperty("orderStatus[]")
-    String[] orderStatus;
+    int[] orderStatus;
     @JsonProperty("transactionStatus[]")
-    String[] transactionStatus;
+    int[] transactionStatus;
 }

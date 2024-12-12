@@ -31,12 +31,6 @@
                                 <i class="fa-solid fa-filter"></i> Bộ lọc
                             </button>
                             <div class="delete__cancel ms-auto">
-                                <form action="<c:url value="/admin/exportExcelOrder"/>" method="POST">
-                                    <button class="btn_export">
-                                        <i class="fa-solid fa-file-export"></i>
-                                        Xuất file excel
-                                    </button>
-                                </form>
                                 <%--                                <div class="delete__wrapper hvr-bounce-out">--%>
                                 <%--                                    <div class="button button__delete">--%>
                                 <%--                                        <i class="fa-solid fa-trash"></i>--%>
@@ -52,17 +46,17 @@
                             </div>
                         </div>
                         <div class="table__wrapper">
-                            <table id="table" class="table table__order">
+                            <table id="table" class="table">
                                 <thead>
-                                <tr class="table__row">
-                                    <th class="table__head">#</th>
-                                    <th class="table__head">Ngày tạo</th>
-                                    <th class="table__head">Khách hàng</th>
-                                    <th class="table__head">Phương thức thanh toán</th>
-                                    <th class="table__head">Tình trạng đơn hàng</th>
-                                    <th class="table__head">Xem</th>
-                                    <th class="table__head">Cập nhật</th>
-                                </tr>
+                                    <tr class="table__row">
+                                        <th class="table__head">#</th>
+                                        <th class="table__head">Ngày tạo</th>
+                                        <th class="table__head">Khách hàng</th>
+                                        <th class="table__head">Phương thức thanh toán</th>
+                                        <th class="table__head">Tình trạng đơn hàng</th>
+                                        <th class="table__head">Xem</th>
+                                        <th class="table__head">Cập nhật</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
@@ -77,8 +71,8 @@
 
 <!--Modal filter-->
 <div class="modal fade" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form id="form-search" action="<c:url value="/api/admin/order/search"/>" class="modal-content">
+    <div class="modal-dialog modal-lg ">
+        <form id="form-search" action="/api/admin/order/search" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lọc và tìm kiếm</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -99,9 +93,9 @@
                         <div class="col-4">
                             <select class="form-select mb-3" id="searchSelect" name="searchSelect"
                                     aria-label="Tìm kiếm theo">
-                                <option value="orderId" selected>Mã đơn hàng
+                                <option value="ORDER_ID" selected>Mã đơn hàng
                                 </option>
-                                <option value="customerName">Tên khách hàng
+                                <option value="CUSTOMER_NAME">Tên khách hàng
                                 </option>
                             </select>
                         </div>
