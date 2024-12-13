@@ -15,6 +15,7 @@ public enum PageAddress {
     USER_INFO("/user/accountInfo"),
     USER_SECURITY("/user/accountSecurity"),
     USER_ORDER("/user/accountOrder"),
+    USER_KEY("/user/accountKey"),
     ADMIN_ORDER("/admin/adminOrders"),
     ADMIN_USER("/admin/adminUsers"),
     ADMIN_REVIEW("/admin/adminReviews"),

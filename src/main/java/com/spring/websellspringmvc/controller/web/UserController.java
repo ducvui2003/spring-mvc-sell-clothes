@@ -29,4 +29,9 @@ public class UserController {
     public ModelAndView getOrderPage() {
         return new ModelAndView(PageAddress.USER_ORDER.getPage());
     }
+
+    @GetMapping("/key")
+    public ModelAndView getKeyPage() {
+        return new ModelAndView(PageAddress.USER_KEY.getPage());
+    }
 }
