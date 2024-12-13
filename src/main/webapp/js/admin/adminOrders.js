@@ -124,6 +124,8 @@ $(document).ready(function () {
             opens: 'right',
             autoUpdateInput: false,
             showDropdowns: true,
+            startDate: null,
+            endDate: null,
             locale: {
                 cancelLabel: 'Hủy ',
                 applyLabel: 'Chọn',
