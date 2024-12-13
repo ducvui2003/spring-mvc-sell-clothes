@@ -37,5 +37,4 @@ public class CheckoutController {
         mov.addObject("addresses", addresses);
         return mov;
     }
-
 }

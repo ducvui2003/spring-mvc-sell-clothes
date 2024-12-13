@@ -325,7 +325,7 @@ label[class="label__selection"] {
     align-items: center;
 }
 
-#delivery__method--form .label__selection span:last-child {
+#delivery__method--form #feeShipping, #delivery__method--form #leadDate{
     font-weight: 600;
     font-size: 20px;
     background-color: var(--blue-color-high);

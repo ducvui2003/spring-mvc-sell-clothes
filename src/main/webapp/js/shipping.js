@@ -58,6 +58,23 @@ async function getFeeAndLeadTime(addressCustomer) {
     // }
 }
 
+async function getFeeAndLeadTimeById(addressCustomer) {
+    // try {
+    const addressShopAPI = await getAddressCode(addressShop);
+
+    const feeShipping = await getFeeShipping(addressShopAPI, addressCustomer);
+    const leadDate = await getLeadDate(addressShopAPI, addressCustomer); // Assuming this function returns a value synchronously
+
+    return {
+        feeShipping: feeShipping,
+        leadDate: leadDate
+    };
+    // } catch (error) {
+    //     console.error(error);
+    //     throw error;
+    // }
+}
+
 
 async function callAPI(url, param) {
     const queryParams = new URLSearchParams(param);
@@ -179,4 +196,5 @@ export {
     getProvince,
     getDistrict,
     getWard,
+    getFeeAndLeadTimeById
 }
