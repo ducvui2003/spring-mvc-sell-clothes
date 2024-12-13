@@ -3,7 +3,8 @@ package com.spring.websellspringmvc.utils.constraint;
 public enum TransactionStatus {
     UN_PAID(1),
     PROCESSING(2),
-    PAID(3);
+    PAID(3),
+    ERROR(4);
 
     private final int value;
 

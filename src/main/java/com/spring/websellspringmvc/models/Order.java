@@ -1,10 +1,12 @@
 package com.spring.websellspringmvc.models;
 
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jdbi.v3.core.enums.EnumByName;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -31,4 +33,8 @@ public class Order {
     String ward;
     String detail;
     double fee;
+
+    @EnumByName
+    PaymentMethod paymentMethod;
+    String paymentRef;
 }

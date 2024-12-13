@@ -121,6 +121,24 @@
                                         nhận xét
                                     </a>
                                 </div>
+                                <span class="product__price">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${product.salePrice == null}">
+                                            <strong class="priority__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </strong>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <strong class="sale__price">
+                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                            </strong>
+                                            <s class="original__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </s>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.dto.mvc.request;
 
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,5 @@ public class CheckoutFormData {
     String email;
     String fullName;
     String phone;
-    Integer paymentMethodId;
+    PaymentMethod paymentMethod;
 }
