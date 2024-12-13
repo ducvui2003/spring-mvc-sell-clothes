@@ -13,57 +13,54 @@
     <title>Quản lý khóa</title>
 </head>
 <body>
-<c:set var="haskey" value="" scope="page"/>
 <c:import url="/header"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
         <div class="row">
             <div class="col-lg-12">
-                <c:if test="${haskey}">
-                    <div class="card mb-4">
-                        <div class="card-header">Thông tin khóa</div>
-                        <div class="card-body">
+
+                <div class="card mb-4">
+                    <div class="card-header">Thông tin khóa</div>
+                    <input type="text" value="" id="hasKey">
+
+                    <div class="card-body">
+                        <c:if test="${empty haskey}">
                             <div class="mb-3">
-                                <label class="small mb-1" for="currentKey">Khóa hiện tại</label>
-                                <textarea class="form-control" name="currentKey" id="currentKey" rows="3"
-                                          placeholder="" disabled></textarea>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="createdDate">Ngày tạo</label>
-                                    <input class="form-control" name="createdDate" id="createdDate" type="text"
-                                           value="" disabled>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="expiredTime">Ngày hết hạn</label>
-                                    <input class="form-control" name="expiredTime" id="expiredTime" type="text"
-                                           value="" disabled>
+                                <div class="alert alert-warning" role="alert">
+                                    <strong>Thông báo:</strong> Hãy cập nhật thông tin khóa của bạn để tiếp tục sử dụng
+                                    dịch vụ!
                                 </div>
                             </div>
+                        </c:if>
+                        <div class="mb-3">
+                            <label class="small mb-1" for="currentKey">Khóa hiện tại</label>
+                            <textarea class="form-control" name="currentKey" id="currentKey" rows="3"
+                                      placeholder="" disabled></textarea>
+                        </div>
 
-                            <div class="d-flex justify-content-start">
-                                <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#updateKeyModal">Cập nhật khóa
-                                </button>
-                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#reportKeyModal">Báo mất khóa
-                                </button>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="createdDate">Ngày tạo</label>
+                                <input class="form-control" name="createdDate" id="createdDate" type="text"
+                                       value="" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="expiredTime">Ngày hết hạn</label>
+                                <input class="form-control" name="expiredTime" id="expiredTime" type="text"
+                                       value="" disabled>
                             </div>
                         </div>
-                    </div>
-                </c:if>
-                <c:if test="${empty haskey}">
-                    <div class="card mb-4">
-                        <div class="card-header">Thông tin khóa</div>
-                        <div class="card-body">
+                        <div class="d-flex justify-content-start">
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#updateKeyModal">Cập nhật khóa
+                                    data-bs-target="#addKeyModal">Cập nhật khóa
+                            </button>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#reportKeyModal">Báo mất khóa
                             </button>
                         </div>
                     </div>
-                </c:if>
+                </div>
             </div>
         </div>
         <div class="row mt-4">
@@ -125,11 +122,11 @@
     </div>
 </div>
 
-<%--Update key modal--%>
-<div class="modal fade text-black" id="updateKeyModal" tabindex="-1" aria-labelledby="staticBackdropLabel"
+<%--Add key modal--%>
+<div class="modal fade text-black" id="addKeyModal" tabindex="-1" aria-labelledby="staticBackdropLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="max-width: 80%">
-        <form id="form-update-key" class="modal-content">
+        <form id="form-add-key" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Thêm khóa mới</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -157,11 +154,11 @@
 
                 <div class="row gx-3 mb-3 mt-2">
                     <div class="mb-3">
-                        <label class="small mb-1" for="newKey">Khóa mới</label>
-                        <textarea class="form-control" name="newKey" id="newKey" rows="3"
-                                  placeholder="Dán khóa công khai của bạn tại đây!">
-
-                        </textarea>
+                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>
+                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"
+                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>
+                        <div class="valid-feedback">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

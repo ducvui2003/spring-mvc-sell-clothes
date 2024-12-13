@@ -152,4 +152,24 @@ public class UserController {
                     .build());
         }
     }
+
+    @GetMapping("/add-key")
+    public ResponseEntity<ApiResponse<String>> addKey(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String key = request.getParameter("newKey");
+
+        if (key == null || key.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Key is empty")
+                    .build());
+        }
+
+        // Xử lý logic thêm key (giả sử thành công)
+        // Cập nhật logic lưu khóa vào database hoặc các bước cần thiết khác tại đây.
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(HttpServletResponse.SC_OK)
+                .message("Key added successfully")
+                .data(key)
+                .build());
+    }
 }

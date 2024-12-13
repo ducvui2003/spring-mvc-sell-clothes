@@ -1,5 +1,5 @@
-import {alert} from "../notify";
-import {addSpinner, cancelSpinner} from "../spinner";
+import {alert} from "../notify.js";
+import {addSpinner, cancelSpinner} from "../spinner.js";
 import {formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
@@ -14,17 +14,14 @@ $(document).ready(function () {
 
     // Validate update key form
     const uploadKey = $("#uploadKey");
-    const newPublicKey = $("#newPublicKey");
-    const newPrivateKey = $("#newPrivateKey");
-    const formUpdateKey = $("#form-update-key");
+    const inputNewKey = $("#inputNewKey");
+    const formAddKey = $("#form-add-key");
 
     // Form validation for Update Key
-    formUpdateKey.validate({
+    formAddKey.validate({
         rules: {
-            uploadKey: {
+            inputNewKey: {
                 required: true,
-                singleFile: true,
-                extension: "key"
             },
         },
         messages: {
@@ -33,26 +30,32 @@ $(document).ready(function () {
                 singleFile: "Vui lòng chọn 1 file duy nhất.",
                 extension: "File phải có định dạng .key."
             },
+            inputNewKey: {
+                required: "Vui lòng nhập khóa."
+            }
         },
         validClass: 'is-valid',
         errorClass: 'is-invalid',
         errorPlacement: function (error, element) {
-            $(element).after(error); // Place error message after the element
+            $(element).next().text(error.text());
         },
         highlight: function (element, errorClass, validClass) {
-            $(element).addClass(errorClass).removeClass(validClass);
+            $(element).addClass(errorClass).removeClass(validClass).attr('required', 'required');
+            $(element).next().addClass("invalid-feedback");
         },
         unhighlight: function (element, errorClass, validClass) {
-            $(element).removeClass(errorClass).addClass(validClass);
+            $(element).removeClass(errorClass).addClass(validClass).removeAttr('required');
+            $(element).next().text("");
         },
         submitHandler: function (form) {
             const formData = new FormData(form);
-            formData.append("newPublicKey", newPublicKey.text());
-            formData.append("newPrivateKey", newPrivateKey.text());
+            formData.append("newKey", inputNewKey.val());
+
+            $("#hasKey").text(inputNewKey.val());
 
             $.ajax({
-                url: "/api/user/update-key",
-                type: "POST",
+                url: "/api/user/add-key",
+                type: "GET",
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -65,17 +68,22 @@ $(document).ready(function () {
                         text: "Khóa đã được cập nhập",
                         icon: "success"
                     });
+                    // Cập nhật UI nếu cần
+                    $("#hasKey").text("Hello");
+                    $("#currentKey").text($("#hasKey").text());
+
                 },
                 error: function (xhr, status, error) {
+                    console.log("Hien thi input:    ",formData.get("newKey"));
                     Swal.fire({
                         title: "Lỗi!",
-                        text: "Khóa không cập nhập thành công",
+                        text: "Khóa không cập nhập thành công " + status,
                         icon: "error"
                     });
                 },
                 complete: function () {
                     cancelSpinner();
-                }
+                },
             });
             return false;
         }
@@ -88,11 +96,11 @@ $(document).ready(function () {
             const reader = new FileReader();
             reader.onload = function (e) {
                 const lines = e.target.result.split('\n');
-                newPublicKey.text(lines[0]);
-                newPrivateKey.text(lines[1]);
+                inputNewKey.text(lines[0]);
             }
             reader.readAsText(file);
         }
     });
+
 
 });
