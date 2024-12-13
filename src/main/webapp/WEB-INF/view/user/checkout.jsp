@@ -130,7 +130,7 @@
                             <tbody class="order__list">
 
                             <c:forEach var="item" items="${requestScope.cartItems}">
-                                <input type="checkbox" name="cartItem" hidden="hidden" value="${item.id}" checked/>
+                                <input type="checkbox" name="cartItemId" hidden="hidden" value="${item.id}" checked/>
                             </c:forEach>
                             <c:forEach var="item" items="${requestScope.cartItems}">
                                 <tr class="row__content">

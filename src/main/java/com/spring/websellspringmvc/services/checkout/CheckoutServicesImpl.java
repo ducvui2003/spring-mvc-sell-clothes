@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dao.AddressDAO;
 import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.CheckoutDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
+import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.*;
@@ -108,7 +109,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
         String orderId = UUID.randomUUID().toString();
         order.setId(orderId);
-        orderDAO.createOrder(order);
+        orderDAO.createOrder(order, address.getId());
         createOrderDetail(request.getCartItemId(), orderId, userId);
 
         return orderId;
@@ -117,11 +118,11 @@ public class CheckoutServicesImpl implements CheckoutServices {
     private void createOrderDetail(List<Integer> cartItems, String orderId, Integer userId) {
         List<OrderDetail> orderDetails = cartDAO.getOrderDetailPreparedAdded(cartItems, userId);
         orderDetails.forEach(orderDetail -> orderDetail.setOrderId(orderId));
-        orderDAO.createOrderDetails(orderDetails);
+        orderDAO.createOrderDetails(orderId, orderDetails.toArray(new OrderDetail[0]));
     }
 
     private double getFeeShipping(String provinceId, String districtId, String wardCode) {
-        GiaoHangNhanhFeeResponse response = giaoHangNhanhHttp.getFee(
+        ApiResponse<GiaoHangNhanhFeeResponse> response = giaoHangNhanhHttp.getFee(
                 token,
                 shopId,
                 provinceIdShop,
@@ -133,11 +134,11 @@ public class CheckoutServicesImpl implements CheckoutServices {
                 weight,
                 serviceTypeId
         );
-        return response.getTotal();
+        return response.getData().getTotal();
     }
 
     private int getLeadTime(String provinceId, String districtId, String wardCode) {
-        GiaoHangNhanhLeadDayResponse response = giaoHangNhanhHttp.getLeadTime(
+        ApiResponse<GiaoHangNhanhLeadDayResponse> response = giaoHangNhanhHttp.getLeadTime(
                 token,
                 shopId,
                 provinceIdShop,
@@ -149,6 +150,6 @@ public class CheckoutServicesImpl implements CheckoutServices {
                 weight,
                 serviceTypeId
         );
-        return response.getLeadTime();
+        return response.getData().getLeadTime();
     }
 }

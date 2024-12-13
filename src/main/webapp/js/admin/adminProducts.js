@@ -32,7 +32,7 @@ $(document).ready(() => {
     let pond;//trình thêm ảnh
 
     const table = $('#table');
-    const datatable = table.DataTable(configDatatable);
+
     const formSearch = $('#form-filter');
     let startDate = null;
     let endDate = null;
@@ -131,6 +131,7 @@ $(document).ready(() => {
             initTextEditor();
         }
     }
+    const datatable = table.DataTable(configDatatable);
 
     function initEventDatatable() {
         table.find("tbody").on('click', 'button', function (e) {

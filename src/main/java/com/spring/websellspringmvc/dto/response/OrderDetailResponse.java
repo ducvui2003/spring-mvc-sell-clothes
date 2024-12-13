@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,7 @@ public class OrderDetailResponse implements Serializable {
     String detail;
     String payment;
     String voucherId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    Date dateOrder;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
+    LocalDateTime dateOrder;
     List<OrderDetailItemResponse> items;
 }

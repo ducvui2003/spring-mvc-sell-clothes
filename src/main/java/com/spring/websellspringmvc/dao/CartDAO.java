@@ -131,12 +131,12 @@ public interface CartDAO {
                    co.codeColor AS colorRequired,
                    c.quantity AS quantityRequired,
                    (s.sizePrice + IF(p.saleDisable = TRUE, p.salePrice, p.originalPrice)) AS price
-            FROM cart_items c
+            FROM cart_items c JOIN cart ON cart.id = c.cart_id
                      JOIN products p ON c.product_id = p.id
                      JOIN sizes s ON c.size_id = s.id
                      JOIN colors co ON c.color_id = co.id
-            WHERE c.cart_id IN (<cartItems>)
-              AND c.cart_id = :userId
+            WHERE c.id IN (<cartItems>)
+              AND cart.user_id = :userId
             """)
     @RegisterBeanMapper(OrderDetail.class)
     public List<OrderDetail> getOrderDetailPreparedAdded(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);

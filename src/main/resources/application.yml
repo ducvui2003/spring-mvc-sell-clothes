@@ -72,9 +72,13 @@ logging:
         websellspringmvc:
           services:
             http: DEBUG
-
-feign :
+feign:
   client:
     config:
-      default:
-        loggerLevel: FULL
+      com:
+        spring:
+          websellspringmvc:
+            services:
+              http:
+                giaoHangNhanh:
+                  loggerLevel: DEBUG

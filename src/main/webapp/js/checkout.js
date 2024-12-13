@@ -373,7 +373,7 @@ $(document).ready(() => {
             const data = formDataToJson(form)
             data.addressId = Number(data.addressId)
             data.paymentMethodId = Number(data.paymentMethodId)
-            data.cartItem = data.cartItem.map(Number)
+            data.cartItemId = data.cartItemId.map(Number)
             console.log(data)
             Swal.fire({
                 title: "Bạn có đã chắc chắn với các thông tin đơn hàng cung cấp?",
@@ -388,11 +388,20 @@ $(document).ready(() => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     http({
-                        url:"/api/checkout",
+                        url: "/api/checkout",
                         method: "POST",
                         data: data,
-                    }).then((response)=>{
-
+                    }).then((response) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đặt hàng thành công!',
+                        })
+                    }).catch((error) => {
+                        console.log(error)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đặt hàng thất bại!',
+                        })
                     });
                 }
             });

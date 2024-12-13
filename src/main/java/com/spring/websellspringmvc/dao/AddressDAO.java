@@ -53,7 +53,7 @@ public interface AddressDAO {
     public int deleteAddress(@Bind("addressId") int addressId, @Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT id, provinceId, wardId, districtId, detail, 
+            SELECT id, userId, provinceId, wardId, districtId, detail
             provinceName, districtName, wardName
             FROM address WHERE id = :addressId
             """)

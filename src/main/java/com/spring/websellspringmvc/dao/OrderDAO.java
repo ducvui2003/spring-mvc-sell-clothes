@@ -9,9 +9,11 @@ import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.transaction.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -166,18 +168,34 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders 
-            (id, userId, dateOrder, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId, fee) 
-            VALUES 
-            (:id, :userId, :dateOrder, :paymentMethodId, :fullName, :email, :phone, :address, :orderStatusId, :transactionStatusId, :voucherId, :fee)
+            INSERT INTO orders (id, userId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+                                fee, province, district, ward, detail)
+            SELECT :order.id,
+                    :order.userId,
+                   :order.paymentMethodId,
+                   :order.fullName,
+                   :order.email,
+                   :order.phone,
+                   :order.orderStatusId,
+                   :order.transactionStatusId,
+                   :order.voucherId,
+                   :order.fee,
+                   a.provinceName,
+                   a.districtName,
+                   a.wardName,
+                   a.detail
+            FROM address a
+            WHERE a.id = :addressId AND a.userId = :order.userId
             """)
-    public int createOrder(@BindBean Order order);
+    public void createOrder(@BindBean("order") Order order, @Bind("addressId") int addressId);
 
     @SqlBatch("""
             INSERT INTO order_details (orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price)
-            VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
+            VALUES (:orderId, :orderDetail.productId, :orderDetail.productName, :orderDetail.sizeRequired, :orderDetail.colorRequired, :orderDetail.quantityRequired, :orderDetail.price)
             """)
-    public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
+    public void createOrderDetails(
+            @Bind("orderId") String orderId,
+            @BindBean("orderDetail") OrderDetail... orderDetails);
 
     @SqlQuery("""
             SELECT orders.id as orderId,
