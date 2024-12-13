@@ -12,14 +12,15 @@ import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhFeeRespon
 import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhHttp;
 import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhLeadDayResponse;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
+import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -93,8 +94,8 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setFullName(request.getFullName());
         order.setEmail(request.getEmail());
         order.setPhone(request.getPhone());
-        order.setOrderStatusId(1);
-        order.setTransactionStatusId(1);
+        order.setOrderStatusId(OrderStatus.PENDING.getValue());
+        order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
 
         Address address = addressDAO.getAddressById(request.getAddressId());
         order.setProvince(address.getProvinceName());
@@ -102,7 +103,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setWard(address.getWardName());
         order.setDetail(address.getDetail());
 
-        double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardName());
+        double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
         order.setFee(fee);
 
         String orderId = UUID.randomUUID().toString();

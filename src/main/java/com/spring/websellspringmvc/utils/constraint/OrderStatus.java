@@ -1,6 +1,6 @@
-package com.spring.websellspringmvc.services.state;
+package com.spring.websellspringmvc.utils.constraint;
 
-public enum OrderState {
+public enum OrderStatus {
     PENDING(1),
     CONFIRMED(2),
     DELIVERY(3),
@@ -9,7 +9,7 @@ public enum OrderState {
 
     private final int value;
 
-    OrderState(int value) {
+    OrderStatus(int value) {
         this.value = value;
     }
 
@@ -17,8 +17,8 @@ public enum OrderState {
         return value;
     }
 
-    public static OrderState getByValue(int value) {
-        for (OrderState state : OrderState.values()) {
+    public static OrderStatus getByValue(int value) {
+        for (OrderStatus state : OrderStatus.values()) {
             if (state.getValue() == value) {
                 return state;
             }

@@ -375,7 +375,27 @@ $(document).ready(() => {
             data.paymentMethodId = Number(data.paymentMethodId)
             data.cartItem = data.cartItem.map(Number)
             console.log(data)
+            Swal.fire({
+                title: "Bạn có đã chắc chắn với các thông tin đơn hàng cung cấp?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                denyButtonColor: "#d33",
+                showDenyButton: true,
+                denyButtonText: "Kiểm tra lại thông tin",
+                confirmButtonText: "Tiến hành đặt hàng"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    http({
+                        url:"/api/checkout",
+                        method: "POST",
+                        data: data,
+                    }).then((response)=>{
 
+                    });
+                }
+            });
 
             // Ngăn việc reload page khi submit form
             return false;
