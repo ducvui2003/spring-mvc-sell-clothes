@@ -24,9 +24,9 @@
                          data-status="1">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="2">
-                        <i class="fa-solid fa-spinner me-3"></i> Đang sản xuất
-                    </div>
+                    <%--                    <div class="py-3 list-group-item list-group-item-action" data-status="2">--%>
+                    <%--                        <i class="fa-solid fa-spinner me-3"></i> Đang sản xuất--%>
+                    <%--                    </div>--%>
                     <div class="py-3 list-group-item list-group-item-action" data-status="3">
                         <i class="fa-solid fa-truck me-3"></i>Đang vận chuyển
                     </div>
@@ -152,30 +152,32 @@
                                     <div class="text-end col-6" id="order__ward"></div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-6">Đường, thị trấn, số nhà,... </div>
+                                    <div class="col-6">Đường, thị trấn, số nhà,...</div>
                                     <div class="text-end col-6" id="order__detail"></div>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <p class="fs-5 text-bold">Tổng tiền</p>
-                                <div class="row mt-3">
-                                    <div class="col-6">Tạm tính</div>
-                                    <div class="col-6 text-end" id="order__temporary"></div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-6">Giảm giá</div>
-                                    <div class="text-end col-6" id="order__voucher"></div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-6">Vận chuyển</div>
-                                    <div class="text-end col-6" id="order__shipping-fee"></div>
-                                </div>
-                                <hr class=" my-2">
-                                <div class="row ">
-                                    <p class="fs-5 text-bold col-6">Tổng cộng</p>
-                                    <div class="text-end text-bold col-6" id="order__total">$123</div>
-                                </div>
-
+                            </div>
+                        </div>
+                        <hr class="border border-1 opacity-75 my-4">
+                        <div class="col">
+                            <p class="fs-5 text-bold">Tổng tiền</p>
+                            <div class="row mt-3">
+                                <div class="col-6">Tạm tính</div>
+                                <div class="col-6 text-end" id="order__temporary"></div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">Giảm giá</div>
+                                <div class="text-end col-6" id="order__voucher"></div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">Vận chuyển</div>
+                                <div class="text-end col-6" id="order__shipping-fee"></div>
+                            </div>
+                            <hr class=" my-2">
+                            <div class="row ">
+                                <p class="fs-5 text-bold col-6">Tổng cộng</p>
+                                <div class="text-end text-bold col-6" id="order__total">$123</div>
                             </div>
                         </div>
                     </div>

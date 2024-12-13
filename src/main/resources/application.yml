@@ -4,10 +4,10 @@ spring:
   profiles:
     default: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: jdbc:mysql://localhost:3306/ltw
+    url: jdbc:mysql://localhost:3306/atbm
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: 123
+    password: 12345
   jpa:
     hibernate:
       ddl-auto: update

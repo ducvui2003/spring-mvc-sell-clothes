@@ -87,7 +87,7 @@ $(document).ready(function () {
                         </div>
                         <div class="col-2">
                             <p class="item__price pb-2 fs-5 fw-bold">Giá: <span>${formatCurrency(item.price)}</span></p>
-                            <p class="item__quantity pt-2 fs-6">Số lượng: <span>${item.quantity}</span> cái</p>
+                            <p class="item__quantity pt-2 fs-6">Số lượng: <span>${item.quantity}</span> </p>
                         </div>
                     </div>`;
         });
