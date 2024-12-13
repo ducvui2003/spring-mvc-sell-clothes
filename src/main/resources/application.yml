@@ -67,3 +67,18 @@ logging:
   level:
     feign:
       Client=DEBUG: DEBUG
+    com:
+      spring:
+        websellspringmvc:
+          services:
+            http: DEBUG
+feign:
+  client:
+    config:
+      com:
+        spring:
+          websellspringmvc:
+            services:
+              http:
+                giaoHangNhanh:
+                  loggerLevel: DEBUG

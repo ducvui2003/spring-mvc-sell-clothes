@@ -18,8 +18,6 @@ public interface OrderDetailDAO {
     @SqlQuery("SELECT orderId,productId, productName, sizeRequired, colorRequired, quantityRequired, price FROM order_details WHERE id = :id")
     public List<OrderDetail> getOrderDetailById(@Bind("id") int id);
 
-    @SqlQuery("SELECT id, orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price FROM order_details WHERE orderId = :orderId")
-    public List<OrderDetail> getListOrderDetailByOrderId(@Bind("orderId") String orderId);
 
     @SqlUpdate("DELETE FROM order_details WHERE orderId IN (<orderIds>)")
     public void removeOrderDetailByMultipleOrderId(@BindList("orderIds") String[] orderIds);
@@ -32,4 +30,10 @@ public interface OrderDetailDAO {
             """)
     @RegisterBeanMapper(User.class)
     public Optional<User> getUserByIdProductDetail(@Bind("orderDetailId") int orderDetailId);
+
+    @SqlQuery(""" 
+            SELECT id, orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price 
+            FROM order_details WHERE orderId = :orderId 
+            """)
+    public List<OrderDetail> getListOrderDetailByOrderId(@Bind("orderId") String orderId);
 }

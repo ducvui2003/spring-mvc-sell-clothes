@@ -15,7 +15,7 @@
 <main id="main">
     <div class="container-xl">
         <h1 class="checkout__title">Thanh toán</h1>
-        <form:form class="checkout__container row" method="post" modelAttribute="checkout">
+        <form:form class="checkout__container row" id="form"  modelAttribute="checkout">
             <div class="col-6">
                 <div class="delivery__info--container">
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
@@ -24,15 +24,19 @@
                             <c:forEach items="${requestScope.addresses}" var="address" varStatus="status">
                                 <div class="col-sm-12 mb-3">
                                     <div class="card">
-                                        <div class="card-body focus__address <c:if test="${status.first}">selected</c:if>"
-                                             onclick="selectCard(this)" style="cursor: pointer"
-                                             data-province="${address.provinceId}"
-                                             data-district="${address.districtId}"
-                                             data-ward="${address.wardId}">
-                                            >
-                                            <h5 class=" card-title">Địa chỉ giao hàng</h5>
-                                            <p class="card-text">${address.detail}, ${address.wardName}, ${address.districtName}, ${address.provinceName}</p>
-                                        </div>
+                                        <label class="card-body focus__address <c:if test="${status.first}">selected</c:if>"
+                                               onclick="selectCard(this)" style="cursor: pointer"
+                                        >
+                                            <span class=" card-title fs-5 fs-bold">Địa chỉ giao hàng</span>
+                                            <span class="card-tex d-block mt-2">${address.detail}, ${address.wardName}, ${address.districtName}, ${address.provinceName}</span>
+                                            <input type="radio" name="addressId" ${status.first ? 'checked' : ''}
+                                                   value="${address.id}" hidden="hidden"
+                                                   data-province="${address.provinceId}"
+                                                   data-district="${address.districtId}"
+                                                   data-ward="${address.wardId}"
+                                            />
+                                        </label>
+
                                     </div>
                                 </div>
                             </c:forEach>
@@ -50,8 +54,11 @@
                             <div class="method__item section__info--selection">
                                 <label class="label__selection">
                                     <span>Giao hàng nhanh</span>
-                                    <span>
-                                        Giá tiền
+                                    <span id="feeShipping">
+                                       ...
+                                        </span>
+                                    <span id="leadDate">
+                                    ...
                                         </span>
                                 </label>
                             </div>
@@ -121,6 +128,10 @@
                             </tr>
                             </thead>
                             <tbody class="order__list">
+
+                            <c:forEach var="item" items="${requestScope.cartItems}">
+                                <input type="checkbox" name="cartItemId" hidden="hidden" value="${item.id}" checked/>
+                            </c:forEach>
                             <c:forEach var="item" items="${requestScope.cartItems}">
                                 <tr class="row__content">
                                     <td class="td__item">

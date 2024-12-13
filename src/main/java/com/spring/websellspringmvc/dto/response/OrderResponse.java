@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
 public class OrderResponse {
     private String id;
     private int quantity;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date dateOrder;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
+    private LocalDateTime dateOrder;
 }

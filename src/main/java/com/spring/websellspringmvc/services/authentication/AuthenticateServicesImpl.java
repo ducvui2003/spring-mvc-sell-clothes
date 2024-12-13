@@ -10,12 +10,10 @@ import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.MailProperties;
 import com.spring.websellspringmvc.services.mail.IMailServices;
-import com.spring.websellspringmvc.services.mail.MailResetPasswordServices;
 import com.spring.websellspringmvc.services.mail.MailVerifyServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
 import com.spring.websellspringmvc.utils.Token;
-import com.spring.websellspringmvc.utils.Validation;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j

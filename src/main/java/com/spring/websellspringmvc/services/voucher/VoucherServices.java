@@ -1,7 +1,7 @@
 package com.spring.websellspringmvc.services.voucher;
 
 import com.spring.websellspringmvc.dao.VoucherDAO;
-import com.spring.websellspringmvc.dto.VoucherDetailRequest;
+import com.spring.websellspringmvc.dto.request.VoucherDetailRequest;
 import com.spring.websellspringmvc.models.CartItem;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.models.Voucher;

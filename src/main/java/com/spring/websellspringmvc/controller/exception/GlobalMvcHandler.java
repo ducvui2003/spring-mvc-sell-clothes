@@ -1,6 +1,6 @@
 package com.spring.websellspringmvc.controller.exception;
 
-import com.spring.websellspringmvc.config.ConfigPage;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +15,7 @@ public class GlobalMvcHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ModelAndView handleResourceNotFoundException() {
-        return new ModelAndView(ConfigPage.ERROR_404);
+        return new ModelAndView(PageAddress.ERROR_404.getPage());
     }
 
     @ExceptionHandler(ErrorForm.class)

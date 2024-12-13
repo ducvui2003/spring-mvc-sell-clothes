@@ -1,14 +1,12 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.controller.exception.ErrorForm;
-import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dto.mvc.request.SignInRequest;
 import com.spring.websellspringmvc.dto.mvc.request.SignUpRequest;
-import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.authentication.AuthenticationService;
 import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class AuthenticationController {
     @GetMapping("/signIn")
     public ModelAndView signInPage() {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName(ConfigPage.SIGN_IN);
+        mav.setViewName(PageAddress.SIGN_IN.getPage());
         mav.addObject("user", new SignInRequest());
         return mav;
     }
@@ -53,7 +51,7 @@ public class AuthenticationController {
     @GetMapping("/signUp")
     public ModelAndView signUpPage() {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName(ConfigPage.SIGN_UP);
+        mav.setViewName(PageAddress.SIGN_UP.getPage());
         mav.addObject("user", new SignUpRequest());
         return mav;
     }
@@ -76,7 +74,7 @@ public class AuthenticationController {
         log.info("username {} tokenVerify {}", username, token);
         request.setAttribute("username", username);
         authenticationService.verify(username, token);
-        return new ModelAndView("redirect:" + ConfigPage.VERIFY_SUCCESS).addObject("username", username);
+        return new ModelAndView("redirect:" + PageAddress.VERIFY_SUCCESS).addObject("username", username);
     }
 
     @GetMapping("/signOut")

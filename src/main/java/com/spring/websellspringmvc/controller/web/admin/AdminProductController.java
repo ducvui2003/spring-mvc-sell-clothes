@@ -1,11 +1,9 @@
 package com.spring.websellspringmvc.controller.web.admin;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.models.Category;
 import com.spring.websellspringmvc.models.Color;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.services.ProductCardServices;
-import com.spring.websellspringmvc.utils.MoneyRange;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller("adminProductControllerMVC")

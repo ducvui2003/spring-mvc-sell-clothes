@@ -1,34 +1,25 @@
-package com.spring.websellspringmvc.models;
+package com.spring.websellspringmvc.dto.response.datatable;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Order {
+public class OrderDatatable {
     String id;
-    int userId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     LocalDateTime dateOrder;
-    int paymentMethodId;
     String fullName;
-    String email;
-    String phone;
-    int orderStatusId;
-    int transactionStatusId;
-    int voucherId;
-    String message;
-    String province;
-    String district;
-    String ward;
-    String detail;
-    double fee;
+    Integer paymentMethodId;
+    Integer orderStatusId;
 }

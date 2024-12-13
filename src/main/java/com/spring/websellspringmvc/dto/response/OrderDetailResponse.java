@@ -5,28 +5,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderDetailResponse implements Serializable {
-    private String orderId;
-    private String status;
-    private String fullName;
-    private String phone;
-    private String email;
-    private String province;
-    private String district;
-    private String ward;
-    private String detail;
-    private String payment;
-    private String voucherId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date orderDate;
+    String orderId;
+    String status;
+    String fullName;
+    String phone;
+    String email;
+    String province;
+    String district;
+    String ward;
+    String detail;
+    String payment;
+    String voucherId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
+    LocalDateTime dateOrder;
     List<OrderDetailItemResponse> items;
 }

@@ -1,17 +1,19 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.BindBeanList;
 import org.jdbi.v3.sqlobject.customizer.BindList;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.transaction.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -43,6 +45,7 @@ public interface OrderDAO {
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
+    @RegisterBeanMapper(PaymentMethod.class)
     public List<PaymentMethod> getListAllPaymentMethodManage();
 
     @SqlQuery("SELECT id, typeShipping, description, shippingFee FROM delivery_methods")
@@ -136,7 +139,7 @@ public interface OrderDAO {
             orders.email, 
             orders.province, 
             orders.district, 
-            orders.ward, orders.detail, orders.voucherId, orders.dateOrder AS orderDate 
+            orders.ward, orders.detail, orders.voucherId, orders.dateOrder 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
@@ -165,16 +168,57 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders 
-            (id, userId, dateOrder, paymentMethodId, fullName, email, phone, address, orderStatusId, transactionStatusId, voucherId, fee) 
-            VALUES 
-            (:id, :userId, :dateOrder, :paymentMethodId, :fullName, :email, :phone, :address, :orderStatusId, :transactionStatusId, :voucherId, :fee)
+            INSERT INTO orders (id, userId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+                                fee, province, district, ward, detail)
+            SELECT :order.id,
+                    :order.userId,
+                   :order.paymentMethodId,
+                   :order.fullName,
+                   :order.email,
+                   :order.phone,
+                   :order.orderStatusId,
+                   :order.transactionStatusId,
+                   :order.voucherId,
+                   :order.fee,
+                   a.provinceName,
+                   a.districtName,
+                   a.wardName,
+                   a.detail
+            FROM address a
+            WHERE a.id = :addressId AND a.userId = :order.userId
             """)
-    public int createOrder(@BindBean Order order);
+    public void createOrder(@BindBean("order") Order order, @Bind("addressId") int addressId);
 
     @SqlBatch("""
             INSERT INTO order_details (orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price)
-            VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
+            VALUES (:orderId, :orderDetail.productId, :orderDetail.productName, :orderDetail.sizeRequired, :orderDetail.colorRequired, :orderDetail.quantityRequired, :orderDetail.price)
             """)
-    public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
+    public void createOrderDetails(
+            @Bind("orderId") String orderId,
+            @BindBean("orderDetail") OrderDetail... orderDetails);
+
+    @SqlQuery("""
+            SELECT orders.id as orderId,
+                   dateOrder,
+                   fullName,
+                   email,
+                   phone,
+                   payment_methods.typePayment     AS paymentMethod,
+                   order_statuses.typeStatus       AS orderStatus,
+                   transaction_statuses.typeStatus AS transactionStatus,
+                   voucherId,
+                   province,
+                   district,
+                   ward,
+                   detail,
+                   fee
+            FROM orders
+                     JOIN payment_methods ON orders.paymentMethodId = payment_methods.id
+                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id
+                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
+            WHERE orders.id = :id
+            """)
+    @RegisterBeanMapper(AdminOrderDetailResponse.class)
+    public AdminOrderDetailResponse getOrder(@Bind("id") String id);
+
 }

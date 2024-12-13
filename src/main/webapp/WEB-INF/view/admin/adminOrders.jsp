@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/adminLink"/>
+    <jsp:include page="/WEB-INF/view/common/adminLink.jsp"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
@@ -14,7 +14,7 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
     <c:import url="/common/adminNavigator"/>
@@ -31,12 +31,6 @@
                                 <i class="fa-solid fa-filter"></i> Bộ lọc
                             </button>
                             <div class="delete__cancel ms-auto">
-                                <form action="<c:url value="/admin/exportExcelOrder"/>" method="POST">
-                                    <button class="btn_export">
-                                        <i class="fa-solid fa-file-export"></i>
-                                        Xuất file excel
-                                    </button>
-                                </form>
                                 <%--                                <div class="delete__wrapper hvr-bounce-out">--%>
                                 <%--                                    <div class="button button__delete">--%>
                                 <%--                                        <i class="fa-solid fa-trash"></i>--%>
@@ -52,7 +46,7 @@
                             </div>
                         </div>
                         <div class="table__wrapper">
-                            <table id="table" class="table table__order">
+                            <table id="table" class="table">
                                 <thead>
                                 <tr class="table__row">
                                     <th class="table__head">#</th>
@@ -77,8 +71,8 @@
 
 <!--Modal filter-->
 <div class="modal fade" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form id="form-search" action="<c:url value="/api/admin/order/search"/>" class="modal-content">
+    <div class="modal-dialog modal-lg ">
+        <form id="form-search" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lọc và tìm kiếm</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -99,9 +93,9 @@
                         <div class="col-4">
                             <select class="form-select mb-3" id="searchSelect" name="searchSelect"
                                     aria-label="Tìm kiếm theo">
-                                <option value="orderId" selected>Mã đơn hàng
+                                <option value="ORDER_ID" selected>Mã đơn hàng
                                 </option>
-                                <option value="customerName">Tên khách hàng
+                                <option value="CUSTOMER_NAME">Tên khách hàng
                                 </option>
                             </select>
                         </div>
@@ -116,10 +110,10 @@
                             <h2 class="filler__heading">Phương thức thanh toán</h2>
                             <div class="filter__content">
                                 <c:forEach
-                                        items="${pageContext.servletContext.getAttribute('listAllPaymentMethodManage')}"
+                                        items="${requestScope.paymentMethod}"
                                         var="paymentMethod">
                                     <label class="filter__label check">
-                                        <input type="checkbox" name="paymentMethod" id="paymentMethod" hidden="hidden"
+                                        <input type="checkbox" name="paymentMethod" hidden="hidden"
                                                value="${paymentMethod.id}">
                                         <span>${paymentMethod.typePayment}</span>
                                     </label>
@@ -129,7 +123,7 @@
                         <div class="col-4">
                             <h2 class="filler__heading">Tình trạng đơn hàng</h2>
                             <div class="filter__content">
-                                <c:forEach items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}"
+                                <c:forEach items="${requestScope.orderStatus}"
                                            var="orderStatus">
                                     <label class="filter__label check">
                                         <input type="checkbox" name="orderStatus"
@@ -260,18 +254,18 @@
     <div class="container-fluid ">
         <div class="row">
             <div class="col-6">
-                <label class="form-label">Tình trạng đơn hàng</label>
-                <select class="orderStatus" name="orderStatus">
-                    <c:forEach var="item" items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}">
+                <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
+                <select id="orderStatus" class="orderStatus" name="orderStatus">
+                    <c:forEach var="item" items="${requestScope.orderStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
             <div class="col-6">
-                <label class="form-label">Tình trạng giao dịch</label>
-                <select class="transactionStatus" name="transactionStatus">
+                <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>
+                <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
-                               items="${pageContext.servletContext.getAttribute('listAllTransactionStatus')}">
+                               items="${requestScope.transactionStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>

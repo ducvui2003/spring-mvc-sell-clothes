@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +12,9 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderDetailItemResponse implements Serializable {
-    int id;
+    Integer id;
     String name;
     String size;
     String color;

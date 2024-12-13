@@ -322,10 +322,14 @@
 //
 // handleRemoveErrorInputting();
 
-import {formDataToJson, http} from "./base.js";
+import {formatDate, formDataToJson, http} from "./base.js";
+import {getFeeAndLeadTimeById} from "./shipping.js";
 
 $(document).ready(() => {
-    const form = $("form")
+    const form = $("#form")
+    // form.on("submit", (e) => {
+    //     e.preventDefault()
+    // })
     const formValidationConfig = {
         rules: {
             addressId: {
@@ -365,47 +369,107 @@ $(document).ready(() => {
             // Hiện notify form ko hợp lệ
             console.log(validator)
         },
-        submitHandler: function (form) {
-            const jsonData = formDataToJson(form)
-            console.log("data", jsonData)
-            http({}).then((response) => {
-                Swal.fire({
-                    title: "Bạn có muốn sử dụng khóa hiện tại của bạn không? ",
-                    text: "Một khi đã chọn khóa, bạn không thể thay đổi.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    denyButtonColor: "#d33",
-                    showDenyButton: true,
-                    denyButtonText: "Sử dụng khóa mới",
-                    confirmButtonText: "Sử dụng khóa hiện tại"
-                }).then((result) => {
-                    if (result.isConfirmed) {
+        submitHandler: function (form, {}) {
+            const data = formDataToJson(form)
+            data.addressId = Number(data.addressId)
+            data.paymentMethodId = Number(data.paymentMethodId)
+            data.cartItemId = data.cartItemId.map(Number)
+            console.log(data)
+            Swal.fire({
+                title: "Bạn có đã chắc chắn với các thông tin đơn hàng cung cấp?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                denyButtonColor: "#d33",
+                showDenyButton: true,
+                denyButtonText: "Kiểm tra lại thông tin",
+                confirmButtonText: "Tiến hành đặt hàng"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    http({
+                        url: "/api/checkout",
+                        method: "POST",
+                        data: data,
+                    }).then((response) => {
                         Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
-                        });
-
-
-                        // http({
-                        //     url:"/api/checkout",
-                        //     method: "POST",
-                        //     data: jsonData,
-                        // }).then();
-                    }
-                });
+                            icon: 'success',
+                            title: 'Đặt hàng thành công!',
+                        })
+                    }).catch((error) => {
+                        console.log(error)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đặt hàng thất bại!',
+                        })
+                    });
+                }
             });
-
 
             // Ngăn việc reload page khi submit form
             return false;
+            // http({}).then((response) => {
+            //     Swal.fire({
+            //         title: "Bạn có muốn sử dụng khóa hiện tại của bạn không? ",
+            //         text: "Một khi đã chọn khóa, bạn không thể thay đổi.",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         denyButtonColor: "#d33",
+            //         showDenyButton: true,
+            //         denyButtonText: "Sử dụng khóa mới",
+            //         confirmButtonText: "Sử dụng khóa hiện tại"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             Swal.fire({
+            //                 title: "Deleted!",
+            //                 text: "Your file has been deleted.",
+            //                 icon: "success"
+            //             });
+            //
+            //
+            //             // http({
+            //             //     url:"/api/checkout",
+            //             //     method: "POST",
+            //             //     data: jsonData,
+            //             // }).then();
+            //         }
+            //     });
+            // });
+
+
         }
     }
-    form.validate(formValidationConfig)
+    const feeShipping = $("#feeShipping")
+    const leadDate = $("#leadDate")
 
-    function handleGetKeyValid() {
+    init();
 
+    function init() {
+        form.validate(formValidationConfig)
+        handleAddressChange();
+    }
+
+    function handleAddressChange() {
+
+        handleAddress($("input[name='addressId']:checked"))
+
+        $("input[name='addressId']").each((index, element) => {
+            $(element).on("click", () => handleAddress(element)
+            )
+        })
+    }
+
+    function handleAddress(addressElement) {
+        const provinceId = $(addressElement).data("province")
+        const districtId = $(addressElement).data("district")
+        const wardCode = $(addressElement).data("ward")
+        getFeeAndLeadTimeById({
+            provinceId, districtId, wardCode
+        }).then((response) => {
+            feeShipping.text(response.feeShipping)
+            leadDate.text(formatDate(response.leadDate))
+        })
     }
 });

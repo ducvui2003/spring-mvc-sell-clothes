@@ -92,7 +92,7 @@ $(document).ready(function () {
                     </div>`;
         });
         modal.find("#order__id").text(orderId);
-        modal.find("#order__date").text(order.orderDate);
+        modal.find("#order__date").text(order.dateOrder);
         modal.find("#order__status").text(order.status ?? 'Chưa xác nhận');
         modal.find("#order__list").html(htmls.join(''));
 
