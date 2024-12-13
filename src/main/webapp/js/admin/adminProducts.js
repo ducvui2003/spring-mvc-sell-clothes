@@ -30,6 +30,13 @@ $(document).ready(() => {
     let dataSizeIndex = [];
     let dataColorIndex = [];
     let pond;//trình thêm ảnh
+
+    const table = $('#table');
+    const datatable = table.DataTable(configDatatable);
+    const formSearch = $('#form-filter');
+    let startDate = null;
+    let endDate = null;
+
     const images = {
         productId: undefined,
         exist: [],
@@ -235,20 +242,22 @@ $(document).ready(() => {
 
         createdAt.on('apply.daterangepicker', function (ev, picker) {
             $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            startDate = picker.startDate.format('YYYY-MM-DD');
+            endDate = picker.endDate.format('YYYY-MM-DD');
         });
 
         createdAt.on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
+            startDate = null;
+            endDate = null;
         });
     }
 
-    const table = $('#table');
-    const datatable = table.DataTable(configDatatable);
-    const formSearch = $('#form-filter');
 
-    function getDataSearch(){
+    function getDataSearch() {
         const formDataJson = formDataToJson(formSearch[0]);
-        formDataJson.moneyRange = formDataJson.moneyRange.replace(";", '-');
+        formDataJson.startDate = startDate
+        formDataJson.endDate = endDate
         return formDataJson;
     }
 

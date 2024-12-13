@@ -116,13 +116,14 @@ $(document).ready(function () {
 
     }
 
+    let startDate = null;
+    let endDate = null;
+
     function initFormSearch() {
         createdAt.daterangepicker({
             opens: 'right',
             autoUpdateInput: false,
             showDropdowns: true,
-            startDate: null,
-            endDate: null,
             locale: {
                 cancelLabel: 'Hủy ',
                 applyLabel: 'Chọn',
@@ -136,21 +137,21 @@ $(document).ready(function () {
 
         createdAt.on('apply.daterangepicker', function (ev, picker) {
             $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            startDate = picker.startDate.format('YYYY-MM-DD');
+            endDate = picker.endDate.format('YYYY-MM-DD');
         });
 
         createdAt.on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
+            startDate = null;
+            endDate = null;
         });
     }
 
     function getDataSearch() {
         const formDataJson = formDataToJson(formSearch[0]);
-        const picker = createdAt.data('daterangepicker');
-        const startDate = picker?.startDate?.format('YYYY-MM-DD');
-        const endDate = picker?.endDate?.format('YYYY-MM-DD');
-
-        formDataJson.startDate = startDate != 'Invalid date' ? startDate : null;
-        formDataJson.endDate = endDate != 'Invalid date' ? endDate : null;
+        formDataJson.startDate = startDate
+        formDataJson.endDate = endDate
         if (formDataJson.createdAt)
             delete formDataJson.createdAt;
         if (formDataJson.orderStatus) {

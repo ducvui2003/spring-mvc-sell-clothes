@@ -72,7 +72,7 @@
 <!--Modal filter-->
 <div class="modal fade" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg ">
-        <form id="form-search" action="/api/admin/order/search" class="modal-content">
+        <form id="form-search" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lọc và tìm kiếm</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -113,7 +113,7 @@
                                         items="${requestScope.paymentMethod}"
                                         var="paymentMethod">
                                     <label class="filter__label check">
-                                        <input type="checkbox" name="paymentMethod" id="paymentMethod" hidden="hidden"
+                                        <input type="checkbox" name="paymentMethod" hidden="hidden"
                                                value="${paymentMethod.id}">
                                         <span>${paymentMethod.typePayment}</span>
                                     </label>
@@ -254,16 +254,16 @@
     <div class="container-fluid ">
         <div class="row">
             <div class="col-6">
-                <label class="form-label">Tình trạng đơn hàng</label>
-                <select class="orderStatus" name="orderStatus">
+                <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
+                <select id="orderStatus" class="orderStatus" name="orderStatus">
                     <c:forEach var="item" items="${requestScope.orderStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
             <div class="col-6">
-                <label class="form-label">Tình trạng giao dịch</label>
-                <select class="transactionStatus" name="transactionStatus">
+                <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>
+                <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
                                items="${requestScope.transactionStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
