@@ -1,15 +1,36 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
+import com.spring.websellspringmvc.dto.response.DatatableResponse;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.services.AdminOrderServices;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/order")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminOrderController {
+    AdminOrderServices orderServices;
 
+    @PostMapping("/datatable")
+    public ResponseEntity<DatatableResponse<OrderDatatable>> datatable(@RequestBody OrderDatatableRequest requestBody) {
+        DatatableResponse<OrderDatatable> response = orderServices.datatable(requestBody);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AdminOrderDetailResponse>> getOrder(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.<AdminOrderDetailResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Get order detail success")
+                .data(orderServices.getOrderDetail(id)).build());
+    }
 }

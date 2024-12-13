@@ -1,4 +1,4 @@
-package com.spring.websellspringmvc.dto.request;
+package com.spring.websellspringmvc.dto.request.datatable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

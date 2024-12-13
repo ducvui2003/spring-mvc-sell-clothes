@@ -6,14 +6,14 @@
 <html lang="en">
 
 <head>
-    <jsp:include page="common/commonLink.jsp"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/home.css" />">
     <title>Trang chủ</title>
 </head>
 
 <body>
 <!--Header-->
-<c:import url="/header" charEncoding="UTF-8"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <!--Main: chứa nội dung chính, các section như giới thiệu sản phầm, các cổ đông,...-->
 <!--Hero-->
 <main id="main" class="animate__animated animate__zoomIn">
@@ -279,7 +279,7 @@
     <div class="modal_hidden_search__box"></div>
 </main>
 <!--Footer-->
-<c:import url="common/footer.jsp"/>
+<jsp:include page="/WEB-INF/view/common/footer.jsp"/>
 <script src="<c:url value="/js/home.js" />"></script>
 </body>
 

@@ -1,4 +1,4 @@
-package com.spring.websellspringmvc.dto;
+package com.spring.websellspringmvc.dto.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

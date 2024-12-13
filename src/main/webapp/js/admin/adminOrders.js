@@ -1,4 +1,12 @@
-import {configSweetAlert2, endLoading, formatCurrency, formatDate, http, startLoading} from "../base.js";
+import {
+    configSweetAlert2,
+    convertFormDataToObject,
+    endLoading,
+    formatCurrency,
+    formatDate, formDataToJson,
+    http,
+    startLoading
+} from "../base.js";
 import {getFeeAndLeadTime} from "../shipping.js";
 
 $(document).ready(function () {
@@ -17,6 +25,8 @@ $(document).ready(function () {
     const
         configDatatable = {
             paging: true,
+            scrollCollapse: true,
+            scrollY: '300px',
             processing: true,
             serverSide: true,
             page: 1,
@@ -25,18 +35,15 @@ $(document).ready(function () {
             searching: false,
             ordering: false,
             ajax: {
-                url: "/api/admin/order/search",
+                url: "/api/admin/order/datatable",
+                type: "POST",
+                contentType: "application/json",
                 data: function (d) {
-                    d.searchSelect = searchSelect.val();
-                    return d;
+                    return JSON.stringify({...d, ...getDataSearch()});
                 },
             }, columns: [
                 {data: "id"},
-                {
-                    data: "dateOrder", render: function (data) {
-                        return formatDate(data);
-                    }
-                },
+                {data: "dateOrder"},
                 {data: "fullName"},
                 {
                     data: "paymentMethodId", render: function (data) {
@@ -66,11 +73,11 @@ $(document).ready(function () {
             select: {
                 style: 'multi'
             },
-            layout: {
-                topStart: {
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
-                }
-            },
+            // layout: {
+            //     topStart: {
+            //         buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            //     }
+            // },
             createdRow: function (row, data, dataIndex) {
                 if (data.orderStatusId == 5) {
                     $(row).addClass('table-danger');
@@ -83,7 +90,7 @@ $(document).ready(function () {
                 initEventDatatable();
                 initFormSearch();
                 handleFormSearch();
-                configModalSearch();
+                configModalFilter();
                 configModalView();
             }
         }
@@ -109,11 +116,16 @@ $(document).ready(function () {
 
     }
 
+    let startDate = null;
+    let endDate = null;
+
     function initFormSearch() {
         createdAt.daterangepicker({
             opens: 'right',
             autoUpdateInput: false,
             showDropdowns: true,
+            startDate: null,
+            endDate: null,
             locale: {
                 cancelLabel: 'Hủy ',
                 applyLabel: 'Chọn',
@@ -121,43 +133,49 @@ $(document).ready(function () {
                 monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
                     'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
                 firstDay: 1,
+                format: 'DD/MM/YYYY',
             }
         });
 
         createdAt.on('apply.daterangepicker', function (ev, picker) {
             $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            startDate = picker.startDate.format('YYYY-MM-DD');
+            endDate = picker.endDate.format('YYYY-MM-DD');
         });
 
         createdAt.on('cancel.daterangepicker', function (ev, picker) {
             $(this).val('');
+            startDate = null;
+            endDate = null;
         });
+    }
+
+    function getDataSearch() {
+        const formDataJson = formDataToJson(formSearch[0]);
+        formDataJson.startDate = startDate
+        formDataJson.endDate = endDate
+        if (formDataJson.createdAt)
+            delete formDataJson.createdAt;
+        if (formDataJson.orderStatus) {
+            formDataJson.orderStatus = formDataJson.orderStatus.map(Number);
+        }
+        if (formDataJson.paymentMethod) {
+            formDataJson.paymentMethod = formDataJson.paymentMethod.map(Number);
+        }
+
+        return formDataJson
     }
 
     function handleFormSearch() {
         formSearch.on("submit", function (e) {
             e.preventDefault();
-            const formDataArray = $(this).serializeArray();
-            const formDataJson = {};
-            $.each(formDataArray, function () {
-                if (formDataJson[this.name]) {
-                    if (!formDataJson[this.name].push) {
-                        formDataJson[this.name] = [formDataJson[this.name]];
-                    }
-                    formDataJson[this.name].push(this.value || '');
-                } else {
-                    formDataJson[this.name] = this.value || '';
-                }
-            });
-            if (formDataJson.createdAt) {
-                const dateRange = formDataJson.createdAt.split(" - ");
-                formDataJson.startDate = dateRange[0];
-                formDataJson.endDate = dateRange[1];
-            }
-            delete formDataJson.createdAt;
-            objFilter = formDataJson;
-            const queryString = $.param(formDataJson);
-            datatable.ajax.url(`/api/admin/order/search?${queryString}`).load();
+
+            console.log(getDataSearch())
+
+            datatable.ajax.reload();
+
             modalFilter.modal("hide");
+
             Swal.fire({
                 ...configSweetAlert2,
                 icon: 'success',
@@ -168,19 +186,19 @@ $(document).ready(function () {
         });
     }
 
-    function configModalSearch() {
+    function configModalFilter() {
         modalFilter.on("show.bs.modal", function () {
-            if (!objFilter) return;
-            formSearch[0].reset();
-            formSearch.find("#contentSearch").val(objFilter.contentSearch);
-            formSearch.find("#searchSelect").val(objFilter.searchSelect);
-            formSearch.find("#createdAt").val(objFilter.startDate + " - " + objFilter.endDate);
-            objFilter?.paymentMethod?.forEach(function (item) {
-                $('input[name="paymentMethod"][value="' + item + '"]').prop('checked', true);
-            });
-            objFilter?.orderStatus?.forEach(function (item) {
-                $('input[name="orderStatus"][value="' + item + '"]').prop('checked', true);
-            });
+            // if (!objFilter) return;
+            // formSearch[0].reset();
+            // formSearch.find("#contentSearch").val(objFilter.contentSearch);
+            // formSearch.find("#searchSelect").val(objFilter.searchSelect);
+            // formSearch.find("#createdAt").val(objFilter.startDate + " - " + objFilter.endDate);
+            // objFilter?.paymentMethod?.forEach(function (item) {
+            //     $('input[name="paymentMethod"][value="' + item + '"]').prop('checked', true);
+            // });
+            // objFilter?.orderStatus?.forEach(function (item) {
+            //     $('input[name="orderStatus"][value="' + item + '"]').prop('checked', true);
+            // });
         }).on("hidden.bs.modal", function () {
         });
     }
@@ -199,38 +217,30 @@ $(document).ready(function () {
 
     function getDetail(id) {
         http({
-            url: '/api/admin/order',
-            data: {
-                orderId: id,
-                action: "seeDetail"
-            },
+            url: '/api/admin/order/:id',
+            pathVariables: {
+                id: id
+            }
         }).then(function (response) {
-            fieldData(response);
+            fieldData(response.data);
         })
     }
 
-    function fieldData(data) {
-        const order = {
-            ...data.orderTarget,
-            status: data.orderStatusTarget,
-            payment: data.paymentMethodTarget.typePayment,
-            transaction: data.transactionStatusTarget.typeStatus,
-            orderDetails: data.listOrderDetailByOrderId,
-            voucher: data?.voucherTarget
-        };
-        modalView.find(".fullname").text(order.fullName);
-        modalView.find(".email").text(order.email);
-        modalView.find(".phone").text(order.phone);
+    function fieldData(order) {
+        modalView.find(".fullname").text(order.fullName || "");
+        modalView.find(".email").text(order.email || "");
+        modalView.find(".phone").text(order.phone || "");
         const address = order.detail + ", " + order.ward + ", " + order.district + ", " + order.province;
         modalView.find(".address").text(address);
         modalView.find(".orderId").text(order.id);
-        modalView.find(".createAt").text(formatDate(order.dateOrder));
+        modalView.find(".createAt").text(order.dateOrder);
         modalView.find(".voucherApply").text(order?.voucherId || "Không sử dụng mã giảm giá");
-        modalView.find(".paymentMethod").text(order.payment);
-        modalView.find(".orderStatus").text(order.status.typeStatus);
-        modalView.find(".transaction").text(order.transaction);
-        loadListOrderDetail(order.orderDetails);
-        if (order.status.id == 1 || order.status.id == 2) return;
+        modalView.find(".paymentMethod").text(order.paymentMethod);
+        modalView.find(".orderStatus").text(order.orderStatus);
+        modalView.find(".transaction").text(order.transactionStatus);
+        loadListOrderDetail(order.items);
+        if (order.orderStatus === ORDER_STATUS[1] || order.status === ORDER_STATUS[2]) return;
+
         startLoading();
         getFeeAndLeadTime({
             province: order.province,
@@ -263,10 +273,10 @@ $(document).ready(function () {
 
     function loadListOrderDetail(listOrderDetail) {
         const htmls = listOrderDetail.map((item) => (`<tr class="table__row">
-                                                                <td class="table__data" style="text-align: left">${item.productName}</td>
-                                                                <td class="table__data">${item.colorRequired}</td>
-                                                                <td class="table__data">${item.sizeRequired}</td>
-                                                                <td class="table__data">${item.quantityRequired}</td>
+                                                                <td class="table__data" style="text-align: left">${item.name}</td>
+                                                                <td class="table__data">${item.color}</td>
+                                                                <td class="table__data">${item.size}</td>
+                                                                <td class="table__data">${item.quantity}</td>
                                                                 <td class="table__data">${formatCurrency(item.price)}</td>
                                                             </tr>`))
         tableOrderDetail.html(htmls.join(""));

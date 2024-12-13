@@ -1,13 +1,18 @@
 package com.spring.websellspringmvc.services.admin;
 
-import com.spring.websellspringmvc.dao.OrderDAO;
-import com.spring.websellspringmvc.dao.OrderDetailDAO;
-import com.spring.websellspringmvc.dao.OrderStatusDAO;
-import com.spring.websellspringmvc.dao.TransactionStatusDAO;
+import com.spring.websellspringmvc.dao.*;
+import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
+import com.spring.websellspringmvc.dto.response.DatatableResponse;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
 import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.services.AdminOrderServices;
+import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.services.state.OrderState;
 import com.spring.websellspringmvc.services.state.TransactionState;
 import com.spring.websellspringmvc.utils.FormatCurrency;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -18,16 +23,41 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class AdminOrderServices {
+public class AdminOrderServicesImpl implements AdminOrderServices {
     OrderDAO orderDAO;
     OrderStatusDAO orderStatusDao;
     TransactionStatusDAO transactionStatusDao;
     OrderDetailDAO orderDetailDAO;
+    CloudinaryUploadServices cloudinaryUploadServices;
+    DatatableDAO datatableDAO;
 
+    @Override
+    public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) {
+        List<OrderDatatable> products = datatableDAO.datatable(request);
+        long total = datatableDAO.count(request);
+        return DatatableResponse.<OrderDatatable>builder()
+                .data(products)
+                .recordsTotal(total)
+                .recordsFiltered(total)
+                .draw(request.getDraw())
+                .build();
+    }
+
+    @Override
+    public AdminOrderDetailResponse getOrderDetail(String orderId) {
+        List<OrderDetailItemResponse> items = orderDAO.getOrderDetailsByOrderId(orderId).stream().peek(
+                orderItem -> orderItem.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), orderItem.getThumbnail()))).toList();
+        AdminOrderDetailResponse order = orderDAO.getOrder(orderId);
+        order.setItems(items);
+        return order;
+    }
+
+    @Override
     public List<OrderStatus> getListAllOrderStatus() {
         return orderStatusDao.getListAllOrderStatus();
     }
 
+    @Override
     public List<TransactionStatus> getListAllTransactionStatus() {
         return transactionStatusDao.getListAllTransactionStatus();
     }
@@ -47,7 +77,7 @@ public class AdminOrderServices {
     public List<Order> getListOrdersBySearchFilter(String[] paymentMethod, String[] orderStatus, String[] transactionStatus, String contentSearch, String searchSelect, String startDate, String endDate) {
         return orderDAO.getListOrdersBySearchFilter(paymentMethod, orderStatus, transactionStatus, contentSearch, searchSelect, startDate, endDate);
     }
-
+    @Override
     public List<PaymentMethod> getListAllPaymentMethodManage() {
         return orderDAO.getListAllPaymentMethodManage();
     }

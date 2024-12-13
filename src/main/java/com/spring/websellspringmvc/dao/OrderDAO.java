@@ -1,13 +1,13 @@
 package com.spring.websellspringmvc.dao;
 
-import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.BindBeanList;
 import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -43,6 +43,7 @@ public interface OrderDAO {
     public List<Order> getListAllOrders();
 
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
+    @RegisterBeanMapper(PaymentMethod.class)
     public List<PaymentMethod> getListAllPaymentMethodManage();
 
     @SqlQuery("SELECT id, typeShipping, description, shippingFee FROM delivery_methods")
@@ -136,7 +137,7 @@ public interface OrderDAO {
             orders.email, 
             orders.province, 
             orders.district, 
-            orders.ward, orders.detail, orders.voucherId, orders.dateOrder AS orderDate 
+            orders.ward, orders.detail, orders.voucherId, orders.dateOrder 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
@@ -177,4 +178,29 @@ public interface OrderDAO {
             VALUES (:orderId, :productId, :productName, :sizeRequired, :colorRequired, :quantityRequired, :price)
             """)
     public void createOrderDetails(@BindBean List<OrderDetail> orderDetails);
+
+    @SqlQuery("""
+            SELECT orders.id as orderId,
+                   dateOrder,
+                   fullName,
+                   email,
+                   phone,
+                   payment_methods.typePayment     AS paymentMethod,
+                   order_statuses.typeStatus       AS orderStatus,
+                   transaction_statuses.typeStatus AS transactionStatus,
+                   voucherId,
+                   province,
+                   district,
+                   ward,
+                   detail,
+                   fee
+            FROM orders
+                     JOIN payment_methods ON orders.paymentMethodId = payment_methods.id
+                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id
+                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
+            WHERE orders.id = :id
+            """)
+    @RegisterBeanMapper(AdminOrderDetailResponse.class)
+    public AdminOrderDetailResponse getOrder(@Bind("id") String id);
+
 }

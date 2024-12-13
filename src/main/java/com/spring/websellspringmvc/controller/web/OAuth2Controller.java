@@ -1,8 +1,8 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.services.authentication.FacebookServices;
 import com.spring.websellspringmvc.services.authentication.GoogleServices;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +39,7 @@ public class OAuth2Controller {
     @GetMapping("/oauth2/google/login/callback")
     public RedirectView loginGoogleCallback(@RequestParam("code") String code) throws IOException {
         googleLoginServices.signIn(code);
-        return new RedirectView(ConfigPage.HOME);
+        return new RedirectView(PageAddress.HOME.getPage());
     }
 
     @GetMapping("/oauth2/facebook/login")
@@ -50,6 +50,6 @@ public class OAuth2Controller {
     @GetMapping("/oauth2/facebook/login/callback")
     public RedirectView loginFacebookCallback(@RequestParam("code") String code) throws IOException {
         facebookServices.signIn(code);
-        return new RedirectView(ConfigPage.HOME);
+        return new RedirectView(PageAddress.HOME.getPage());
     }
 }

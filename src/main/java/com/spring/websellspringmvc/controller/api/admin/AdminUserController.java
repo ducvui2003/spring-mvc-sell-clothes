@@ -1,7 +1,7 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
 import com.spring.websellspringmvc.dto.request.CreateUserRequest;
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateUserRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.mapper.UserMapper;

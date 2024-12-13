@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
 import com.spring.websellspringmvc.models.Slider;
 import com.spring.websellspringmvc.services.ProductService;
@@ -78,7 +77,7 @@ public class HomeController {
 
     @GetMapping("/newProducts")
     ModelAndView newProductsPage(@RequestParam(value = "page", defaultValue = "1") int page) {
-        ModelAndView mav = new ModelAndView(ConfigPage.PRODUCT_NEW);
+        ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_NEW.getPage());
 //        List<Product> listAllNewProducts = homeServices.getListNewProducts(true);
 //        int itemsPerPage = 8;
 //        int size = listAllNewProducts.size();

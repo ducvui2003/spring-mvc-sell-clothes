@@ -176,16 +176,54 @@ export const configSweetAlert2 = {
     cancelButtonColor: "#d33",
 }
 
-export const formDataToJson = function (form, additionalFields = {}) {
-    // Create a FormData object from the form
-    const formData = new FormData(form);
+export const formDataToJson = function (formElement, additionalFields = {}) {
+    const formData = new FormData(formElement);
+    const json = {};
 
-    // Convert FormData to a JSON object
-    const jsonObject = {};
-    formData.forEach((value, key) => {
-        jsonObject[key] = value;
-    });
+    for (const [key, value] of formData.entries()) {
+        const inputElements = formElement.elements[key];
 
-    // Add additional fields to the JSON object
-    return {...jsonObject, ...additionalFields};
-}
+        if (inputElements) {
+            if (inputElements.length && inputElements[0].type === 'checkbox') {
+                // Handle multiple checkboxes with the same name
+                json[key] = Array.from(inputElements)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+            } else if (inputElements.nodeName === 'SELECT') {
+                // Handle <select multiple>
+                const selectElement = inputElements;
+                if (selectElement.multiple) {
+                    json[key] = Array.from(selectElement.selectedOptions).map(opt => opt.value);
+                } else {
+                    json[key] = value;
+                }
+            } else if (inputElements.type === 'checkbox' || inputElements.type === 'radio') {
+                // Handle single checkbox or radio button
+                if (inputElements.type === 'checkbox' && inputElements.checked) {
+                    if (!json[key]) json[key] = [];
+                    json[key].push(value);
+                } else if (inputElements.type === 'radio' && inputElements.checked) {
+                    json[key] = value;
+                }
+            } else {
+                // Handle other input types
+                if (json[key] === undefined) {
+                    json[key] = value; // Single value
+                } else if (Array.isArray(json[key])) {
+                    json[key].push(value); // Append to array if already an array
+                } else {
+                    json[key] = [json[key], value]; // Convert to array if duplicate keys
+                }
+            }
+        }
+    }
+
+    // Remove empty arrays for unchecked checkboxes
+    for (const key in json) {
+        if (Array.isArray(json[key]) && json[key].length === 0) {
+            delete json[key];
+        }
+    }
+
+    return { ...json, ...additionalFields };
+};
