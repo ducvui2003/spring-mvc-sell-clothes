@@ -168,11 +168,12 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders (id, userId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+            INSERT INTO orders (id, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
                                 fee, province, district, ward, detail)
             SELECT :order.id,
-                    :order.userId,
-                   :order.paymentMethodId,
+                   :order.userId,
+                   :order.paymentMethod,
+                   :order.paymentRef,
                    :order.fullName,
                    :order.email,
                    :order.phone,
@@ -221,4 +222,10 @@ public interface OrderDAO {
     @RegisterBeanMapper(AdminOrderDetailResponse.class)
     public AdminOrderDetailResponse getOrder(@Bind("id") String id);
 
+    @SqlUpdate("""
+            UPDATE orders
+            SET orders.transactionStatusId = :transactionStatus
+            WHERE orders.paymentRef = :paymentRef
+            """)
+    void updateTransactionStatusVNPay(@Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
 }
