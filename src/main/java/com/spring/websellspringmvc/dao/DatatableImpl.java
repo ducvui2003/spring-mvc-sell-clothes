@@ -128,11 +128,6 @@ public class DatatableImpl implements DatatableDAO {
             params.put("endDate", request.getEndDate());
         }
 
-        sql.append("ORDER BY dateOrder DESC ");
-        sql.append("LIMIT :limit OFFSET :offset ");
-        params.put("limit", request.getLength());
-        params.put("offset", request.getStart());
-
         // Execute the query and return results
         return jdbi.withHandle(handle -> {
             Query query = handle.createQuery(sql);

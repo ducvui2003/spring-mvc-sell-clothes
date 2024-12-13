@@ -9,11 +9,16 @@ const SHOP_ID = '4969655';
 // Chuyển phát thương mại điện tử
 const SERVICE_ID = 53320;
 const SERVICE_TYPE_ID = 2;
+// const addressShop = {
+//     province: "Hồ Chí Minh",
+//     district: "Quận 1",
+//     ward: "Phường Bến Nghé",
+//     detail: "123 Nguyễn Huệ"
+// }
 const addressShop = {
-    province: "Hồ Chí Minh",
-    district: "Quận 1",
-    ward: "Phường Bến Nghé",
-    detail: "123 Nguyễn Huệ"
+    "provinceId": 202,
+    "districtId": 1442,
+    "wardCode": 20101
 }
 
 async function getAddressCode(address) {
@@ -42,11 +47,10 @@ async function getAddressCode(address) {
 
 async function getFeeAndLeadTime(addressCustomer) {
     // try {
-    const addressShopAPI = await getAddressCode(addressShop);
     const addressCustomerAPI = await getAddressCode(addressCustomer);
 
-    const feeShipping = await getFeeShipping(addressShopAPI, addressCustomerAPI);
-    const leadDate = await getLeadDate(addressShopAPI, addressCustomerAPI); // Assuming this function returns a value synchronously
+    const feeShipping = await getFeeShipping(addressShop, addressCustomerAPI);
+    const leadDate = await getLeadDate(addressShop, addressCustomerAPI); // Assuming this function returns a value synchronously
 
     return {
         feeShipping: feeShipping,
@@ -60,10 +64,8 @@ async function getFeeAndLeadTime(addressCustomer) {
 
 async function getFeeAndLeadTimeById(addressCustomer) {
     // try {
-    const addressShopAPI = await getAddressCode(addressShop);
-
-    const feeShipping = await getFeeShipping(addressShopAPI, addressCustomer);
-    const leadDate = await getLeadDate(addressShopAPI, addressCustomer); // Assuming this function returns a value synchronously
+    const feeShipping = await getFeeShipping(addressShop, addressCustomer);
+    const leadDate = await getLeadDate(addressShop, addressCustomer); // Assuming this function returns a value synchronously
 
     return {
         feeShipping: feeShipping,

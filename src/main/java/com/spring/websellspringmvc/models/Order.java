@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -16,7 +17,7 @@ import java.util.Date;
 public class Order {
     String id;
     int userId;
-    Date dateOrder;
+    LocalDateTime dateOrder;
     int paymentMethodId;
     String fullName;
     String email;
