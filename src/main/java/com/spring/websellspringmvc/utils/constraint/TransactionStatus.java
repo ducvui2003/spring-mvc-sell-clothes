@@ -1,13 +1,14 @@
-package com.spring.websellspringmvc.services.state;
+package com.spring.websellspringmvc.utils.constraint;
 
-public enum TransactionState {
+public enum TransactionStatus {
     UN_PAID(1),
     PROCESSING(2),
-    PAID(3);
+    PAID(3),
+    ERROR(4);
 
     private final int value;
 
-    TransactionState(int value) {
+    TransactionStatus(int value) {
         this.value = value;
     }
 
@@ -15,8 +16,8 @@ public enum TransactionState {
         return value;
     }
 
-    public static TransactionState getByValue(int value) {
-        for (TransactionState state : TransactionState.values()) {
+    public static TransactionStatus getByValue(int value) {
+        for (TransactionStatus state : TransactionStatus.values()) {
             if (state.getValue() == value) {
                 return state;
             }

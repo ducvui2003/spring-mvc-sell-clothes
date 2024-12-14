@@ -22,7 +22,7 @@ public class DatatableImpl implements DatatableDAO {
     public List<OrderDatatable> datatable(OrderDatatableRequest request) {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, fullName, dateOrder, paymentMethodId, orderStatusId ");
+        sql.append("SELECT id, fullName, dateOrder, paymentMethod, orderStatusId ");
         sql.append("FROM orders WHERE 1=1 ");
 
         Map<String, Object> params = new HashMap<>();
@@ -40,7 +40,7 @@ public class DatatableImpl implements DatatableDAO {
         }
 
         if (request.getPaymentMethod() != null) {
-            sql.append("AND paymentMethodId IN (<paymentMethod>) ");
+            sql.append("AND paymentMethod IN (<paymentMethod>) ");
             params.put("paymentMethod", request.getPaymentMethod());
         }
 
@@ -108,7 +108,7 @@ public class DatatableImpl implements DatatableDAO {
         }
 
         if (request.getPaymentMethod() != null) {
-            sql.append("AND paymentMethodId IN (<paymentMethod>) ");
+            sql.append("AND paymentMethod IN (<paymentMethod>) ");
             params.put("paymentMethod", request.getPaymentMethod());
         }
 
@@ -127,11 +127,6 @@ public class DatatableImpl implements DatatableDAO {
             params.put("startDate", request.getStartDate());
             params.put("endDate", request.getEndDate());
         }
-
-        sql.append("ORDER BY dateOrder DESC ");
-        sql.append("LIMIT :limit OFFSET :offset ");
-        params.put("limit", request.getLength());
-        params.put("offset", request.getStart());
 
         // Execute the query and return results
         return jdbi.withHandle(handle -> {

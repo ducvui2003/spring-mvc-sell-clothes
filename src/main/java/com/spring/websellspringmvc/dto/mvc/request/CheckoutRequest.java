@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.dto.mvc.request;
 
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CheckoutFormData {
+public class CheckoutRequest {
     List<Integer> cartItemId;
     String voucher;
     Integer addressId;
     String email;
     String fullName;
     String phone;
-    Integer paymentMethodId;
+    PaymentMethod paymentMethod;
 }

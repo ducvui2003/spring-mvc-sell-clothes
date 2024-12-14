@@ -23,8 +23,7 @@ public class PasswordController {
 
     @GetMapping("/forgetPassword")
     public ModelAndView forgetPassword() {
-        return new ModelAndView(PageAddress.FORGET_PASSWORD.getPage())
-                .addObject("form", new ForgetPasswordRequest());
+        return new ModelAndView(PageAddress.FORGET_PASSWORD.getPage());
     }
 
     @PostMapping("/forgetPassword")

@@ -15,7 +15,7 @@
 <main id="main">
     <div class="container-xl">
         <h1 class="checkout__title">Thanh toán</h1>
-        <form:form class="checkout__container row" id="form"  modelAttribute="checkout">
+        <form:form class="checkout__container row" id="form" modelAttribute="checkout">
             <div class="col-6">
                 <div class="delivery__info--container">
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
@@ -71,19 +71,28 @@
                 <div class="payment__method--container">
                     <h2 class="checkout__subtitle">Phương thức thanh toán</h2>
                     <div id="payment__method--form" class="radio__section">
-                        <c:forEach items="${applicationScope.listPaymentMethod}" var="paymentMethod">
-                            <div class="method__content">
-                                <div class="method__item section__info--selection">
-                                    <form:radiobutton
-                                            path="paymentMethodId"
-                                            name="payment__method" class="radio__button"
-                                            value="${paymentMethod.id}"
-                                            id="payment__method${paymentMethod.id}"/>
-                                    <label class="label__selection"
-                                           for="payment__method${paymentMethod.id}">${paymentMethod.typePayment}</label>
-                                </div>
+                        <div class="method__content">
+                            <div class="method__item section__info--selection">
+                                <input type="radio"
+                                       name="paymentMethod" class="radio__button"
+                                       value="COD"
+                                       id="payment__method-cod"/>
+                                <label class="label__selection"
+                                       for="payment__method-cod">COD</label>
                             </div>
-                        </c:forEach>
+                        </div>
+                        <div class="method__content">
+                            <div class="method__item section__info--selection">
+
+                                <input
+                                        type="radio"
+                                        name="paymentMethod" class="radio__button"
+                                        value="VNPAY"
+                                        id="payment__method-vnpay"/>
+                                <label class="label__selection"
+                                       for="payment__method-vnpay">VNPAY</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

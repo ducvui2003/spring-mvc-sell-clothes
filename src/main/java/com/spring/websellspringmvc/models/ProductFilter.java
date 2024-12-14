@@ -1,7 +1,10 @@
 package com.spring.websellspringmvc.models;
 
 import com.spring.websellspringmvc.utils.MoneyRange;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

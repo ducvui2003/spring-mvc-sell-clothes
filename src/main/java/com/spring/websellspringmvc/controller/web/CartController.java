@@ -1,7 +1,7 @@
 package com.spring.websellspringmvc.controller.web;
 
 
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.services.cart.CartService;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
@@ -27,9 +27,9 @@ public class CartController {
     public ModelAndView getCartPage() {
         ModelAndView modelAndView = new ModelAndView(PageAddress.USER_CART.getPage());
         List<CartItemResponse> carts = cartService.getCart();
-        CheckoutFormData checkoutFormData = new CheckoutFormData();
+        CheckoutRequest checkoutRequest = new CheckoutRequest();
         modelAndView.addObject("carts", carts);
-        modelAndView.addObject("checkout", checkoutFormData);
+        modelAndView.addObject("checkout", checkoutRequest);
         return modelAndView;
     }
 }

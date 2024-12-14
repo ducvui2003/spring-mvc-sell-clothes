@@ -7,11 +7,9 @@ import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
 import com.spring.websellspringmvc.models.*;
-import com.spring.websellspringmvc.services.AdminOrderServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
-import com.spring.websellspringmvc.services.state.OrderState;
-import com.spring.websellspringmvc.services.state.TransactionState;
-import com.spring.websellspringmvc.utils.FormatCurrency;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
+import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -53,92 +51,26 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     }
 
     @Override
-    public List<OrderStatus> getListAllOrderStatus() {
+    public List<com.spring.websellspringmvc.models.OrderStatus> getListAllOrderStatus() {
         return orderStatusDao.getListAllOrderStatus();
     }
 
     @Override
-    public List<TransactionStatus> getListAllTransactionStatus() {
+    public List<com.spring.websellspringmvc.models.TransactionStatus> getListAllTransactionStatus() {
         return transactionStatusDao.getListAllTransactionStatus();
     }
 
-    public OrderStatus getOrderStatusById(int orderStatusId) {
+    public com.spring.websellspringmvc.models.OrderStatus getOrderStatusById(int orderStatusId) {
         return orderStatusDao.getOrderStatusById(orderStatusId);
     }
 
-    public TransactionStatus getTransactionStatusById(int transactionStatusId) {
+    public com.spring.websellspringmvc.models.TransactionStatus getTransactionStatusById(int transactionStatusId) {
         return transactionStatusDao.getTransactionStatusById(transactionStatusId);
     }
 
-    public List<Order> getListAllOrders() {
-        return orderDAO.getListAllOrders();
-    }
-
-    public List<Order> getListOrdersBySearchFilter(String[] paymentMethod, String[] orderStatus, String[] transactionStatus, String contentSearch, String searchSelect, String startDate, String endDate) {
-        return orderDAO.getListOrdersBySearchFilter(paymentMethod, orderStatus, transactionStatus, contentSearch, searchSelect, startDate, endDate);
-    }
     @Override
     public List<PaymentMethod> getListAllPaymentMethodManage() {
         return orderDAO.getListAllPaymentMethodManage();
-    }
-
-    public List<DeliveryMethod> getListAllDeliveryMethodManage() {
-        return orderDAO.getListAllDeliveryMethodManage();
-    }
-
-    public PaymentMethod getPaymentMethodMangeById(int id) {
-        return orderDAO.getPaymentMethodMangeById(id);
-    }
-
-    public DeliveryMethod getDeliveryMethodManageById(int id) {
-        return orderDAO.getDeliveryMethodManageById(id);
-    }
-
-//    public List<Order> getListOrderById(String orderId){
-//        return orderDao.getListOrderByPartialId(orderId);
-//    }
-
-//    public List<Order> getListOrderByCustomerName(String customerName){
-//        return orderDao.getListOrderByCustomerName(customerName);
-//    }
-
-    public Order getOrderById(String id) {
-        return orderDAO.getOrderById(id);
-    }
-
-//    public void updateOrderStatusIdByOrderId(int orderStatusId , String orderId){
-//        orderDao.updateOrderStatusIdByOrderId(orderStatusId, orderId);
-//    }
-//
-//    public void updateTransactionStatusIdByOrderId(int transactionStatusId , String orderId){
-//        orderDao.updateTransactionStatusIdByOrderId(transactionStatusId,orderId);
-//    }
-
-    public void removeOrderByMultipleOrderId(String[] multipleOrderId) {
-        orderDetailDAO.removeOrderDetailByMultipleOrderId(multipleOrderId);
-        orderDAO.removeOrderByMultipleId(multipleOrderId);
-    }
-
-    public void cancelOrderByMultipleId(String[] multipleId) {
-        orderDAO.cancelOrderByArrayMultipleId(multipleId);
-    }
-
-    public List<OrderDetail> getListOrderDetailByOrderId(String orderId) {
-        return orderDetailDAO.getListOrderDetailByOrderId(orderId);
-    }
-
-    public boolean updateOrder(String orderId, Integer orderStatusId, Integer transactionStatusId) {
-        Order order = orderDAO.getOrderById(orderId);
-        if (orderStatusId != null && transactionStatusId != null) {
-            return updateStatusAndOrderTransaction(order, orderStatusId, transactionStatusId);
-        }
-        if (orderStatusId != null) {
-            return updateOrderStatus(order, orderStatusId);
-        }
-        if (transactionStatusId != null) {
-            return updateOrderTransaction(order, transactionStatusId);
-        }
-        return false;
     }
 
     private boolean updateStatusAndOrderTransaction(Order order, Integer orderStatusId, Integer transactionStatusId) {
@@ -150,40 +82,40 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     }
 
     private boolean canUpdateStatusByOrderId(Order order, int orderStatusId) {
-        OrderState orderState = OrderState.getByValue(orderStatusId);
-        if (orderState == null) return false;
-        List<OrderState> orderStateCanChange = new ArrayList<>();
-        switch (OrderState.getByValue(order.getOrderStatusId())) {
+        OrderStatus orderStatus = OrderStatus.getByValue(orderStatusId);
+        if (orderStatus == null) return false;
+        List<OrderStatus> orderStatusCanChange = new ArrayList<>();
+        switch (OrderStatus.getByValue(order.getOrderStatusId())) {
             case PENDING:
-                orderStateCanChange.add(OrderState.PENDING);
-                orderStateCanChange.add(OrderState.CONFIRMED);
-                orderStateCanChange.add(OrderState.CANCELLED);
+                orderStatusCanChange.add(OrderStatus.PENDING);
+                orderStatusCanChange.add(OrderStatus.CONFIRMED);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
                 break;
             case CONFIRMED:
-                orderStateCanChange.add(OrderState.DELIVERY);
-                orderStateCanChange.add(OrderState.CONFIRMED);
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                orderStatusCanChange.add(OrderStatus.CONFIRMED);
                 break;
             case DELIVERY:
-                orderStateCanChange.add(OrderState.DELIVERY);
-                orderStateCanChange.add(OrderState.CANCELLED);
-                orderStateCanChange.add(OrderState.COMPLETED);
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
+                orderStatusCanChange.add(OrderStatus.COMPLETED);
                 break;
         }
-        return orderStateCanChange.contains(orderState);
+        return orderStatusCanChange.contains(orderStatus);
     }
 
     private boolean canUpdateTransactionByOrderId(Order order, int transactionStatusId) {
-        TransactionState transactionState = TransactionState.getByValue(transactionStatusId);
-        if (transactionState == null) return false;
-        List<TransactionState> transactionStateCanChange = new ArrayList<>();
-        switch (TransactionState.getByValue(order.getTransactionStatusId())) {
+        TransactionStatus transactionStatus = TransactionStatus.getByValue(transactionStatusId);
+        if (transactionStatus == null) return false;
+        List<TransactionStatus> transactionStatusCanChange = new ArrayList<>();
+        switch (TransactionStatus.getByValue(order.getTransactionStatusId())) {
             case UN_PAID, PROCESSING:
-                transactionStateCanChange.add(TransactionState.UN_PAID);
-                transactionStateCanChange.add(TransactionState.PROCESSING);
-                transactionStateCanChange.add(TransactionState.PAID);
+                transactionStatusCanChange.add(TransactionStatus.UN_PAID);
+                transactionStatusCanChange.add(TransactionStatus.PROCESSING);
+                transactionStatusCanChange.add(TransactionStatus.PAID);
                 break;
         }
-        return transactionStateCanChange.contains(transactionState);
+        return transactionStatusCanChange.contains(transactionStatus);
     }
 
     public boolean updateOrderTransaction(Order order, int transactionStatusId) {
@@ -206,20 +138,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return orderDAO.getVoucherById(id);
     }
 
-    public String getTotalPriceFormatByOrderId(String orderId) {
-        Order order = orderDAO.getOrderById(orderId);
-        List<OrderDetail> listOrderDetail = orderDetailDAO.getListOrderDetailByOrderId(orderId);
-        double totalPrice = 0;
-        for (OrderDetail orderDetail : listOrderDetail) {
-            totalPrice += orderDetail.getPrice();
-        }
-
-        if (order.getVoucherId() != 0) {
-            Voucher voucher = getVoucherById(order.getVoucherId());
-            totalPrice *= (1 - voucher.getDiscountPercent());
-        }
-        return FormatCurrency.vietNamCurrency(totalPrice);
-    }
 
     public long getQuantity() {
         return orderDAO.getQuantity();

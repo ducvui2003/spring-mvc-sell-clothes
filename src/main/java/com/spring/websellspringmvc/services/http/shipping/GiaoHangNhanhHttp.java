@@ -1,14 +1,16 @@
 package com.spring.websellspringmvc.services.http.shipping;
 
+import com.spring.websellspringmvc.config.FeignConfig;
+import com.spring.websellspringmvc.dto.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "giaoHanhNhanh", url = "${app.service.delivery.url}")
+@FeignClient(name = "giaoHangNhanh", url = "${app.service.delivery.url}", configuration = FeignConfig.class)
 public interface GiaoHangNhanhHttp {
     @RequestMapping(method = RequestMethod.GET,
             value = "/v2/shipping-order/leadtime",
             consumes = "application/json")
-    GiaoHangNhanhLeadDayResponse getLeadTime(
+    ApiResponse<GiaoHangNhanhLeadDayResponse> getLeadTime(
             @RequestHeader("token") String token,
             @RequestHeader("shop_id") String shopId,
             @RequestParam("from_province_id") String fromProvinceId,
@@ -24,7 +26,7 @@ public interface GiaoHangNhanhHttp {
     @RequestMapping(method = RequestMethod.GET,
             value = "/v2/shipping-order/fee",
             consumes = "application/json")
-    GiaoHangNhanhFeeResponse getFee(
+    ApiResponse<GiaoHangNhanhFeeResponse> getFee(
             @RequestHeader("token") String token,
             @RequestHeader("shop_id") String shopId,
             @RequestParam("from_province_id") String fromProvinceId,

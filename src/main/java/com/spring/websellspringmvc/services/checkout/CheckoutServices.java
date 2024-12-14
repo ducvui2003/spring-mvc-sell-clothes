@@ -1,18 +1,18 @@
 package com.spring.websellspringmvc.services.checkout;
 
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
-import com.spring.websellspringmvc.models.DeliveryMethod;
-import com.spring.websellspringmvc.models.PaymentMethod;
+import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface CheckoutServices {
-    List<DeliveryMethod> getAllInformationDeliveryMethod();
-
-    List<PaymentMethod> getAllPaymentMethod();
-
     List<CartItemResponse> getCarts(List<Integer> listCartItemId, Integer userId);
 
-    String createOrder(CheckoutFormData request, Integer userId);
+    void createOrder(CheckoutRequest request, Integer userId);
+
+    String createOrderByVnPay(CheckoutRequest request, Integer userId, String ip) throws UnsupportedEncodingException;
+
+    void updateTransactionStatusVNPay(String paymentRef, TransactionStatus status);
 }

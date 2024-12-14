@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/commonLink"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp.jsp"/>
     <link rel="stylesheet" href="/assets/css/verify.css">
     <title>Xác thực hành công</title>
 </head>
@@ -15,8 +15,8 @@
     </div>
     <h1>Xác thực hành công</h1>
     <p>
-        Chúc mừng tài khoản <b>${username}</b> của bạn đã xác thực hành công! </p>
-    <a href="<c:url value="/public/auth/signIn.jsp"/>" class="button button--hover">Tiến hành đăng nhập</a>
+        Chúc mừng tài khoản <b>${requestScope.username}</b> của bạn đã xác thực hành công! </p>
+    <a href="/signIn" class="button button--hover">Tiến hành đăng nhập</a>
 </main>
 </body>
 

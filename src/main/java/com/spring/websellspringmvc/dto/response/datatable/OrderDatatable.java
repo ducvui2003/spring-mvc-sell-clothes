@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -16,9 +16,9 @@ import java.sql.Date;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class OrderDatatable {
     String id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    Date dateOrder;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
+    LocalDateTime dateOrder;
     String fullName;
-    Integer paymentMethodId;
+    String paymentMethod;
     Integer orderStatusId;
 }

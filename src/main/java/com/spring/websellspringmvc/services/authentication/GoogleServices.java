@@ -55,7 +55,7 @@ public class GoogleServices implements OAuthServices {
         String accessToken = getToken(code);
         GoogleUser googleUserAccount = (GoogleUser) getUserInfo(accessToken);
         String emailGoogle = googleUserAccount.getEmail();
-        Optional<User> userOptional = userDAO.findByEmail(emailGoogle);
+        Optional<User> userOptional = userDAO.findById(emailGoogle);
         if (userOptional.isPresent()) {
             sessionManager.addUser(userOptional.get());
             int quantityCart = cartDAO.getQuantityCart(userOptional.get().getId());

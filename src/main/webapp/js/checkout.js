@@ -372,43 +372,89 @@ $(document).ready(() => {
         submitHandler: function (form, {}) {
             const data = formDataToJson(form)
             data.addressId = Number(data.addressId)
-            data.paymentMethodId = Number(data.paymentMethodId)
-            data.cartItem = data.cartItem.map(Number)
+            data.cartItemId = data.cartItemId.map(Number)
             Swal.fire({
-                title: "Bạn có muốn sử dụng khóa hiện tại của bạn không? ",
-                text: "Một khi đã chọn khóa, bạn không thể thay đổi.",
+                title: "Bạn có đã chắc chắn với các thông tin đơn hàng cung cấp?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
                 denyButtonColor: "#d33",
                 showDenyButton: true,
-                denyButtonText: "Sử dụng khóa mới",
-                confirmButtonText: "Sử dụng khóa hiện tại"
+                denyButtonText: "Kiểm tra lại thông tin",
+                confirmButtonText: "Tiến hành đặt hàng"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success"
-                    });
-
-                    http({
+                    if (data.paymentMethod === "COD")
+                        http({
                             url: "/api/checkout",
                             method: "POST",
                             data: data,
-                        }
-                    ).then((response) => {
-                        console.log(response)
-                    });
-                    // http({
-                    //
-                    // }).then();
+                        }).then((response) => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đặt hàng thành công!',
+                            })
+                        }).catch((error) => {
+                            console.log(error)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt hàng thất bại!',
+                            })
+                        });
+                    else if (data.paymentMethod === "VNPAY")
+                        http({
+                            url: "/api/checkout/vn-pay",
+                            method: "POST",
+                            data: data,
+                        }).then((response) => {
+                            if (response.code === 200) {
+                                window.location.href = response.data
+                            }
+                        }).catch((error) => {
+                            console.log(error)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt hàng thất bại!',
+                            })
+                        });
+
                 }
             });
 
             // Ngăn việc reload page khi submit form
             return false;
+            // http({}).then((response) => {
+            //     Swal.fire({
+            //         title: "Bạn có muốn sử dụng khóa hiện tại của bạn không? ",
+            //         text: "Một khi đã chọn khóa, bạn không thể thay đổi.",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         denyButtonColor: "#d33",
+            //         showDenyButton: true,
+            //         denyButtonText: "Sử dụng khóa mới",
+            //         confirmButtonText: "Sử dụng khóa hiện tại"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             Swal.fire({
+            //                 title: "Deleted!",
+            //                 text: "Your file has been deleted.",
+            //                 icon: "success"
+            //             });
+            //
+            //
+            //             // http({
+            //             //     url:"/api/checkout",
+            //             //     method: "POST",
+            //             //     data: jsonData,
+            //             // }).then();
+            //         }
+            //     });
+            // });
+
+
         }
     }
     const feeShipping = $("#feeShipping")
