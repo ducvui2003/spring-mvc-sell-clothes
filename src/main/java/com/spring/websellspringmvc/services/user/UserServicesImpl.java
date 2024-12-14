@@ -1,7 +1,11 @@
-package com.spring.websellspringmvc.services;
+package com.spring.websellspringmvc.services.user;
 
 import com.spring.websellspringmvc.dao.UserDAO;
+import com.spring.websellspringmvc.dto.response.UserInfoResponse;
+import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -12,11 +16,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class UserServices {
+public class UserServicesImpl implements UserServices {
     UserDAO userDAO;
+    UserMapper userMapper = UserMapper.INSTANCE;
+    CloudinaryUploadServices cloudinaryUploadServices;
 
-    public User getUser(int userId) {
-        return userDAO.selectById(userId);
+    @Override
+    public UserInfoResponse getUserInfo(int id) {
+        User user = userDAO.findById(id);
+        if (user.getAvatar() != null)
+            user.setAvatar(cloudinaryUploadServices.getImage(ImagePath.USER.getPath(), user.getAvatar()));
+        return userMapper.toUserInfoResponse(user);
     }
 
     public void updateUserPassword(int userId, String password) {
@@ -31,12 +41,6 @@ public class UserServices {
         userDAO.updateInfoUser(id, avatar);
     }
 
-    public User getUserByIdProductDetail(int orderDetailId) {
-        List<User> listUser = userDAO.getUserByIdProductDetail(orderDetailId);
-        if (listUser.isEmpty())
-            return null;
-        return listUser.get(0);
-    }
 
     public void insertUser(User user) {
         userDAO.insert(user);

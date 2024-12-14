@@ -23,7 +23,7 @@ public enum PageAddress {
     ADMIN_CATEGORY("/admin/adminCategories"),
     ADMIN_VOUCHER("/admin/adminVoucher"),
     ADMIN_DASHBOARD("/admin/adminDashboard"),
-    ERROR_404("/error/404"),
+    ERROR_404("/error/error404"),
     FORGET_PASSWORD("/auth/forgotPassword"),
     USER_CART("/user/shoppingCart"),
     VERIFY_SUCCESS("/auth/verifySuccess"),

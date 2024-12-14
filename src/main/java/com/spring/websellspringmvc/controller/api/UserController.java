@@ -6,7 +6,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServices userServices;
+    UserServicesImpl userServicesImpl;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -51,7 +51,7 @@ public class UserController {
         }
         String nameAvatar = uploadImageServices.getNameImages().get(0);
         JSONObject json = new JSONObject();
-        userServices.updateInfoUser(user.getId(), nameAvatar);
+        userServicesImpl.updateInfoUser(user.getId(), nameAvatar);
         user.setAvatar(nameAvatar);
         json.put("status", "success");
         json.put("message", "Upload avatar success");
@@ -78,7 +78,7 @@ public class UserController {
         ValidatePassword validatePassword = new ValidatePassword(newPassword);
         boolean isValid = validatePassword.check();
         if (isValid) {
-            userServices.updateUserPassword(user.getId(), Encoding.getINSTANCE().toSHA1(newPassword));
+            userServicesImpl.updateUserPassword(user.getId(), Encoding.getINSTANCE().toSHA1(newPassword));
             json.put("isValid", true);
         } else {
             json.put("isValid", false);
@@ -102,7 +102,7 @@ public class UserController {
             e.printStackTrace();
         }
 
-        userServices.updateUserByID(userId, fullName, gender, phone, birthDay);
+        userServicesImpl.updateUserByID(userId, fullName, gender, phone, birthDay);
         try {
             // Nghỉ đảm bảo trong db cập nhật trước
             Thread.sleep(1000);

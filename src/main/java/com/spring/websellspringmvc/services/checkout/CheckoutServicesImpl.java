@@ -4,7 +4,7 @@ import com.spring.websellspringmvc.dao.AddressDAO;
 import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dto.ApiResponse;
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.Address;
 import com.spring.websellspringmvc.models.Order;
@@ -69,7 +69,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
 
     @Override
-    public void createOrder(CheckoutFormData request, Integer userId) {
+    public void createOrder(CheckoutRequest request, Integer userId) {
         Order order = new Order();
         order.setUserId(userId);
         order.setPaymentMethod(request.getPaymentMethod());
@@ -95,7 +95,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
     }
 
     @Override
-    public String createOrderByVnPay(CheckoutFormData request, Integer userId, String ip) throws UnsupportedEncodingException {
+    public String createOrderByVnPay(CheckoutRequest request, Integer userId, String ip) throws UnsupportedEncodingException {
         Order order = new Order();
         order.setUserId(userId);
         order.setPaymentMethod(request.getPaymentMethod());
