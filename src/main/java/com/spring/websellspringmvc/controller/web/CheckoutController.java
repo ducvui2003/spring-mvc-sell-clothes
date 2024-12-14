@@ -1,6 +1,6 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
 import com.spring.websellspringmvc.dto.response.AddressResponse;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.services.address.AddressServices;
@@ -32,7 +32,7 @@ public class CheckoutController {
     String VN_PAY_PROCESSING = "07";
 
     @PostMapping("/checkout")
-    public ModelAndView checkout(@ModelAttribute("checkout") CheckoutFormData request) {
+    public ModelAndView checkout(@ModelAttribute("checkout") CheckoutRequest request) {
         int userId = sessionManager.getUser().getId();
         List<AddressResponse> addresses = addressService.getAddress(userId);
         List<CartItemResponse> cartItems = checkoutServices.getCarts(request.getCartItemId(), userId);

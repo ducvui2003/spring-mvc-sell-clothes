@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class CheckoutFormData {
+public class CheckoutRequest {
     List<Integer> cartItemId;
     String voucher;
     Integer addressId;

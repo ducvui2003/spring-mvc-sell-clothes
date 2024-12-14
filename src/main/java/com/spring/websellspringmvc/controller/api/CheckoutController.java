@@ -1,7 +1,7 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
-import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
+import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,14 +22,14 @@ public class CheckoutController {
     SessionManager sessionManager;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> createCheckout(@RequestBody CheckoutFormData request) {
+    public ResponseEntity<ApiResponse<?>> createCheckout(@RequestBody CheckoutRequest request) {
         int userId = sessionManager.getUser().getId();
         checkoutServices.createOrder(request, userId);
         return ResponseEntity.ok(ApiResponse.<String>builder().build());
     }
 
     @PostMapping("/vn-pay")
-    public ResponseEntity<ApiResponse<String>> createCheckout(@RequestBody CheckoutFormData request, HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
+    public ResponseEntity<ApiResponse<String>> createCheckout(@RequestBody CheckoutRequest request, HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
         int userId = sessionManager.getUser().getId();
         String ip = httpServletRequest.getRemoteAddr();
         String url = checkoutServices.createOrderByVnPay(request, userId, ip);

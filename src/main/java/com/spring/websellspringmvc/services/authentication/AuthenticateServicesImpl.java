@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.services.authentication;
 
 import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.UserDAO;
@@ -53,7 +54,7 @@ public class AuthenticateServicesImpl implements AuthenticationService {
     public void signUp(SignUpRequest dto) {
         User user = userDAO.findByUsername(dto.getUsername(), true);
         if (user != null)
-            throw new AppException(new ErrorView(ErrorView.SIGN_UP_FAILED, "user", dto));
+            throw new AppException(ErrorCode.CREATE_FAILED);
         String passwordEncoding = Encoding.getINSTANCE().toSHA1(dto.getPassword());
         User userSaved = userMapper.toUser(dto);
         userSaved.setPasswordEncoding(passwordEncoding);
@@ -85,7 +86,6 @@ public class AuthenticateServicesImpl implements AuthenticationService {
         Timestamp userTokenExpired = user.getTokenVerifyTime();
         Timestamp timestampCurrent = Timestamp.valueOf(LocalDateTime.now());
         if (timestampCurrent.compareTo(userTokenExpired) > 0) throw new AppException(ErrorView.ERROR_404);
-
         userDAO.updateTokenVerify(user.getId(), true, null, null);
     }
 }

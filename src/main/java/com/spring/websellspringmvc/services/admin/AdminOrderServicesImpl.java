@@ -10,7 +10,6 @@ import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
-import com.spring.websellspringmvc.utils.FormatCurrency;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -205,20 +204,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return orderDAO.getVoucherById(id);
     }
 
-    public String getTotalPriceFormatByOrderId(String orderId) {
-        Order order = orderDAO.getOrderById(orderId);
-        List<OrderDetail> listOrderDetail = orderDetailDAO.getListOrderDetailByOrderId(orderId);
-        double totalPrice = 0;
-        for (OrderDetail orderDetail : listOrderDetail) {
-            totalPrice += orderDetail.getPrice();
-        }
-
-        if (order.getVoucherId() != 0) {
-            Voucher voucher = getVoucherById(order.getVoucherId());
-            totalPrice *= (1 - voucher.getDiscountPercent());
-        }
-        return FormatCurrency.vietNamCurrency(totalPrice);
-    }
 
     public long getQuantity() {
         return orderDAO.getQuantity();

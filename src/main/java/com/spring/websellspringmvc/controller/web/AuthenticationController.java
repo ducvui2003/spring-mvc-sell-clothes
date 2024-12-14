@@ -72,9 +72,8 @@ public class AuthenticationController {
         String username = request.getParameter("username");
         String token = request.getParameter("token-verify");
         log.info("username {} tokenVerify {}", username, token);
-        request.setAttribute("username", username);
         authenticationService.verify(username, token);
-        return new ModelAndView("redirect:" + PageAddress.VERIFY_SUCCESS).addObject("username", username);
+        return new ModelAndView(PageAddress.VERIFY_SUCCESS.getPage()).addObject("username", username);
     }
 
     @GetMapping("/signOut")

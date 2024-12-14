@@ -1,12 +1,13 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
@@ -15,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServices userServices;
+    UserServicesImpl userServicesImpl;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -51,7 +53,7 @@ public class UserController {
         }
         String nameAvatar = uploadImageServices.getNameImages().get(0);
         JSONObject json = new JSONObject();
-        userServices.updateInfoUser(user.getId(), nameAvatar);
+        userServicesImpl.updateInfoUser(user.getId(), nameAvatar);
         user.setAvatar(nameAvatar);
         json.put("status", "success");
         json.put("message", "Upload avatar success");
@@ -59,32 +61,14 @@ public class UserController {
         response.getWriter().print(json);
     }
 
-    @PostMapping("/password")
-    public void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<?>> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws IOException {
         JSONObject json = new JSONObject();
 
-        String currentPassword = request.getParameter("currentPassword");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
         User user = sessionManager.getUser();
+        userServicesImpl.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
 
-        if (currentPassword == null || newPassword == null || confirmPassword == null) {
-            json.put("error", "Missing required fields");
-            json.put("isValid", false);
-            response.getWriter().println(json.toString());
-            return;
-        }
-
-        ValidatePassword validatePassword = new ValidatePassword(newPassword);
-        boolean isValid = validatePassword.check();
-        if (isValid) {
-            userServices.updateUserPassword(user.getId(), Encoding.getINSTANCE().toSHA1(newPassword));
-            json.put("isValid", true);
-        } else {
-            json.put("isValid", false);
-            json.put("error", validatePassword.getErrorMap());
-        }
-        response.getWriter().println(json.toString());
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Change password success", null));
     }
 
     @PostMapping("/info")
@@ -102,7 +86,7 @@ public class UserController {
             e.printStackTrace();
         }
 
-        userServices.updateUserByID(userId, fullName, gender, phone, birthDay);
+        userServicesImpl.updateUserByID(userId, fullName, gender, phone, birthDay);
         try {
             // Nghỉ đảm bảo trong db cập nhật trước
             Thread.sleep(1000);

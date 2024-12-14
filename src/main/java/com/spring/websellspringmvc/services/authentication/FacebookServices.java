@@ -52,7 +52,7 @@ public class FacebookServices implements OAuthServices {
         // Retrieve user's email address
         FacebookUser userFacebook = (FacebookUser) getUserInfo(accessToken);
         String email = userFacebook.getEmail();
-        Optional<com.spring.websellspringmvc.models.User> userOptional = userDAO.findByEmail(email);
+        Optional<com.spring.websellspringmvc.models.User> userOptional = userDAO.findById(email);
         if (userOptional.isPresent())
             // Lưu thông tin user vào session
             sessionManager.addUser(userOptional.get());

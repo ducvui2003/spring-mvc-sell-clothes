@@ -5,8 +5,8 @@
 <html lang="en">
 
 <head>
-    <jsp:include page="/commonLink"/>
-    <link rel="stylesheet" href="<c:url value="/assets/css/logIn.css"/>">
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
+    <link rel="stylesheet" href="/assets/css/logIn.css"/>
     <script src="https://www.google.com/recaptcha/api.js?render=6LdSQu4pAAAAAJ0LbzMt-kVSfKqzVZYQtmPo3mHD"></script>
     <title>Đăng nhập</title>
 </head>
@@ -36,7 +36,7 @@
                     </p>
                 </div>
                 <div class="form__block hvr-forward">
-                    <a href="<c:url value ="/public/auth/forgotPassword.jsp"/>" id="form__forget-password"
+                    <a href="/forgetPassword " id="form__forget-password"
                        class="form__link">
                         Quên mật khẩu
                     </a>
@@ -55,8 +55,10 @@
                 <button id="form__submit" type="submit" class="form__submit button button--hover">Đăng nhập
                 </button>
                 <div class="d-flex justify-content-around mt-4">
-                    <a class="btn btn-primary" data-btn-style="google" href="/oauth2/google/login">Đăng nhập với Google</a>
-                    <a class="btn btn-primary" data-btn-style="facebook" href="/oauth2/facebook/login">Đăng nhập với Facebook</a>
+                    <a class="btn btn-primary" data-btn-style="google" href="/oauth2/google/login">Đăng nhập với
+                        Google</a>
+                    <a class="btn btn-primary" data-btn-style="facebook" href="/oauth2/facebook/login">Đăng nhập với
+                        Facebook</a>
                 </div>
             </form:form>
             <a href="<c:url value="/signUp"/>" id="form__link--signUp" class="form__link
