@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountOrder.css"/>">
-
     <title>Lịch sử mua hàng</title>
 </head>
 <body>
@@ -24,9 +23,6 @@
                          data-status="1">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
                     </div>
-                    <%--                    <div class="py-3 list-group-item list-group-item-action" data-status="2">--%>
-                    <%--                        <i class="fa-solid fa-spinner me-3"></i> Đang sản xuất--%>
-                    <%--                    </div>--%>
                     <div class="py-3 list-group-item list-group-item-action" data-status="3">
                         <i class="fa-solid fa-truck me-3"></i>Đang vận chuyển
                     </div>
@@ -157,28 +153,63 @@
                                 </div>
                             </div>
                             <div class="col-6">
+                                <p class="fs-5 text-bold">Tổng tiền</p>
+                                <div class="row mt-3">
+                                    <div class="col-6">Tạm tính</div>
+                                    <div class="col-6 text-end" id="order__temporary"></div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-6">Giảm giá</div>
+                                    <div class="text-end col-6" id="order__voucher"></div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-6">Vận chuyển</div>
+                                    <div class="text-end col-6" id="order__shipping-fee"></div>
+                                </div>
                             </div>
                         </div>
                         <hr class="border border-1 opacity-75 my-4">
-                        <div class="col">
-                            <p class="fs-5 text-bold">Tổng tiền</p>
-                            <div class="row mt-3">
-                                <div class="col-6">Tạm tính</div>
-                                <div class="col-6 text-end" id="order__temporary"></div>
+                        <div class="row align-items-center">
+                            <div class="col-6 border-end flex-column  justify-content-center pe-auto">
+                                <div class=" d-flex justify-content-center">
+                                    <div class="text-center m-2">
+                                        <div class="rounded-circle bg-primary p-3" onclick="handleDownloadFile()">
+                                            <label class="text-light"
+                                                   style="cursor: pointer; font-size: 32px;">
+                                                <i class="fas fa-download"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Vui lòng tải thông tin đơn hàng thực hiện xác thực</p>
+                                </div>
                             </div>
-                            <div class="row mt-3">
-                                <div class="col-6">Giảm giá</div>
-                                <div class="text-end col-6" id="order__voucher"></div>
+                            <!-- Vertical Divider -->
+
+                            <div class="col-6 flex-column  justify-content-center pe-auto">
+                                <div class="d-flex justify-content-center ">
+                                    <div class="text-center m-2">
+                                        <div class="rounded-circle bg-primary p-3">
+                                            <label for="upload-sign-info" class="text-light"
+                                                   style="cursor: pointer; font-size: 32px;">
+                                                <i class="fas fa-upload"></i>
+                                            </label>
+                                            <input id="upload-sign-info" type="file" class="d-none"
+                                                   onchange="handleUploadFile(event)" accept=".sign"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Vui lòng tải thông tin đơn hàng đã xác thực</p>
+                                </div>
                             </div>
-                            <div class="row mt-3">
-                                <div class="col-6">Vận chuyển</div>
-                                <div class="text-end col-6" id="order__shipping-fee"></div>
-                            </div>
-                            <hr class=" my-2">
-                            <div class="row ">
-                                <p class="fs-5 text-bold col-6">Tổng cộng</p>
-                                <div class="text-end text-bold col-6" id="order__total">$123</div>
-                            </div>
+                        </div>
+
+                        <hr class="border border-1 opacity-75 my-4">
+                        <div class="row">
+                            <p class="fs-5 text-bold col-6">Tổng cộng</p>
+                            <div class="text-end text-bold col-6" id="order__total">$123</div>
                         </div>
                     </div>
                 </div>
@@ -190,7 +221,6 @@
     </div>
 </div>
 </body>
-
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -206,7 +236,45 @@
         integrity="sha512-csaTzpLFmF+Zl81hRtaZMsMhaeQDHO8E3gBkN3y3sCX9B1QSut68NxqcrxXH60BXPUQ/GB3LZzzIq9ZrxPAMTg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="module" src="<c:url value="/js/user/accountOrder.js"/>"></script>
+
 <script>
+    function handleUploadFile(event) {
+        var order_id = $('span#order__id').html();
+        var file = event.target.files[0];
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('uuid', order_id);
+        $.ajax({
+            url: '/api/verifyOrder/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.status == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Tải lên thành công',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tải lên thất bại',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    }
+
+    function handleDownloadFile() {
+        var order_id = $('span#order__id').html();
+        window.open(`/api/verifyOrder/download?uuid=` + order_id, '_blank');
+    }
+
     function selected(ind) {
         document.querySelectorAll('.navbar__link').forEach(tab => {
             if (tab.dataset.index == ind) {

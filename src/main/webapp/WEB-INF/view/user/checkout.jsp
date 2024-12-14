@@ -168,22 +168,7 @@
                             <div class="price__item--detail">
                                 <div class="temporary__container">
                                     <span>Tạm tính ( <span class="count__product"></span> sản phẩm)</span>
-                                        <%--                                <span>${sessionScope[userIdCart].temporaryPriceFormat()}</span>--%>
                                 </div>
-                                    <%--                            <c:if test="${sessionScope[userIdCart].voucherApplied != null}">--%>
-                                    <%--                                <div class="discount__container">--%>
-                                    <%--                                    <span>Giảm giá</span>--%>
-                                    <%--                                    <span>${sessionScope[userIdCart].discountPriceFormat()}</span>--%>
-                                    <%--                                </div>--%>
-                                    <%--                            </c:if>--%>
-                                    <%--                            <c:if test="${sessionScope[userIdCart].deliveryMethod != null}">--%>
-                                    <%--                                <div class="shipping__container">--%>
-                                    <%--                                    <span>Phí vận chuyển</span>--%>
-                                    <%--                                    <span>--%>
-                                    <%--                                        <fmt:setLocale value="vi_VN"/><fmt:formatNumber type="currency"/>--%>
-                                    <%--                                    </span>--%>
-                                    <%--                                </div>--%>
-                                    <%--                            </c:if>--%>
                             </div>
                             <div class="total__price--final">
                                 <span class="total__label">Tổng tiền</span>

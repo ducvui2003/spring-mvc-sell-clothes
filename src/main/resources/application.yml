@@ -4,7 +4,7 @@ spring:
   profiles:
     default: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: jdbc:mysql://localhost:3306/atbm
+    url: jdbc:mysql://localhost:3306/your_style
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 12345
