@@ -372,9 +372,7 @@ $(document).ready(() => {
         submitHandler: function (form, {}) {
             const data = formDataToJson(form)
             data.addressId = Number(data.addressId)
-            data.paymentMethodId = Number(data.paymentMethodId)
             data.cartItemId = data.cartItemId.map(Number)
-            console.log(data)
             Swal.fire({
                 title: "Bạn có đã chắc chắn với các thông tin đơn hàng cung cấp?",
                 icon: "warning",
@@ -387,22 +385,40 @@ $(document).ready(() => {
                 confirmButtonText: "Tiến hành đặt hàng"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    http({
-                        url: "/api/checkout",
-                        method: "POST",
-                        data: data,
-                    }).then((response) => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đặt hàng thành công!',
-                        })
-                    }).catch((error) => {
-                        console.log(error)
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Đặt hàng thất bại!',
-                        })
-                    });
+                    if (data.paymentMethod === "COD")
+                        http({
+                            url: "/api/checkout",
+                            method: "POST",
+                            data: data,
+                        }).then((response) => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đặt hàng thành công!',
+                            })
+                        }).catch((error) => {
+                            console.log(error)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt hàng thất bại!',
+                            })
+                        });
+                    else if (data.paymentMethod === "VNPAY")
+                        http({
+                            url: "/api/checkout/vn-pay",
+                            method: "POST",
+                            data: data,
+                        }).then((response) => {
+                            if (response.code === 200) {
+                                window.location.href = response.data
+                            }
+                        }).catch((error) => {
+                            console.log(error)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt hàng thất bại!',
+                            })
+                        });
+
                 }
             });
 

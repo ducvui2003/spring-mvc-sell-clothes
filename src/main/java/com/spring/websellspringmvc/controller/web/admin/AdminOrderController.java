@@ -1,10 +1,10 @@
 package com.spring.websellspringmvc.controller.web.admin;
 
 import com.spring.websellspringmvc.models.OrderStatus;
-import com.spring.websellspringmvc.models.PaymentMethod;
 import com.spring.websellspringmvc.models.TransactionStatus;
-import com.spring.websellspringmvc.services.AdminOrderServices;
+import com.spring.websellspringmvc.services.admin.AdminOrderServices;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,11 +26,10 @@ public class AdminOrderController {
     public ModelAndView showOrderPage() {
         ModelAndView mov = new ModelAndView(PageAddress.ADMIN_ORDER.getPage());
         List<OrderStatus> orderStatusList = orderServices.getListAllOrderStatus();
-        List<PaymentMethod> paymentMethodList = orderServices.getListAllPaymentMethodManage();
         List<TransactionStatus> transactionStatusList = orderServices.getListAllTransactionStatus();
         mov.addObject("orderStatus", orderStatusList);
-        mov.addObject("paymentMethod", paymentMethodList);
         mov.addObject("transactionStatus", transactionStatusList);
+        mov.addObject("paymentMethod", PaymentMethod.values());
         return mov;
     }
 }

@@ -80,7 +80,8 @@
                                             <div class="setting__link">Quản lý</div>
                                         </a>
                                     </c:if>
-                                    <a href="<c:url value="/signOut" />" class="setting__item">
+                                    <a href="<c:url value="/signOut" />" class="setting__item"
+                                       onclick="handleSignOut(event,this)">
                                         <div class="setting__link setting__logOut">Đăng xuất</div>
                                     </a>
                                 </div>
@@ -92,3 +93,24 @@
         </div>
     </nav>
 </header>
+<script>
+    function handleSignOut(e, element) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn đăng xuất?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            cancelButtonText: 'Không',
+            confirmButtonText: 'Đăng xuất'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = element.href;
+            }
+        })
+        return false;
+    }
+</script>

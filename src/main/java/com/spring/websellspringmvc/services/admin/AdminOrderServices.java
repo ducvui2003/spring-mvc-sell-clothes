@@ -1,4 +1,4 @@
-package com.spring.websellspringmvc.services;
+package com.spring.websellspringmvc.services.admin;
 
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;

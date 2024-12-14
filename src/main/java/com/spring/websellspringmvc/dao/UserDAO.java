@@ -20,16 +20,16 @@ import java.util.Optional;
 public interface UserDAO {
 
     @SqlQuery("SELECT id, username, fullName, gender, phone, email, birthday, isVerify, role, avatar FROM users WHERE id = :id")
-    User selectById(@Bind("id") int id);
+    User findById(@Bind("id") int id);
 
     @SqlQuery("SELECT * FROM users WHERE username = :username AND isVerify = :isVerify")
     User findByUsername(@Bind("username") String username, @Bind("isVerify") boolean isVerify);
 
     @SqlQuery("SELECT * FROM users WHERE email = :email")
-    Optional<User> findByEmail(@Bind("email") String email);
+    Optional<User> findById(@Bind("email") String email);
 
     @SqlQuery("SELECT id FROM users WHERE email = :email AND isVerify = :isVerify")
-    Optional<User> findByEmail(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
+    Optional<User> findById(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
 
     @SqlUpdate("UPDATE users SET passwordEncoding = :passwordEncoding WHERE id = :id AND passwordEncoding = :passwordEncoding")
     void updatePasswordEncoding(@Bind("id") int id, @Bind("passwordEncoding") String passwordEncoding);
@@ -44,7 +44,7 @@ public interface UserDAO {
     List<User> selectTokenResetPassword(@Bind("email") String email);
 
     @SqlUpdate("UPDATE users SET tokenResetPassword = :tokenResetPassword, tokenResetPasswordTime = :tokenResetPasswordTime WHERE id = :id")
-    void updateTokenResetPassword(@Bind(":id") int id, @Bind(":tokenResetPassword") String tokenResetPassword, @Bind("tokenResetPasswordTime") Timestamp tokenResetPasswordTime);
+    void updateTokenResetPassword(@Bind("id") int id, @Bind("tokenResetPassword") String tokenResetPassword, @Bind("tokenResetPasswordTime") Timestamp tokenResetPasswordTime);
 
     @SqlUpdate("""
             INSERT INTO users (username, passwordEncoding, fullName, gender, email, phone, birthDay, isVerify, role, tokenVerifyTime, tokenVerify) 

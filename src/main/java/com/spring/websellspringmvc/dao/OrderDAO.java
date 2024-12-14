@@ -9,11 +9,9 @@ import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
-import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
-import org.jdbi.v3.sqlobject.transaction.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,50 +19,14 @@ import java.util.Optional;
 
 @Repository
 public interface OrderDAO {
-    @SqlQuery("""
-            SELECT id, userId, dateOrder,  paymentMethodId,
-                             fullName, email, phone, address, orderStatusId, transactionStatusId, 
-                             voucherId FROM orders WHERE 1=1
-                             And if(:searchSelect = 'orderId', id LIKE :contentSearch, fullName LIKE :contentSearch)
-                             And if(:paymentMethod != null, paymentMethodId IN (:paymentMethod), 1=1)
-                             And if(:orderStatus != null, orderStatusId IN (:orderStatus), 1=1)
-                             And if(:transactionStatus != null, transactionStatusId IN (:transactionStatus), 1=1)\
-                             And if(:startDate != null AND :endDate != null, dateOrder BETWEEN startDate AND endDate, 1=1)
-            """)
-    List<Order> getListOrdersBySearchFilter(
-            @BindList("paymentMethod") String[] paymentMethod,
-            @BindList("orderStatus") String[] orderStatus,
-            @BindList("transactionStatus") String[] transactionStatus,
-            @Bind("contentSearch") String contentSearch,
-            @Bind("searchSelect") String searchSelect,
-            @Bind("startDate") String startDate,
-            @Bind("endDate") String endDate);
-
-
-    @SqlQuery("SELECT id, userId, dateOrder,  paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId FROM orders")
-    public List<Order> getListAllOrders();
-
     @SqlQuery("SELECT id, typePayment FROM payment_methods")
     @RegisterBeanMapper(PaymentMethod.class)
     public List<PaymentMethod> getListAllPaymentMethodManage();
 
-    @SqlQuery("SELECT id, typeShipping, description, shippingFee FROM delivery_methods")
-    public List<DeliveryMethod> getListAllDeliveryMethodManage();
-
-    @SqlQuery("SELECT id, typePayment FROM payment_methods WHERE id = :id")
-    public PaymentMethod getPaymentMethodMangeById(@Bind("id") int id);
-
-    @SqlQuery("SELECT id, typeShipping, description, shippingFee FROM delivery_methods WHERE id = :id")
-    public DeliveryMethod getDeliveryMethodManageById(@Bind("id") int id);
 
     @SqlQuery("SELECT * FROM orders WHERE id = :id")
     public Order getOrderById(@Bind("id") String id);
 
-    @SqlUpdate("DELETE FROM orders WHERE id IN (ids)")
-    public void removeOrderByMultipleId(@BindList("ids") String[] multipleId);
-
-    @SqlUpdate("UPDATE orders SET orderStatusId = 5 WHERE id IN (<ids>)")
-    public void cancelOrderByArrayMultipleId(@BindList("ids") String[] multipleId);
 
     @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId, transactionStatusId = :transactionStatusId WHERE id = :orderId")
     public void updateStatusByOrderId(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId, @Bind("transactionStatusId") int transactionStatusId);
@@ -168,11 +130,12 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders (id, userId, paymentMethodId, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+            INSERT INTO orders (id, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
                                 fee, province, district, ward, detail)
             SELECT :order.id,
-                    :order.userId,
-                   :order.paymentMethodId,
+                   :order.userId,
+                   :order.paymentMethod,
+                   :order.paymentRef,
                    :order.fullName,
                    :order.email,
                    :order.phone,
@@ -198,12 +161,12 @@ public interface OrderDAO {
             @BindBean("orderDetail") OrderDetail... orderDetails);
 
     @SqlQuery("""
-            SELECT orders.id as orderId,
+            SELECT orders.id                       as orderId,
                    dateOrder,
                    fullName,
                    email,
                    phone,
-                   payment_methods.typePayment     AS paymentMethod,
+                   paymentMethod,
                    order_statuses.typeStatus       AS orderStatus,
                    transaction_statuses.typeStatus AS transactionStatus,
                    voucherId,
@@ -213,7 +176,6 @@ public interface OrderDAO {
                    detail,
                    fee
             FROM orders
-                     JOIN payment_methods ON orders.paymentMethodId = payment_methods.id
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
             WHERE orders.id = :id
@@ -221,4 +183,10 @@ public interface OrderDAO {
     @RegisterBeanMapper(AdminOrderDetailResponse.class)
     public AdminOrderDetailResponse getOrder(@Bind("id") String id);
 
+    @SqlUpdate("""
+            UPDATE orders
+            SET orders.transactionStatusId = :transactionStatus
+            WHERE orders.paymentRef = :paymentRef
+            """)
+    void updateTransactionStatusVNPay(@Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
 }

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/commonLink"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/error404.css"/>">
     <title>404 - Tài nguyên không tồn tại</title>
 </head>

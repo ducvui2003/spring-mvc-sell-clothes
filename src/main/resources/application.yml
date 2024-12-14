@@ -29,6 +29,7 @@ server:
     key-store-password: 123
     key-alias: local-https
     key-store-type: PKCS12
+  address: localhost
 
 app:
   service:
@@ -63,6 +64,12 @@ app:
       user-info-uri: https://graph.facebook.com/me?fields=id,name,email&access_token=
       redirect-uri: http://localhost:${server.port}/oauth2/facebook/login/callback
       login-uri: https://www.facebook.com/v9.0/dialog/oauth?redirect_uri=${app.service.facebook.redirect-uri}&scope=email&client_id=${app.service.facebook.client-id}
+    vnpay:
+      pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      pay-return-url: https://localhost:${server.port}/checkout/vn-pay-return
+      tnn-code: 8QI437P2
+      hash-secret: AT3P2JYLC7DN394RY3X0FDCAJ3RCJCH9
+      api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
 logging:
   level:
     feign:

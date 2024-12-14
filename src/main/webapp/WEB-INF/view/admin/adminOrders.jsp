@@ -8,8 +8,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
-    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
+    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">--%>
+    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">--%>
     <title>Quản lý đơn hàng</title>
 </head>
 <body>
@@ -21,47 +21,32 @@
     <section class="content">
         <div class="container-xl">
             <div class="row">
+                <h1 class="badge bg-primary fs-3 d-inline m-2" style="width: fit-content">
+                    <i class="fa-solid fa-list"></i>
+                    Danh sách đơn hàng</h1>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modal-filter">
+                        <i class="fa-solid fa-filter"></i> Bộ lọc
+                    </button>
+                </div>
                 <div class="col-12">
-                    <!--Bảng thông tin đơn hàng -->
-                    <div id="process__order--form">
-                        <div class="order__heading py-2">
-                            <h1><i class="fa-solid fa-list"></i> Danh sách đơn hàng</h1>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modal-filter">
-                                <i class="fa-solid fa-filter"></i> Bộ lọc
-                            </button>
-                            <div class="delete__cancel ms-auto">
-                                <%--                                <div class="delete__wrapper hvr-bounce-out">--%>
-                                <%--                                    <div class="button button__delete">--%>
-                                <%--                                        <i class="fa-solid fa-trash"></i>--%>
-                                <%--                                        Xóa đơn hàng--%>
-                                <%--                                    </div>--%>
-                                <%--                                </div>--%>
-                                <%--                                <div class="cancel__wrapper hvr-bounce-out">--%>
-                                <%--                                    <div class="button button__cancel">--%>
-                                <%--                                        <i class="fa-solid fa-ban"></i>--%>
-                                <%--                                        Hủy đơn hàng--%>
-                                <%--                                    </div>--%>
-                                <%--                                </div>--%>
-                            </div>
-                        </div>
-                        <div class="table__wrapper">
-                            <table id="table" class="table">
-                                <thead>
-                                <tr class="table__row">
-                                    <th class="table__head">#</th>
-                                    <th class="table__head">Ngày tạo</th>
-                                    <th class="table__head">Khách hàng</th>
-                                    <th class="table__head">Phương thức thanh toán</th>
-                                    <th class="table__head">Tình trạng đơn hàng</th>
-                                    <th class="table__head">Xem</th>
-                                    <th class="table__head">Cập nhật</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table__wrapper">
+                        <table id="table" class="table">
+                            <thead>
+                            <tr class="table__row">
+                                <th class="table__head">#</th>
+                                <th class="table__head">Ngày tạo</th>
+                                <th class="table__head">Khách hàng</th>
+                                <th class="table__head">Phương thức thanh toán</th>
+                                <th class="table__head">Tình trạng đơn hàng</th>
+                                <th class="table__head">Xem</th>
+                                <th class="table__head">Cập nhật</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -114,8 +99,8 @@
                                         var="paymentMethod">
                                     <label class="filter__label check">
                                         <input type="checkbox" name="paymentMethod" hidden="hidden"
-                                               value="${paymentMethod.id}">
-                                        <span>${paymentMethod.typePayment}</span>
+                                               value="${paymentMethod}">
+                                        <span>${paymentMethod}</span>
                                     </label>
                                 </c:forEach>
                             </div>
