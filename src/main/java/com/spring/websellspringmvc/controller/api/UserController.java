@@ -16,6 +16,7 @@ import com.spring.websellspringmvc.utils.ValidatePassword;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -144,7 +145,7 @@ public class UserController {
     }
 
     @PostMapping("/add-key")
-    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
+    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request, HttpSession session) throws IOException {
         User user = sessionManager.getUser();
         if (request == null || request.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
@@ -160,11 +161,12 @@ public class UserController {
             }
         }
         System.out.println(result.toString());
+        session.setAttribute("key", result.toString());
 
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key added successfully")
-                .data("Key added successfully")
+                .data(result.toString())
                 .build());
     }
 }

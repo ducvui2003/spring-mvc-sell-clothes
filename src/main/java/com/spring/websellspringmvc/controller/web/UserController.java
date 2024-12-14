@@ -45,6 +45,17 @@ public class UserController {
 
     @GetMapping("/key")
     public ModelAndView getKeyPage() {
-        return new ModelAndView(PageAddress.USER_KEY.getPage());
+        boolean hasKey;
+        String key = "";
+        if(!key.isEmpty() || key != "") {
+            hasKey = true;
+        }else{
+            hasKey = false;
+        }
+        System.out.println("Kiem tra hasKey: "+hasKey);
+        ModelAndView mov = new ModelAndView();
+        mov.setViewName(PageAddress.USER_KEY.getPage());
+        mov.addObject("hasKey", hasKey);
+        return mov;
     }
 }

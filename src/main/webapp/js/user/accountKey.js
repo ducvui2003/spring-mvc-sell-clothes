@@ -16,6 +16,7 @@ $(document).ready(function () {
     const uploadKey = $("#uploadKey");
     const inputNewKey = $("#inputNewKey");
     const formAddKey = $("#form-add-key");
+    const addKeyModal = $("#addKeyModal");
 
     // Form validation for Update Key
     formAddKey.validate({
@@ -66,6 +67,12 @@ $(document).ready(function () {
                         text: "Khóa đã được cập nhập",
                         icon: "success"
                     });
+                    if(response && response.data ) {
+                        updateCurrentKey(response.data);
+                    }
+                    form.reset();
+                    addKeyModal.modal('hide');
+                    return true;
                 },
                 error: function (xhr, status, error) {
                     console.log("Hien thi input:    ",formData.get("newKey"));
@@ -81,7 +88,7 @@ $(document).ready(function () {
     });
 
     // Change review new key
-    uploadKey.change(function () {
+    $("#inputUploadKey").change(function () {
         const file = uploadKey.prop('files')[0];
         if (file) {
             const reader = new FileReader();
@@ -93,5 +100,43 @@ $(document).ready(function () {
         }
     });
 
+    $('#currentKey').on('input', function () {
+        const minRows = 3;
+        const maxRows = 6;
+        const lineHeight = parseFloat($(this).css('line-height')); // Line height
+        this.style.height = 'auto'; // Reset height
+        const newHeight = this.scrollHeight;
 
+        // Calculate height limits
+        if (newHeight > lineHeight * maxRows) {
+            this.style.height = lineHeight * maxRows + 'px'; // Max rows
+            this.style.overflowY = 'auto'; // Show scrollbar
+        } else {
+            this.style.height = newHeight + 'px';
+            this.style.overflowY = 'hidden'; // Hide scrollbar
+        }
+    }).trigger('input'); // Initialize on page load
+
+    // Hàm cập nhật Khóa hiện tại
+    function updateCurrentKey(newKey) {
+        if (newKey) {
+            $("#alertWarning").hide();
+            $("#hasKey").val(newKey)
+            $("#currentKey").val(newKey); // Cập nhật textarea Khóa hiện tại
+        } else {
+            $("#alertWarning").show();
+            $("#currentKey").val(""); // Xóa nếu không có khóa
+        }
+    }
+
+    document.getElementById('currentKey').addEventListener('dblclick', function() {
+        // Select the content of the textarea
+        this.select();
+        // Copy the selected content to the clipboard
+        document.execCommand('copy');
+        // Optionally, you can show an alert or notification to the user
+        alert('Content copied to clipboard!');
+    });
+    // Khởi tạo tất cả tooltip
+    $('[data-bs-toggle="tooltip"]').tooltip();
 });

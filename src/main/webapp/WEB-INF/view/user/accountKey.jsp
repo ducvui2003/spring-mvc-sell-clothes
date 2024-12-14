@@ -19,14 +19,11 @@
     <div class="px-4 mt-4 w-100">
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card mb-4">
                     <div class="card-header">Thông tin khóa</div>
-                    <input type="text" value="" id="hasKey">
-
                     <div class="card-body">
-                        <c:if test="${empty haskey}">
-                            <div class="mb-3">
+                        <c:if test="${requestScope.hasKey == false}">
+                            <div class="mb-3" id="alertWarning">
                                 <div class="alert alert-warning" role="alert">
                                     <strong>Thông báo:</strong> Hãy cập nhật thông tin khóa của bạn để tiếp tục sử dụng
                                     dịch vụ!
@@ -34,9 +31,15 @@
                             </div>
                         </c:if>
                         <div class="mb-3">
-                            <label class="small mb-1" for="currentKey">Khóa hiện tại</label>
-                            <textarea class="form-control" name="currentKey" id="currentKey" rows="3"
-                                      placeholder="" disabled></textarea>
+                            <label class="small mb-0 d-inline-flex align-items-center" for="currentKey">Khóa hiện
+                                tại <span class="ms-1 button--hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                          data-bs-custom-class="custom-tooltip"
+                                          data-bs-title="Khóa công khai."><i
+                                        class="fa-regular fa-circle-question"></i></span></label>
+                            <!-- Textarea hiển thị key -->
+                            <textarea class="form-control overflow-auto" rows="3" name="currentKey" id="currentKey"
+                                      placeholder="Hãy cập nhật khóa công khai của bạn!"
+                                      disabled></textarea>
                         </div>
 
                         <div class="row mb-3">
@@ -55,7 +58,7 @@
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
                                     data-bs-target="#addKeyModal">Thêm khóa mới
                             </button>
-                            <c:if test="${!empty haskey}">
+                            <c:if test="${requestScope.hasKey == true}">
                                 <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                         data-bs-target="#reportKeyModal">Báo mất khóa
                                 </button>
@@ -136,7 +139,12 @@
             <div class="modal-body">
                 <div class="row gx-3 mb-3 mt-2">
                     <div class="mb-3">
-                        <label class="small mb-1" for="inputUploadKey">Tải khóa</label>
+                        <label class="small mb-1" for="inputUploadKey">Tải khóa <span class="ms-1 button--hover"
+                                                                                      data-bs-toggle="tooltip"
+                                                                                      data-bs-placement="bottom"
+                                                                                      data-bs-custom-class="custom-tooltip"
+                                                                                      data-bs-title="Tải khóa công khai của bạn."><i
+                                class="fa-regular fa-circle-question"></i></span></label>
                         <input class="form-control" name="inputUploadKey" id="inputUploadKey" type="file">
                         <div class="valid-feedback">
                         </div>
@@ -144,7 +152,12 @@
                 </div>
                 <div class="row gx-3 mb-3 mt-2">
                     <div class="mb-3">
-                        <label class="medium mb-1" for="inputExpireTime">Thời hạn khóa</label>
+                        <label class="small mb-1" for="inputExpireTime">Thời hạn khóa <span class="ms-1 button--hover"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="bottom"
+                                                                                            data-bs-custom-class="custom-tooltip"
+                                                                                            data-bs-title="Thời hạn sử dụng khóa của bạn."><i
+                                class="fa-regular fa-circle-question"></i></span></label>
                         <input class="form-control" name="inputExpireTime" id="inputExpireTime" type="text"
                                value="Thời hạn sử dụng 7 ngày" disabled>
                         <div class="valid-feedback">
@@ -188,6 +201,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/additional-methods.js"></script>
 <script type="module" src="<c:url value="/js/user/accountKey.js"/>">
+    <script type="module" src="<c:url value="/js/base.js"/>">
 </script>
 <script>
     function selected(ind) {
