@@ -53,11 +53,13 @@
                         </div>
                         <div class="d-flex justify-content-start">
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#addKeyModal">Cập nhật khóa
+                                    data-bs-target="#addKeyModal">Thêm khóa mới
                             </button>
-                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#reportKeyModal">Báo mất khóa
-                            </button>
+                            <c:if test="${!empty haskey}">
+                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#reportKeyModal">Báo mất khóa
+                                </button>
+                            </c:if>
                         </div>
                     </div>
                 </div>
@@ -126,22 +128,22 @@
 <div class="modal fade text-black" id="addKeyModal" tabindex="-1" aria-labelledby="staticBackdropLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="max-width: 80%">
-        <form id="form-add-key" class="modal-content">
+        <form id="form-add-key" class="modal-content" enctype="multipart/form-data">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Thêm khóa mới</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row gx-3 mb-3 mt-2">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="small mb-1" for="inputUploadKey">Tải khóa</label>
-                            <input class="form-control" name="inputUploadKey" id="inputUploadKey" type="file">
-                        </div>
+                    <div class="mb-3">
+                        <label class="small mb-1" for="inputUploadKey">Tải khóa</label>
+                        <input class="form-control" name="inputUploadKey" id="inputUploadKey" type="file">
                         <div class="valid-feedback">
                         </div>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row gx-3 mb-3 mt-2">
+                    <div class="mb-3">
                         <label class="medium mb-1" for="inputExpireTime">Thời hạn khóa</label>
                         <input class="form-control" name="inputExpireTime" id="inputExpireTime" type="text"
                                value="Thời hạn sử dụng 7 ngày" disabled>
@@ -150,15 +152,15 @@
                     </div>
                 </div>
 
-                <div class="row gx-3 mb-3 mt-2">
-                    <div class="mb-3">
-                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>
-                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"
-                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>
-                        <div class="valid-feedback">
-                        </div>
-                    </div>
-                </div>
+                <%--                <div class="row gx-3 mb-3 mt-2">--%>
+                <%--                    <div class="mb-3">--%>
+                <%--                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>--%>
+                <%--                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"--%>
+                <%--                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>--%>
+                <%--                        <div class="valid-feedback">--%>
+                <%--                        </div>--%>
+                <%--                    </div>--%>
+                <%--                </div>--%>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

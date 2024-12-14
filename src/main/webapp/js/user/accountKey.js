@@ -20,9 +20,9 @@ $(document).ready(function () {
     // Form validation for Update Key
     formAddKey.validate({
         rules: {
-            inputNewKey: {
-                required: true,
-            },
+            // inputNewKey: {
+            //     required: true,
+            // },
             inputUploadKey: {
                 required: true,
                 singleFile: true,
@@ -30,9 +30,9 @@ $(document).ready(function () {
             }
         },
         messages: {
-            inputNewKey: {
-                required: "Vui lòng nhập khóa."
-            },
+            // inputNewKey: {
+            //     required: "Vui lòng nhập khóa."
+            // },
             inputUploadKey: {
                 required: "Vui lòng chọn file khóa.",
                 singleFile: "Vui lòng chọn 1 file duy nhất.",
@@ -53,21 +53,19 @@ $(document).ready(function () {
             $(element).next().text("");
         },
         submitHandler: function (form) {
-            const formData = formDataToJson(form);
-            http({
+            var formData = new FormData(form);
+            $.ajax({
                 url: "/api/user/add-key",
                 type: "POST",
                 data: formData,
+                processData: false,
+                contentType: false,
                 success: function (response) {
                     Swal.fire({
                         title: "Chúc mừng!",
                         text: "Khóa đã được cập nhập",
                         icon: "success"
                     });
-                    // Cập nhật UI nếu cần
-                    $("#hasKey").text("Hello");
-                    $("#currentKey").text($("#hasKey").text());
-
                 },
                 error: function (xhr, status, error) {
                     console.log("Hien thi input:    ",formData.get("newKey"));

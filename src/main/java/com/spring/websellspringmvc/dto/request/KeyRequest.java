@@ -11,7 +11,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class KeyRequest {
     @NotBlank(message = "File không được để trống")
     MultipartFile keyFile;
-    @NotBlank(message = "Xem trước khóa mới không được để trống")
-    String previewKey;
 
 }

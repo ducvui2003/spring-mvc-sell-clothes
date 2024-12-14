@@ -25,11 +25,16 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -139,21 +144,27 @@ public class UserController {
     }
 
     @PostMapping("/add-key")
-    public ResponseEntity<ApiResponse<?>> addKey(@RequestBody KeyRequest request) throws IOException {
-        String key = request.getPreviewKey();
-        if (key == null || key.isEmpty()) {
+    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
+        User user = sessionManager.getUser();
+        if (request == null || request.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
                     .code(HttpStatus.NOT_FOUND.value())
                     .message("Key is empty")
                     .build());
         }
+        StringBuilder result = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line).append(System.lineSeparator());
+            }
+        }
+        System.out.println(result.toString());
 
-        // Xử lý logic thêm key (giả sử thành công)
-        // Cập nhật logic lưu khóa vào database hoặc các bước cần thiết khác tại đây.
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key added successfully")
-                .data(key)
+                .data("Key added successfully")
                 .build());
     }
 }
