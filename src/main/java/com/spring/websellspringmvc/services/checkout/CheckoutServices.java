@@ -10,10 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface CheckoutServices {
-    List<DeliveryMethod> getAllInformationDeliveryMethod();
-
-    List<PaymentMethod> getAllPaymentMethod();
-
     List<CartItemResponse> getCarts(List<Integer> listCartItemId, Integer userId);
 
     void createOrder(CheckoutFormData request, Integer userId);

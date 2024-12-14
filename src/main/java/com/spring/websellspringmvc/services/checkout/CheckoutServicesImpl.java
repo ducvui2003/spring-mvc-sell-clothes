@@ -2,22 +2,21 @@ package com.spring.websellspringmvc.services.checkout;
 
 import com.spring.websellspringmvc.dao.AddressDAO;
 import com.spring.websellspringmvc.dao.CartDAO;
-import com.spring.websellspringmvc.dao.CheckoutDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.mvc.request.CheckoutFormData;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
-import com.spring.websellspringmvc.models.*;
-import com.spring.websellspringmvc.services.address.AddressServicesImpl;
+import com.spring.websellspringmvc.models.Address;
+import com.spring.websellspringmvc.models.Order;
+import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhFeeResponse;
 import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhHttp;
 import com.spring.websellspringmvc.services.http.shipping.GiaoHangNhanhLeadDayResponse;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.services.vnpay.VnPayServices;
-import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
-import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
+import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,8 +33,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CheckoutServicesImpl implements CheckoutServices {
-    CheckoutDAO checkoutDAO;
-    AddressServicesImpl addressServicesImpl;
     CartDAO cartDAO;
     CloudinaryUploadServices cloudinaryUploadServices;
     GiaoHangNhanhHttp giaoHangNhanhHttp;
@@ -70,13 +67,6 @@ public class CheckoutServicesImpl implements CheckoutServices {
         return cartDAO.getCart(listCartItemId, userId).stream().peek(cartResponse -> cartResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), cartResponse.getThumbnail()))).toList();
     }
 
-    public List<DeliveryMethod> getAllInformationDeliveryMethod() {
-        return checkoutDAO.getAllInformationDeliveryMethod();
-    }
-
-    public List<PaymentMethod> getAllPaymentMethod() {
-        return checkoutDAO.getAllPaymentMethod();
-    }
 
     @Override
     public void createOrder(CheckoutFormData request, Integer userId) {
