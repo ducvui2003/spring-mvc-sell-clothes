@@ -23,16 +23,21 @@ $(document).ready(function () {
             inputNewKey: {
                 required: true,
             },
+            inputUploadKey: {
+                required: true,
+                singleFile: true,
+                extension: "key"
+            }
         },
         messages: {
-            uploadKey: {
+            inputNewKey: {
+                required: "Vui lòng nhập khóa."
+            },
+            inputUploadKey: {
                 required: "Vui lòng chọn file khóa.",
                 singleFile: "Vui lòng chọn 1 file duy nhất.",
                 extension: "File phải có định dạng .key."
             },
-            inputNewKey: {
-                required: "Vui lòng nhập khóa."
-            }
         },
         validClass: 'is-valid',
         errorClass: 'is-invalid',
@@ -48,20 +53,11 @@ $(document).ready(function () {
             $(element).next().text("");
         },
         submitHandler: function (form) {
-            const formData = new FormData(form);
-            formData.append("newKey", inputNewKey.val());
-
-            $("#hasKey").text(inputNewKey.val());
-
-            $.ajax({
+            const formData = formDataToJson(form);
+            http({
                 url: "/api/user/add-key",
-                type: "GET",
+                type: "POST",
                 data: formData,
-                processData: false,
-                contentType: false,
-                beforeSend: function () {
-                    addSpinner();
-                },
                 success: function (response) {
                     Swal.fire({
                         title: "Chúc mừng!",
@@ -80,9 +76,6 @@ $(document).ready(function () {
                         text: "Khóa không cập nhập thành công " + status,
                         icon: "error"
                     });
-                },
-                complete: function () {
-                    cancelSpinner();
                 },
             });
             return false;

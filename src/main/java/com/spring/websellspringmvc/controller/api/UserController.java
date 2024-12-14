@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
+import com.spring.websellspringmvc.dto.request.KeyRequest;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
@@ -137,10 +138,9 @@ public class UserController {
         }
     }
 
-    @GetMapping("/add-key")
-    public ResponseEntity<ApiResponse<String>> addKey(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        String key = request.getParameter("newKey");
-
+    @PostMapping("/add-key")
+    public ResponseEntity<ApiResponse<?>> addKey(@RequestBody KeyRequest request) throws IOException {
+        String key = request.getPreviewKey();
         if (key == null || key.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
                     .code(HttpStatus.NOT_FOUND.value())

@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <jsp:include page="/commonLink"/>
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
-    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountKey.css"/>">
     <title>Quản lý khóa</title>
 </head>
@@ -139,7 +139,6 @@
                             <input class="form-control" name="inputUploadKey" id="inputUploadKey" type="file">
                         </div>
                         <div class="valid-feedback">
-
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -147,7 +146,6 @@
                         <input class="form-control" name="inputExpireTime" id="inputExpireTime" type="text"
                                value="Thời hạn sử dụng 7 ngày" disabled>
                         <div class="valid-feedback">
-
                         </div>
                     </div>
                 </div>
