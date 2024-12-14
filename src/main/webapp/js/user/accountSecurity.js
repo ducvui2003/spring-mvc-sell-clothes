@@ -1,5 +1,6 @@
 import {alert} from "../notify.js";
 import {addSpinner, cancelSpinner} from "../spinner.js";
+import {formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
     // Custom regex kiểm tra mật khẩu mạnh
@@ -53,46 +54,55 @@ $(document).ready(function () {
         },
         submitHandler: function (form) {
             // Hiển thi dialog xác nhận
-            alert(function () {
-                const formData = $(form).serialize();
-                $.ajax({
-                    url: "/api/user/password",
-                    type: 'POST',
-                    data: formData,
-                    beforeSend: function () {
-                        addSpinner();
-                    },
-                    success: function (response) {
-                        handleResponse(response);
-                        form.reset();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    },
-                    complete: function () {
-                        cancelSpinner();
-                    }
-                });
-            }, function () {
-                form.reset();
+            Swal.fire({
+                title: "Bạn có muốn lưu thay đổi không?",
+                showDenyButton: true,
+                confirmButtonText: "Lưu",
+                denyButtonText: "Không lưu",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleChangePassword(form)
+                    return;
+                }
+                if (result.isDenied) {
+                    Swal.fire({
+                        title: "Thay đổi của bạn đã sẽ không được lưu",
+                        icon: "info"
+                    });
+                }
             });
-
         }
     });
 
-    function handleResponse(response) {
-        if (response.isValid) {
-            Swal.fire({
-                title: "Chúc mừng!",
-                text: "Đổi mật khẩu thành công",
-                icon: "success"
-            });
-        } else {
+    function handleChangePassword(form) {
+        const data = formDataToJson(form);
+        http(
+            {
+                url: "/api/user/change-password",
+                type: 'POST',
+                data: data,
+            }
+        ).then((response) => {
+            if (response.code === 200)
+                Swal.fire({
+                    title: "Chúc mừng!",
+                    text: "Đổi mật khẩu thành công",
+                    icon: "success"
+                });
+            else
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: "Đổi mật khẩu ko thành công, vui lòng kiểm tra lại mật khẩu hiện tại",
+                    icon: "error"
+                });
+
+            form.reset();
+        }).catch((err) => {
             Swal.fire({
                 title: "Lỗi!",
-                text: "Đổi mật khẩu ko thành công, vui lòng kiểm tra lại mật khẩu hiện tại",
+                text: "Mật khẩu hiện tại không chính xác",
                 icon: "error"
             });
-        }
+        })
     }
 });

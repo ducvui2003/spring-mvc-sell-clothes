@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
@@ -15,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -59,32 +61,14 @@ public class UserController {
         response.getWriter().print(json);
     }
 
-    @PostMapping("/password")
-    public void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<?>> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws IOException {
         JSONObject json = new JSONObject();
 
-        String currentPassword = request.getParameter("currentPassword");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
         User user = sessionManager.getUser();
+        userServicesImpl.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
 
-        if (currentPassword == null || newPassword == null || confirmPassword == null) {
-            json.put("error", "Missing required fields");
-            json.put("isValid", false);
-            response.getWriter().println(json.toString());
-            return;
-        }
-
-        ValidatePassword validatePassword = new ValidatePassword(newPassword);
-        boolean isValid = validatePassword.check();
-        if (isValid) {
-            userServicesImpl.updateUserPassword(user.getId(), Encoding.getINSTANCE().toSHA1(newPassword));
-            json.put("isValid", true);
-        } else {
-            json.put("isValid", false);
-            json.put("error", validatePassword.getErrorMap());
-        }
-        response.getWriter().println(json.toString());
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Change password success", null));
     }
 
     @PostMapping("/info")

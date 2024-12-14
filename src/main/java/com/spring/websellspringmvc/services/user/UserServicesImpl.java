@@ -29,7 +29,8 @@ public class UserServicesImpl implements UserServices {
         return userMapper.toUserInfoResponse(user);
     }
 
-    public void updateUserPassword(int userId, String password) {
+    @Override
+    public void changePassword(int userId, String password) {
         userDAO.updateUserPassword(userId, password);
     }
 
