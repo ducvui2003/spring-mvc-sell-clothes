@@ -49,19 +49,6 @@ public class AdminProductServices {
         colorDAO.addColors(colors);
     }
 
-    public void addImages(List<String> nameImages, int productId) {
-        List<Image> imageList = new ArrayList<>();
-        for (int i = 0; i < nameImages.size(); i++) {
-            Image image = new Image();
-            if (nameImages.get(i) == null)
-                continue;
-            image.setNameImage(nameImages.get(i));
-            image.setProductId(productId);
-            imageList.add(image);
-        }
-        imageDAO.addImages(imageList);
-    }
-
     public void addSize(String[] nameSizes, double[] sizePrices, int productId) {
         Size[] sizes = new Size[nameSizes.length];
         for (int i = 0; i < sizes.length; i++) {
@@ -73,60 +60,6 @@ public class AdminProductServices {
             sizes[i] = size;
         }
         sizeDAO.addSizes(sizes);
-    }
-
-    public List<Product> filter(List<Integer> listId, int pageNumber) {
-        int offset = (pageNumber - 1) * LIMIT;
-        List<Product> productList = productCardDAO.pagingAndFilter(listId, offset, LIMIT);
-        return productList;
-    }
-
-    public int getQuantityPage() {
-        double quantityPage = Math.ceil(Double.parseDouble(productCardDAO.getQuantityProduct() + "") / LIMIT);
-        return (int) quantityPage;
-    }
-
-    public int getQuantityPage(List<Integer> listId) {
-        double quantityPage = Math.ceil(Double.parseDouble(productCardDAO.getQuantityProduct(listId) + "") / LIMIT);
-        return (int) quantityPage;
-    }
-
-    public int getQuantityPage(int limit) {
-        double quantityPage = Math.ceil(Double.parseDouble(productCardDAO.getQuantityProduct() + "") / limit);
-        System.out.println("quantityPage: " + quantityPage);
-        return (int) quantityPage;
-    }
-
-    public List<Integer> getProductByName(String name) {
-        List<Product> listProduct = productCardDAO.getIdProductByName(name);
-        if (listProduct.isEmpty()) return null;
-        List<Integer> listId = new ArrayList<>();
-        for (Product p : listProduct) {
-            listId.add(p.getId());
-        }
-        return listId;
-    }
-
-
-    public List<Integer> getProductByTimeCreated(Date dateBegin, Date dateEnd) {
-        List<Product> listProduct = productCardDAO.getProductByTimeCreated(dateBegin, dateEnd);
-        if (listProduct.isEmpty()) return null;
-        List<Integer> listId = new ArrayList<>();
-        for (Product p :
-                listProduct) {
-            listId.add(p.getId());
-        }
-        return listId;
-    }
-
-    public List<Product> getProducts(int numberPage) {
-        List<Product> productList = productCardDAO.getProducts(numberPage, LIMIT);
-        return productList;
-    }
-
-    public boolean isContain(Product product) {
-        List<Product> productList = productDAO.getIdProductByName(product.getName());
-        return !productList.isEmpty();
     }
 
     public void updateProduct(Product product) {
@@ -179,44 +112,6 @@ public class AdminProductServices {
         }
     }
 
-    private List<String> getNameImages(int quantityFromRightToLeft, int productId) {
-//        List<Image> imageList = imageDAO.getNameImages(productId);
-//        Collections.reverse(imageList);
-//
-//        List<Image> imageDelete = imageList.subList(0, quantityFromRightToLeft);
-//        for (int i = 0; i < imageDelete.size(); i++) {
-//            if (keepImageAvailable(imageList, imageDelete.get(i)) > 1) {
-//                imageDelete.remove(imageDelete.get(i));
-//            }
-//        }
-//
-//        List<String> nameImageList = new ArrayList<>();
-//        for (Image img : imageDelete) {
-//            nameImageList.add("product_img/" + img.getNameImage());
-//        }
-//
-//        return nameImageList;
-        return null;
-    }
-
-    public int keepImageAvailable(List<Image> imageList, Image image) {
-        int count = 0;
-        for (Image img : imageList) {
-            if (img.equals(image)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private List<Integer> getIdImages(int quantityImgDelete, int productId) {
-        List<Image> imageList = imageDAO.getIdImages(productId);
-        List<Integer> nameImageList = new ArrayList<>();
-        for (Image image : imageList) {
-            nameImageList.add(image.getId());
-        }
-        return nameImageList.subList(imageList.size() - quantityImgDelete, imageList.size());
-    }
 
     //    Xóa image theo id
     public void deleteImages(List<Integer> idImages) {
@@ -228,22 +123,5 @@ public class AdminProductServices {
         imageDAO.addImages(images);
     }
 
-    public void updateImages(UploadImageServices uploadImageServices, Collection<Part> images, int productId) throws Exception {
-
-//        if (quantityImgDelete != 0) {
-//            List<String> nameImages = getNameImages(quantityImgDelete, productId);
-//            List<Integer> imageId = getIdImages(quantityImgDelete, productId);
-//            uploadImageServices.deleteImages(nameImages);//delete in cloud
-//            deleteImages(imageId);//delete in db
-//        } else {
-//            uploadImageServices.addImages(images);//add in cloud
-//            addImages(nameImagesAdded, productId);//add in db
-//        }
-//            List<String> nameImagesAdded = uploadImageServices.getNameImages();
-    }
-
-    public void updateVisibility(int productId, ProductState state) {
-        productCardDAO.updateVisibility(productId, state.getValue());
-    }
 
 }

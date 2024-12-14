@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,15 +42,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductCardResponse> getListNewProducts(Pageable pageable) {
-        List<Product> products = homeDAO.getListNewProducts();
-        List<ProductCardResponse> response = new ArrayList<>();
-        for (Product product : products) {
-            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
-            setRating(productCardResponse);
-            setThumbnail(productCardResponse);
-            response.add(productCardResponse);
-        }
-        return new PageImpl(response, pageable, homeDAO.countTrendProducts());
+        List<ProductCardResponse> products = productCardDAO.getListNewProducts(pageable.getPageSize(), pageable.getOffset());
+        products.forEach(product -> {
+            product.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), product.getThumbnail()));
+        });
+        return new PageImpl<>(products, pageable, homeDAO.countNewProducts());
     }
 
     @Override
@@ -61,15 +56,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductCardResponse> getListTrendProducts(Pageable pageable) {
-        List<Product> products = homeDAO.getListTrendProducts(pageable.getPageSize(), pageable.getOffset());
-        List<ProductCardResponse> response = new ArrayList<>();
-        for (Product product : products) {
-            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
-            setRating(productCardResponse);
-            setThumbnail(productCardResponse);
-            response.add(productCardResponse);
-        }
-        return new PageImpl(response, pageable, homeDAO.countTrendProducts());
+        List<ProductCardResponse> products = productCardDAO.getListTrendProducts(pageable.getPageSize(), pageable.getOffset());
+        products.forEach(product -> {
+            product.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), product.getThumbnail()));
+        });
+        return new PageImpl<>(products, pageable, homeDAO.countTrendProducts());
     }
 
 
@@ -98,16 +89,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductCardResponse> filter(ProductFilter productFilter) {
-        List<Product> products = productDAO.filter(productFilter);
-        List<ProductCardResponse> response = new ArrayList<>();
-        for (Product product : products) {
-            ProductCardResponse productCardResponse = productMapper.toProductCardResponse(product);
-            setRating(productCardResponse);
-            setThumbnail(productCardResponse);
-            response.add(productCardResponse);
-        }
+        List<ProductCardResponse> products = productCardDAO.filter(productFilter);
+        products.forEach(product -> {
+            product.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), product.getThumbnail()));
+        });
         long total = productDAO.countFilter(productFilter);
-        return new PageImpl<>(response, productFilter.getPageable(), total);
+        return new PageImpl<>(products, productFilter.getPageable(), total);
     }
 
     @Override
@@ -168,10 +155,6 @@ public class ProductServiceImpl implements ProductService {
         productDetailResponse.setReviewCount(reviewCount);
     }
 
-    private void setThumbnail(ProductCardResponse productCardResponse) {
-        String thumbnail = imageDAO.getThumbnail(productCardResponse.getId());
-        productCardResponse.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), thumbnail));
-    }
 
     public List<Product> getAllProductSelect() {
         return productCardDAO.getProduct();
