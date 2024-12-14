@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.dto.request.datatable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import com.spring.websellspringmvc.utils.constraint.SearchSelect;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +21,8 @@ public class OrderDatatableRequest extends DatatableRequest {
     String contentSearch;
     String startDate;
     String endDate;
-    @JsonProperty("deliveryMethod")
-    List<Integer> paymentMethod;
+    @JsonProperty("paymentMethod")
+    List<PaymentMethod> paymentMethod;
     @JsonProperty("orderStatus")
     List<Integer> orderStatus;
     @JsonProperty("transactionStatus")

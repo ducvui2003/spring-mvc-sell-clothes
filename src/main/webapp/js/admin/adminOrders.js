@@ -46,33 +46,39 @@ $(document).ready(function () {
                 {data: "dateOrder"},
                 {data: "fullName"},
                 {
-                    data: "paymentMethodId", render: function (data) {
-                        return `${TYPE_PAYMENT[data]}`
-                    }
+                    data: "paymentMethod",
                 },
                 {
                     data: "orderStatusId",
-                    render: function (data) {
+                    render: function
+                        (data) {
                         return `${ORDER_STATUS[data]}`;
                     }
                 },
                 {
-                    data: "id", render: function (data) {
-                        return `<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-view" data-id="${data}"><i class="fa-solid fa-eye"></i></button>`
-                    }
-                },
+                    data: "id", render:
+
+                        function (data) {
+                            return `<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-view" data-id="${data}"><i class="fa-solid fa-eye"></i></button>`
+                        }
+                }
+                ,
                 {
-                    data: "id", render: function (data) {
-                        return `<button type="button" class="btn btn-warning btn-update" data-id="${data}"><i class="fa-solid fa-pen"></i></button>`
-                    }
+                    data: "id", render:
+
+                        function (data) {
+                            return `<button type="button" class="btn btn-warning btn-update" data-id="${data}"><i class="fa-solid fa-pen"></i></button>`
+                        }
                 }
             ],
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json'
-            },
+            }
+            ,
             select: {
                 style: 'multi'
-            },
+            }
+            ,
             // layout: {
             //     topStart: {
             //         buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
@@ -85,7 +91,8 @@ $(document).ready(function () {
                 if (data.orderStatusId == 4) {
                     $(row).addClass('table-success');
                 }
-            },
+            }
+            ,
             initComplete: function (settings, json) {
                 initEventDatatable();
                 initFormSearch();
@@ -158,9 +165,6 @@ $(document).ready(function () {
             delete formDataJson.createdAt;
         if (formDataJson.orderStatus) {
             formDataJson.orderStatus = formDataJson.orderStatus.map(Number);
-        }
-        if (formDataJson.paymentMethod) {
-            formDataJson.paymentMethod = formDataJson.paymentMethod.map(Number);
         }
 
         return formDataJson
@@ -414,4 +418,5 @@ $(document).ready(function () {
             });
         });
     }
-});
+})
+;

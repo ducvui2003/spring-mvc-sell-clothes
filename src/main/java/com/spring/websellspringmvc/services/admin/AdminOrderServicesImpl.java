@@ -68,75 +68,9 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return transactionStatusDao.getTransactionStatusById(transactionStatusId);
     }
 
-    public List<Order> getListAllOrders() {
-        return orderDAO.getListAllOrders();
-    }
-
-    public List<Order> getListOrdersBySearchFilter(String[] paymentMethod, String[] orderStatus, String[] transactionStatus, String contentSearch, String searchSelect, String startDate, String endDate) {
-        return orderDAO.getListOrdersBySearchFilter(paymentMethod, orderStatus, transactionStatus, contentSearch, searchSelect, startDate, endDate);
-    }
     @Override
     public List<PaymentMethod> getListAllPaymentMethodManage() {
         return orderDAO.getListAllPaymentMethodManage();
-    }
-
-    public List<DeliveryMethod> getListAllDeliveryMethodManage() {
-        return orderDAO.getListAllDeliveryMethodManage();
-    }
-
-    public PaymentMethod getPaymentMethodMangeById(int id) {
-        return orderDAO.getPaymentMethodMangeById(id);
-    }
-
-    public DeliveryMethod getDeliveryMethodManageById(int id) {
-        return orderDAO.getDeliveryMethodManageById(id);
-    }
-
-//    public List<Order> getListOrderById(String orderId){
-//        return orderDao.getListOrderByPartialId(orderId);
-//    }
-
-//    public List<Order> getListOrderByCustomerName(String customerName){
-//        return orderDao.getListOrderByCustomerName(customerName);
-//    }
-
-    public Order getOrderById(String id) {
-        return orderDAO.getOrderById(id);
-    }
-
-//    public void updateOrderStatusIdByOrderId(int orderStatusId , String orderId){
-//        orderDao.updateOrderStatusIdByOrderId(orderStatusId, orderId);
-//    }
-//
-//    public void updateTransactionStatusIdByOrderId(int transactionStatusId , String orderId){
-//        orderDao.updateTransactionStatusIdByOrderId(transactionStatusId,orderId);
-//    }
-
-    public void removeOrderByMultipleOrderId(String[] multipleOrderId) {
-        orderDetailDAO.removeOrderDetailByMultipleOrderId(multipleOrderId);
-        orderDAO.removeOrderByMultipleId(multipleOrderId);
-    }
-
-    public void cancelOrderByMultipleId(String[] multipleId) {
-        orderDAO.cancelOrderByArrayMultipleId(multipleId);
-    }
-
-    public List<OrderDetail> getListOrderDetailByOrderId(String orderId) {
-        return orderDetailDAO.getListOrderDetailByOrderId(orderId);
-    }
-
-    public boolean updateOrder(String orderId, Integer orderStatusId, Integer transactionStatusId) {
-        Order order = orderDAO.getOrderById(orderId);
-        if (orderStatusId != null && transactionStatusId != null) {
-            return updateStatusAndOrderTransaction(order, orderStatusId, transactionStatusId);
-        }
-        if (orderStatusId != null) {
-            return updateOrderStatus(order, orderStatusId);
-        }
-        if (transactionStatusId != null) {
-            return updateOrderTransaction(order, transactionStatusId);
-        }
-        return false;
     }
 
     private boolean updateStatusAndOrderTransaction(Order order, Integer orderStatusId, Integer transactionStatusId) {
