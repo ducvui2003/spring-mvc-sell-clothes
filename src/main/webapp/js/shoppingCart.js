@@ -1,4 +1,4 @@
-import {BASE_URL, configSweetAlert2, formatCurrency, formatDate, http} from "./base.js";
+import {configSweetAlert2, formatCurrency, formatDate, http} from "./base.js";
 
 $(document).ready(function () {
     preFormatCurrency();
@@ -186,14 +186,13 @@ $(document).ready(function () {
             event.preventDefault();
             let cartItem = $(this).closest('.cart__item');
             let cartItemId = cartItem.data("card-item-id");
+            let quantityElement = $(cartItem).find('.quality__swapper .quality__required');
+            let quantity = parseInt(quantityElement.val());
             http({
-                url: `${BASE_URL}/api/cart/increase/${cartItemId}`,
+                url: `/api/cart/increase/${cartItemId}`,
                 type: 'POST',
             }).then((response => {
-                let quantityElement = $(cartItem).find('.quality__swapper .quality__required');
-                let quantityValue = parseInt(quantityElement.val()) + 1;
-                quantityElement.val(quantityValue);
-                // $(cartItem).find(".subtotal__item").text(response.newSubtotalFormat);
+                quantityElement.val(quantity + 1);
                 updatePriceItem(cartItem);
                 updateTotalPrice()
             }));
@@ -207,8 +206,8 @@ $(document).ready(function () {
             let cartItem = $(this).closest('.cart__item');
             let cartItemId = cartItem.data("card-item-id");
             let quantityElement = $(cartItem).find('.quality__swapper .quality__required');
-
-            if (quantityElement == 1) {
+            let quantity = parseInt(quantityElement.val());
+            if (quantity === 1) {
                 Swal.fire({
                     icon: "warning",
                     title: "Cảnh bảo",
@@ -218,11 +217,10 @@ $(document).ready(function () {
             }
 
             http({
-                url: `${BASE_URL}/api/cart/decrease/${cartItemId}`,
+                url: `/api/cart/decrease/${cartItemId}`,
                 type: 'POST'
             }).then(response => {
-                let quantityValue = parseInt(quantityElement.val()) - 1;
-                quantityElement.val(quantityValue);
+                quantityElement.val(quantity - 1);
                 updatePriceItem(cartItem);
                 updateTotalPrice();
             });
@@ -245,7 +243,7 @@ $(document).ready(function () {
                     let cartItem = $(this).closest('.cart__item');
                     let cartItemId = cartItem.data("card-item-id");
                     http({
-                        url: `${BASE_URL}/api/cart/delete/${cartItemId}`,
+                        url: `/api/cart/delete/${cartItemId}`,
                         type: 'DELETE',
                     }).then(() => {
                         cartItem.remove();
@@ -262,7 +260,7 @@ $(document).ready(function () {
     function emptyCart() {
         const html = `<div class="cart__container--empty">
                                 <p>Không có sản phẩm nào trong giỏ hàng của bạn</p>
-                                <a href="../product/productBuying.jsp"><button>Tiếp tục mua sắm</button></a>
+                                <a href="/product"><button>Tiếp tục mua sắm</button></a>
                                 <img src="../../assets/img/continueShopping.svg">
                             </div>`
         $(document).find('.cart__container').html(html);
