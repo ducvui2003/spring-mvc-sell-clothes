@@ -27,6 +27,11 @@
                    class="navbar__link button button button--hover hvr-grow-shadow" data-index="3"> Đơn hàng
                 </a>
             </li>
+            <li class="navbar__item">
+                <a href="/user/key"
+                   class="navbar__link button button button--hover hvr-grow-shadow" data-index="4"> Khóa
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
