@@ -114,4 +114,7 @@ public class JDBIConfig {
         return jdbi.onDemand(CartDAO.class);
     }
 
+    @Bean
+    public KeyDAO keyDAO(Jdbi jdbi) {return jdbi.onDemand(KeyDAO.class);}
+
 }

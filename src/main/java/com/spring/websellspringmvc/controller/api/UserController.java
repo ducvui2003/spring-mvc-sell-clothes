@@ -142,48 +142,5 @@ public class UserController {
         }
     }
 
-    @PostMapping("/add-key")
-    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
-        User user = sessionManager.getUser();
-        if (request == null || request.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
-                    .code(HttpStatus.NOT_FOUND.value())
-                    .message("Key is empty")
-                    .build());
-        }
 
-
-        String keyPairAlgorithm = null;
-        String secureRandom = null;
-        String provider = null;
-        String signature = null;
-        int keySize = 0;
-        String publicKey = null;
-
-        try (DataInputStream reader = new DataInputStream(new DataInputStream(request.getInputStream()))) {
-            keyPairAlgorithm = reader.readUTF();
-            secureRandom = reader.readUTF();
-            provider = reader.readUTF();
-            signature = reader.readUTF();
-            keySize = Integer.parseInt(reader.readUTF());
-            publicKey = reader.readUTF();
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .message("Invalid key size format")
-                    .build());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.<String>builder()
-                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message("Error reading the file")
-                    .build());
-        }
-            int userID = sessionManager.getUser().getId();
-        userServicesImpl.insertKey(publicKey, userID);
-        return ResponseEntity.ok(ApiResponse.<String>builder()
-                .code(HttpServletResponse.SC_OK)
-                .message("Key added successfully")
-                .data(publicKey.toString())
-                .build());
-    }
 }

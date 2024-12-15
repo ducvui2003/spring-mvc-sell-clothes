@@ -39,7 +39,7 @@
                             <!-- Textarea hiển thị key -->
                             <textarea class="form-control overflow-auto" rows="3" name="currentKey" id="currentKey"
                                       placeholder="Hãy cập nhật khóa công khai của bạn!"
-                                      disabled></textarea>
+                                      disabled>${requestScope.currentKey.publicKey}</textarea>
                         </div>
 
                         <div class="row mb-3">

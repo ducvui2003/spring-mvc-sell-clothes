@@ -68,12 +68,4 @@ public class UserServicesImpl implements UserServices {
         return userDAO.getSizeWithCondition(searchValue);
     }
 
-    public void insertKey(String publicKey, int userId){
-        //TODO get current key
-        Key key = new Key();
-        key.setId(UUID.randomUUID().toString());
-        key.setPublicKey(publicKey);
-        key.setUserId(userId);
-        keyDAO.insert(key);
-    }
 }
