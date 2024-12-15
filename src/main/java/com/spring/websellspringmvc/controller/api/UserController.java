@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
 import com.spring.websellspringmvc.dto.request.KeyRequest;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
@@ -28,10 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -145,7 +143,7 @@ public class UserController {
     }
 
     @PostMapping("/add-key")
-    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request, HttpSession session) throws IOException {
+    public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
         User user = sessionManager.getUser();
         if (request == null || request.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
@@ -153,20 +151,39 @@ public class UserController {
                     .message("Key is empty")
                     .build());
         }
-        StringBuilder result = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line).append(System.lineSeparator());
-            }
-        }
-        System.out.println(result.toString());
-        session.setAttribute("key", result.toString());
 
+
+        String keyPairAlgorithm = null;
+        String secureRandom = null;
+        String provider = null;
+        String signature = null;
+        int keySize = 0;
+        String publicKey = null;
+
+        try (DataInputStream reader = new DataInputStream(new DataInputStream(request.getInputStream()))) {
+            keyPairAlgorithm = reader.readUTF();
+            secureRandom = reader.readUTF();
+            provider = reader.readUTF();
+            signature = reader.readUTF();
+            keySize = Integer.parseInt(reader.readUTF());
+            publicKey = reader.readUTF();
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Invalid key size format")
+                    .build());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.<String>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Error reading the file")
+                    .build());
+        }
+            int userID = sessionManager.getUser().getId();
+        userServicesImpl.insertKey(publicKey, userID);
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key added successfully")
-                .data(result.toString())
+                .data(publicKey.toString())
                 .build());
     }
 }
