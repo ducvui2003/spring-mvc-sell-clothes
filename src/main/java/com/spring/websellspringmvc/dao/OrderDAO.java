@@ -50,7 +50,7 @@ public interface OrderDAO {
     @SqlQuery("""
             SELECT orders.id AS id, orders.dateOrder AS dateOrder, COUNT(order_details.orderId) AS quantity 
             FROM orders JOIN order_details ON orders.id = order_details.orderId 
-            WHERE orders.orderStatusId = :statusOrder AND orders.userId = :userId 
+            WHERE orders.orderStatusId = :statusOrder AND orders.userId = :userId AND orders.previousId IS NULL
             GROUP BY order_details.orderId 
             """)
     @RegisterBeanMapper(OrderResponse.class)
@@ -178,10 +178,34 @@ public interface OrderDAO {
             FROM orders
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
-            WHERE orders.id = :id
+            WHERE orders.id = :id AND orders.previousId IS NULL
             """)
     @RegisterBeanMapper(AdminOrderDetailResponse.class)
     public AdminOrderDetailResponse getOrder(@Bind("id") String id);
+
+    @SqlQuery("""
+            SELECT orders.id                       as orderId,
+                   dateOrder,
+                   fullName,
+                   email,
+                   phone,
+                   paymentMethod,
+                   order_statuses.typeStatus       AS orderStatus,
+                   transaction_statuses.typeStatus AS transactionStatus,
+                   voucherId,
+                   province,
+                   district,
+                   ward,
+                   detail,
+                   fee 
+            FROM orders 
+                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
+                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id 
+            WHERE orders.previous = :id 
+            ORDER BY orders.createAt DESC
+            """)
+    @RegisterBeanMapper(Order.class)
+    List<AdminOrderDetailResponse> getOrderPrevious(@Bind("id") String id);
 
     @SqlUpdate("""
             UPDATE orders
