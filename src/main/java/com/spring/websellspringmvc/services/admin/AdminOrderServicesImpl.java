@@ -1,16 +1,20 @@
 package com.spring.websellspringmvc.services.admin;
 
-import com.spring.websellspringmvc.dao.*;
+import com.spring.websellspringmvc.dao.DatatableDAO;
+import com.spring.websellspringmvc.dao.OrderDAO;
+import com.spring.websellspringmvc.dao.OrderStatusDAO;
+import com.spring.websellspringmvc.dao.TransactionStatusDAO;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
-import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
-import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.models.Order;
+import com.spring.websellspringmvc.models.Voucher;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
-import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -25,7 +29,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     OrderDAO orderDAO;
     OrderStatusDAO orderStatusDao;
     TransactionStatusDAO transactionStatusDao;
-    OrderDetailDAO orderDetailDAO;
     CloudinaryUploadServices cloudinaryUploadServices;
     DatatableDAO datatableDAO;
 
@@ -51,6 +54,12 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     }
 
     @Override
+    public List<AdminOrderDetailResponse> getOrderPrevious(String orderId) {
+        // Không trả về order item
+        return orderDAO.getOrderPrevious(orderId);
+    }
+
+    @Override
     public List<com.spring.websellspringmvc.models.OrderStatus> getListAllOrderStatus() {
         return orderStatusDao.getListAllOrderStatus();
     }
@@ -66,11 +75,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
     public com.spring.websellspringmvc.models.TransactionStatus getTransactionStatusById(int transactionStatusId) {
         return transactionStatusDao.getTransactionStatusById(transactionStatusId);
-    }
-
-    @Override
-    public List<PaymentMethod> getListAllPaymentMethodManage() {
-        return orderDAO.getListAllPaymentMethodManage();
     }
 
     private boolean updateStatusAndOrderTransaction(Order order, Integer orderStatusId, Integer transactionStatusId) {
