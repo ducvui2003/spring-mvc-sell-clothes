@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.dao;
 
+import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -87,5 +88,4 @@ public interface UserDAO {
 
     @SqlQuery("SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE %:search% OR email LIKE :search OR phone LIKE :search")
     public long getSizeWithCondition(@Bind("searchValue") String search);
-
 }

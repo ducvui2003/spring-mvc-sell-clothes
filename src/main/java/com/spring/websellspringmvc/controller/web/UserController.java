@@ -1,6 +1,9 @@
 package com.spring.websellspringmvc.controller.web;
 
 import com.spring.websellspringmvc.dto.response.UserInfoResponse;
+import com.spring.websellspringmvc.models.Key;
+import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.services.key.KeyServices;
 import com.spring.websellspringmvc.services.user.UserServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
+
 @Controller("userControllerMvc")
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
     UserServices userServices;
     SessionManager sessionManager;
+    KeyServices keyServices;
 
     @GetMapping(value = {
             "/info",
@@ -41,5 +47,22 @@ public class UserController {
     @GetMapping("/order")
     public ModelAndView getOrderPage() {
         return new ModelAndView(PageAddress.USER_ORDER.getPage());
+    }
+
+    @GetMapping("/key")
+    public ModelAndView getKeyPage() {
+        User user = sessionManager.getUser();
+        List<Key> keys = keyServices.getKeys(user.getId());
+        boolean hasKey;
+        if(!keys.isEmpty()) {
+            hasKey = true;
+        }else{
+            hasKey = false;
+        }
+        ModelAndView mov = new ModelAndView();
+        mov.setViewName(PageAddress.USER_KEY.getPage());
+        mov.addObject("hasKey", hasKey);
+        mov.addObject("keys", keys);
+        return mov;
     }
 }
