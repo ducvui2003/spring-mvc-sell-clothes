@@ -1,0 +1,90 @@
+body {
+    background-color: #f2f6fc;
+    color: #69707a;
+}
+
+#main {
+    max-height: 500px !important;
+    overflow-y: scroll;
+}
+
+.navbar {
+    height: 100%;
+}
+
+.navbar__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Căn giữa các mục con theo chiều ngang */
+    align-items: center; /* Căn giữa các mục con theo chiều dọc */
+    list-style: none; /* Loại bỏ ký hiệu danh sách */
+    padding: 0; /* Loại bỏ khoảng trống mặc định */
+    margin: 0; /* Loại bỏ khoảng trống mặc định */
+}
+
+.navbar__item {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center; /* Căn giữa nội dung bên trong mục */
+    align-items: center; /* Căn giữa nội dung bên trong mục */
+}
+
+.nav-borders .nav-link.active {
+    color: #0061f2;
+    border-bottom-color: #0061f2;
+}
+
+.nav-borders .nav-link {
+    color: #69707a;
+    border-bottom-width: 0.125rem;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    padding: 0.5rem 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    text-align: center;
+}
+
+/*Process*/
+#progress-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+#progress {
+    width: 0;
+    height: 100%;
+    background-color: #4caf50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+}
+
+textarea{
+    resize: none;
+}
+
+.modal{
+    z-index: 1055;
+}
+
+.img-account-profile {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+#ui-datepicker-div {
+    font-family: 'Open Sans', sans-serif;
+    background: #f0f0f0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+}
