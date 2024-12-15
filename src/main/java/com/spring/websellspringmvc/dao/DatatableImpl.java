@@ -23,7 +23,7 @@ public class DatatableImpl implements DatatableDAO {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT id, fullName, dateOrder, paymentMethod, orderStatusId ");
-        sql.append("FROM orders WHERE 1=1 ");
+        sql.append("FROM orders WHERE 1=1 AND orders.previousId IS NULL ");
 
         Map<String, Object> params = new HashMap<>();
 

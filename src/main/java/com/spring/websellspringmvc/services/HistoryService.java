@@ -25,30 +25,10 @@ public class HistoryService {
     OrderDAO orderDAO;
     CloudinaryUploadServices cloudinaryUploadServices;
 
-    public List<OrderDetail> getOrderDetailByOrderId(List<String> listId) {
-        if (listId.isEmpty()) return new ArrayList<>();
-        return orderDAO.getOrderDetailByOrderId(listId);
-    }
-
     public List<OrderResponse> getOrder(int userId, int statusOrder) {
         return orderDAO.getOrder(userId, statusOrder);
     }
 
-    public List<OrderDetail> getOrderDetailNotReview(int userId) {
-        return orderDAO.getOrderDetailNotReview(userId);
-    }
-
-    public List<OrderDetail> getOrderDetailHasReview(int userId) {
-        return orderDAO.getOrderDetailHasReview(userId);
-    }
-
-    public List<Product> getProductInOrderDetail(int id) {
-        return orderDAO.getProductInOrderDetail(id);
-    }
-
-    public List<Image> getNameImageByProductId(int id) {
-        return orderDAO.getNameImageByProductId(id);
-    }
 
     public List<OrderDetailItemResponse> getOrderDetailByOrderId(String orderId) {
         return orderDAO.getOrderDetailsByOrderId(orderId).stream().peek(

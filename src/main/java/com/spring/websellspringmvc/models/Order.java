@@ -37,4 +37,7 @@ public class Order {
     @EnumByName
     PaymentMethod paymentMethod;
     String paymentRef;
+
+    LocalDateTime createAt;
+    String previousId;
 }

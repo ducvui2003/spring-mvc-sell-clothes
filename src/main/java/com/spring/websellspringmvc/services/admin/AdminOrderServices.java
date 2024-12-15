@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderStatus;
 import com.spring.websellspringmvc.models.PaymentMethod;
 import com.spring.websellspringmvc.models.TransactionStatus;
@@ -15,7 +16,8 @@ public interface AdminOrderServices {
 
     AdminOrderDetailResponse getOrderDetail(String orderId);
 
-    List<PaymentMethod> getListAllPaymentMethodManage();
+    List<AdminOrderDetailResponse> getOrderPrevious(String orderId);
+
 
     List<OrderStatus> getListAllOrderStatus();
 
