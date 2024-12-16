@@ -25,8 +25,7 @@ public class KeyServiceImpl implements KeyServices{
         keyToInsert.setId(UUID.randomUUID().toString());
         keyToInsert.setPublicKey(publicKey);
         keyToInsert.setUserId(userId);
-        System.out.println("Current key: "+currentKeyId);
-        if (!currentKeyId.isEmpty() || currentKeyId != ""){
+        if (!currentKeyId.isEmpty() && currentKeyId != ""){
             keyDAO.deleteCurrentKey(userId);
         }else {
             currentKeyId = null;

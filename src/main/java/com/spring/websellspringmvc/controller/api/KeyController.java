@@ -62,7 +62,6 @@ public class KeyController {
         }
         int userID = sessionManager.getUser().getId();
         keyServiceImpl.insertKey(currentKeyId ,publicKey, userID);
-        Key key = keyServiceImpl.getCurrentKey(userID);
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key added successfully")
