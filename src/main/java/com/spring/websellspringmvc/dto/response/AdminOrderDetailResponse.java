@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AdminOrderDetailResponse {
+public class AdminOrderDetailResponse implements Serializable {
     String id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     LocalDateTime dateOrder;
@@ -32,5 +33,7 @@ public class AdminOrderDetailResponse {
     String ward;
     String detail;
     double fee;
+    LocalDateTime createAt;
+    String previousId;
     List<OrderDetailItemResponse> items;
 }
