@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface KeyServices {
 
-    boolean isBlockKey(int userId);
+    boolean isBlockKey(int userId, String uuid);
 
     List<Key> getKeys(int userId);
 

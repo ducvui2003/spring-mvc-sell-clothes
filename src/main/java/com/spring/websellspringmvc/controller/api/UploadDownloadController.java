@@ -86,6 +86,8 @@ public class UploadDownloadController {
     @GetMapping("/download")
     public void downloadFile(@RequestParam("uuid") String uuid, HttpServletResponse res) {
         int userId = sessionManager.getUser().getId();
+
+
         OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
         List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
         if (orderPrevious == null) {

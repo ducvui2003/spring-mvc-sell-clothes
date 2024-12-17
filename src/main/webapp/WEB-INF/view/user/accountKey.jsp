@@ -106,9 +106,9 @@
             <div class="modal-body">
                 <div class="row gx-3 mb-3 mt-2">
                     <div class="mb-3">
-                        <label class="small mb-1" for="inputPassword">Mật khẩu</label>
+                        <label class="small mb-1" for="inputPassword">Mã xác thực</label>
                         <input class="form-control" name="inputPassword" id="inputPassword" type="text"
-                               value="" placeholder="Nhập mật khẩu xác thực">
+                               value="" placeholder="Nhập mã xác thực">
                     </div>
                 </div>
                 <div class="row gx-3 mb-3 mt-2">
