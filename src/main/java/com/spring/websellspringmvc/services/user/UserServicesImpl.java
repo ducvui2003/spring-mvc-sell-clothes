@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.dto.response.UserInfoResponse;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.model.Credential;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;

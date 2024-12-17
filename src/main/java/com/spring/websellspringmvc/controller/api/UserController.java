@@ -1,20 +1,22 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
-import com.spring.websellspringmvc.dto.response.OrderResponse;
+import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.UserServices;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
+import com.spring.websellspringmvc.services.user.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
-import com.spring.websellspringmvc.utils.ValidatePassword;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServices userServices;
+    UserServicesImpl userServices;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -61,10 +63,8 @@ public class UserController {
 
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<?>> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws IOException {
-        JSONObject json = new JSONObject();
-
         User user = sessionManager.getUser();
-        userServicesImpl.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
+        userServices.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
 
         return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Change password success", null));
     }
