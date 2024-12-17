@@ -2,9 +2,9 @@ package com.spring.websellspringmvc.controller.api.admin;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.spring.websellspringmvc.dto.VoucherDetailRequest;
+import com.spring.websellspringmvc.dto.request.VoucherDetailRequest;
 import com.spring.websellspringmvc.dto.request.CreateVoucherRequest;
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateVoucherRequest;
 import com.spring.websellspringmvc.dto.request.VisibleVoucherRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;

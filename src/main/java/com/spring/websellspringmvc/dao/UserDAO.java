@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.model.Credential;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -20,16 +21,19 @@ import java.util.Optional;
 public interface UserDAO {
 
     @SqlQuery("SELECT id, username, fullName, gender, phone, email, birthday, isVerify, role, avatar FROM users WHERE id = :id")
-    User selectById(@Bind("id") int id);
+    User findById(@Bind("id") int id);
 
     @SqlQuery("SELECT * FROM users WHERE username = :username AND isVerify = :isVerify")
     User findByUsername(@Bind("username") String username, @Bind("isVerify") boolean isVerify);
 
+    @SqlQuery("SELECT * FROM users WHERE email = :email AND isVerify = :isVerify")
+    User findByEmail(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
+
     @SqlQuery("SELECT * FROM users WHERE email = :email")
-    Optional<User> findByEmail(@Bind("email") String email);
+    Optional<User> findById(@Bind("email") String email);
 
     @SqlQuery("SELECT id FROM users WHERE email = :email AND isVerify = :isVerify")
-    Optional<User> findByEmail(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
+    Optional<User> findById(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
 
     @SqlUpdate("UPDATE users SET passwordEncoding = :passwordEncoding WHERE id = :id AND passwordEncoding = :passwordEncoding")
     void updatePasswordEncoding(@Bind("id") int id, @Bind("passwordEncoding") String passwordEncoding);
@@ -37,17 +41,14 @@ public interface UserDAO {
     @SqlQuery("SELECT id, tokenVerifyTime, tokenVerify FROM users WHERE username = ? AND isVerify = 0")
     Optional<User> selectTokenVerify(String username);
 
-    @SqlUpdate("UPDATE users SET tokenVerify = :tokenVerify, tokenVerifyTime = :tokenVerifyTime WHERE id = :id")
-    void updateTokenVerify(@Bind("id") int id, @Bind("tokenVerify") String tokenVerify, @Bind("timeTokenExpired") Timestamp timeTokenExpired);
-
-    @SqlUpdate("UPDATE users SET isVerify = :isVerify WHERE id = :id")
-    void updateVerify(@Bind(":id") int id, @Bind("status") boolean isVerify);
+    @SqlUpdate("UPDATE users SET isVerify = :isVerify, tokenVerify = :tokenVerify, tokenVerifyTime = :tokenVerifyTime WHERE id = :id")
+    void updateTokenVerify(@Bind("id") int id, @Bind("isVerify") boolean isVerify, @Bind("tokenVerify") String tokenVerify, @Bind("tokenVerifyTime") Timestamp timeTokenExpired);
 
     @SqlQuery("SELECT id, tokenResetPassword, tokenResetPasswordTime FROM users WHERE email = :email")
     List<User> selectTokenResetPassword(@Bind("email") String email);
 
     @SqlUpdate("UPDATE users SET tokenResetPassword = :tokenResetPassword, tokenResetPasswordTime = :tokenResetPasswordTime WHERE id = :id")
-    void updateTokenResetPassword(@Bind(":id") int id, @Bind(":tokenResetPassword") String tokenResetPassword, @Bind("tokenResetPasswordTime") Timestamp tokenResetPasswordTime);
+    void updateTokenResetPassword(@Bind("id") int id, @Bind("tokenResetPassword") String tokenResetPassword, @Bind("tokenResetPasswordTime") Timestamp tokenResetPasswordTime);
 
     @SqlUpdate("""
             INSERT INTO users (username, passwordEncoding, fullName, gender, email, phone, birthDay, isVerify, role, tokenVerifyTime, tokenVerify) 
@@ -78,7 +79,7 @@ public interface UserDAO {
     @SqlQuery("SELECT COUNT(*) count FROM users")
     public long getQuantity();
 
-    @SqlQuery("Select id, username, email, fullName, gender, phone, address, birthDay, role from users limit :limit offset :offset")
+    @SqlQuery("Select id, username, email, fullName, gender, phone, birthDay, role from users limit :limit offset :offset")
     public List<User> getLimit(@Bind("limit") int limit, @Bind("offset") int offset);
 
     @SqlQuery("""
@@ -90,5 +91,11 @@ public interface UserDAO {
 
     @SqlQuery("SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE %:search% OR email LIKE :search OR phone LIKE :search")
     public long getSizeWithCondition(@Bind("searchValue") String search);
+
+    @SqlUpdate("UPDATE users SET userHandle = :userHandle WHERE id = :id")
+    void updateUserHandle(@Bind("id") Integer id, @Bind("userHandle") String userHandle);
+
+    @SqlUpdate("INSERT INTO users_credentials (id, public_key, sign_count, user_id, type) VALUES (:id, :publicKey, :signCount, :userId, :type)")
+    void addCredential(@BindBean Credential credential);
 
 }

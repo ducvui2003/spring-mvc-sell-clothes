@@ -1,11 +1,14 @@
 package com.spring.websellspringmvc.models;
 
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jdbi.v3.core.enums.EnumByName;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -14,21 +17,27 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Order {
-      String id;
-      int userId;
-      Date dateOrder;
-      int deliveryMethodId;
-      int paymentMethodId;
-      String fullName;
-      String email;
-      String phone;
-      String address;
-      int orderStatusId;
-      int transactionStatusId;
-      int voucherId;
-      String message;
-      String province;
-      String district;
-      String ward;
-      String detail;
+    String id;
+    int userId;
+    LocalDateTime dateOrder;
+    int paymentMethodId;
+    String fullName;
+    String email;
+    String phone;
+    int orderStatusId;
+    int transactionStatusId;
+    int voucherId;
+    String message;
+    String province;
+    String district;
+    String ward;
+    String detail;
+    double fee;
+
+    @EnumByName
+    PaymentMethod paymentMethod;
+    String paymentRef;
+
+    LocalDateTime createAt;
+    String previousId;
 }

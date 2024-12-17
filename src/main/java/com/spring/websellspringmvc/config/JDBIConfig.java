@@ -110,7 +110,11 @@ public class JDBIConfig {
     }
 
     @Bean
-    public CheckoutDAO checkoutDAO(Jdbi jdbi) {
-        return jdbi.onDemand(CheckoutDAO.class);
+    public CartDAO cartDAO(Jdbi jdbi) {
+        return jdbi.onDemand(CartDAO.class);
     }
+
+    @Bean
+    public KeyDAO keyDAO(Jdbi jdbi) {return jdbi.onDemand(KeyDAO.class);}
+
 }

@@ -4,70 +4,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/adminLink"/>
+    <jsp:include page="/WEB-INF/view/common/adminLink.jsp"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
-    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
+    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">--%>
+    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">--%>
     <title>Quản lý đơn hàng</title>
 </head>
 <body>
 <!--Header-->
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
-    <%@include file="adminNavigator.jsp" %>
+    <c:import url="/common/adminNavigator"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
+                <h1 class="badge bg-primary fs-3 d-inline m-2" style="width: fit-content">
+                    <i class="fa-solid fa-list"></i>
+                    Danh sách đơn hàng</h1>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modal-filter">
+                        <i class="fa-solid fa-filter"></i> Bộ lọc
+                    </button>
+                </div>
                 <div class="col-12">
-                    <!--Bảng thông tin đơn hàng -->
-                    <div id="process__order--form">
-                        <div class="order__heading py-2">
-                            <h1><i class="fa-solid fa-list"></i> Danh sách đơn hàng</h1>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modal-filter">
-                                <i class="fa-solid fa-filter"></i> Bộ lọc
-                            </button>
-                            <div class="delete__cancel ms-auto">
-                                <form action="<c:url value="/admin/exportExcelOrder"/>" method="POST">
-                                    <button class="btn_export">
-                                        <i class="fa-solid fa-file-export"></i>
-                                        Xuất file excel
-                                    </button>
-                                </form>
-                                <%--                                <div class="delete__wrapper hvr-bounce-out">--%>
-                                <%--                                    <div class="button button__delete">--%>
-                                <%--                                        <i class="fa-solid fa-trash"></i>--%>
-                                <%--                                        Xóa đơn hàng--%>
-                                <%--                                    </div>--%>
-                                <%--                                </div>--%>
-                                <%--                                <div class="cancel__wrapper hvr-bounce-out">--%>
-                                <%--                                    <div class="button button__cancel">--%>
-                                <%--                                        <i class="fa-solid fa-ban"></i>--%>
-                                <%--                                        Hủy đơn hàng--%>
-                                <%--                                    </div>--%>
-                                <%--                                </div>--%>
-                            </div>
-                        </div>
-                        <div class="table__wrapper">
-                            <table id="table" class="table table__order">
-                                <thead>
-                                <tr class="table__row">
-                                    <th class="table__head">#</th>
-                                    <th class="table__head">Ngày tạo</th>
-                                    <th class="table__head">Khách hàng</th>
-                                    <th class="table__head">Phương thức thanh toán</th>
-                                    <th class="table__head">Tình trạng đơn hàng</th>
-                                    <th class="table__head">Xem</th>
-                                    <th class="table__head">Cập nhật</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table__wrapper">
+                        <table id="table" class="table">
+                            <thead>
+                            <tr class="table__row">
+                                <th class="table__head">#</th>
+                                <th class="table__head">Ngày tạo</th>
+                                <th class="table__head">Khách hàng</th>
+                                <th class="table__head">Phương thức thanh toán</th>
+                                <th class="table__head">Tình trạng đơn hàng</th>
+                                <th class="table__head">Xem</th>
+                                <th class="table__head">Cập nhật</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -77,8 +56,8 @@
 
 <!--Modal filter-->
 <div class="modal fade" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form id="form-search" action="<c:url value="/api/admin/order/search"/>" class="modal-content">
+    <div class="modal-dialog modal-lg ">
+        <form id="form-search" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lọc và tìm kiếm</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -99,9 +78,9 @@
                         <div class="col-4">
                             <select class="form-select mb-3" id="searchSelect" name="searchSelect"
                                     aria-label="Tìm kiếm theo">
-                                <option value="orderId" selected>Mã đơn hàng
+                                <option value="ORDER_ID" selected>Mã đơn hàng
                                 </option>
-                                <option value="customerName">Tên khách hàng
+                                <option value="CUSTOMER_NAME">Tên khách hàng
                                 </option>
                             </select>
                         </div>
@@ -116,12 +95,12 @@
                             <h2 class="filler__heading">Phương thức thanh toán</h2>
                             <div class="filter__content">
                                 <c:forEach
-                                        items="${pageContext.servletContext.getAttribute('listAllPaymentMethodManage')}"
+                                        items="${requestScope.paymentMethod}"
                                         var="paymentMethod">
                                     <label class="filter__label check">
-                                        <input type="checkbox" name="paymentMethod" id="paymentMethod" hidden="hidden"
-                                               value="${paymentMethod.id}">
-                                        <span>${paymentMethod.typePayment}</span>
+                                        <input type="checkbox" name="paymentMethod" hidden="hidden"
+                                               value="${paymentMethod}">
+                                        <span>${paymentMethod}</span>
                                     </label>
                                 </c:forEach>
                             </div>
@@ -129,7 +108,7 @@
                         <div class="col-4">
                             <h2 class="filler__heading">Tình trạng đơn hàng</h2>
                             <div class="filter__content">
-                                <c:forEach items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}"
+                                <c:forEach items="${requestScope.orderStatus}"
                                            var="orderStatus">
                                     <label class="filter__label check">
                                         <input type="checkbox" name="orderStatus"
@@ -260,18 +239,18 @@
     <div class="container-fluid ">
         <div class="row">
             <div class="col-6">
-                <label class="form-label">Tình trạng đơn hàng</label>
-                <select class="orderStatus" name="orderStatus">
-                    <c:forEach var="item" items="${pageContext.servletContext.getAttribute('listAllOrderStatus')}">
+                <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
+                <select id="orderStatus" class="orderStatus" name="orderStatus">
+                    <c:forEach var="item" items="${requestScope.orderStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
             <div class="col-6">
-                <label class="form-label">Tình trạng giao dịch</label>
-                <select class="transactionStatus" name="transactionStatus">
+                <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>
+                <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
-                               items="${pageContext.servletContext.getAttribute('listAllTransactionStatus')}">
+                               items="${requestScope.transactionStatus}">
                         <option value="${item.id}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>

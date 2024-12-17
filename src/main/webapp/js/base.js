@@ -1,3 +1,4 @@
+
 export const addParam = (form, {key, value}) => {
     let formDataArray = $(form).serializeArray();
     formDataArray.push({name: key, value: value}); // Add your custom parameter
@@ -104,36 +105,63 @@ export const endLoading = () => {
     $.LoadingOverlay("hide");
 }
 
-export const http = ({beforeSend, complete, data, ...rest}, automaticLoading = true) => {
+export const http = ({
+                         beforeSend,
+                         complete,
+                         data = null,
+                         contentType = 'application/json',
+                         dataType = 'json',
+                         queryParams = {},
+                         pathVariables = {},
+                         ...rest
+                     }, automaticLoading = true) => {
     return new Promise((resolve, reject) => {
+        let finalUrl = rest.url;
+        if (pathVariables && typeof pathVariables === 'object') {
+            Object.entries(pathVariables).forEach(([key, value]) => {
+                finalUrl = finalUrl.replace(`:${key}`, encodeURIComponent(value));
+            });
+        }
+        // Build the query string if queryParams is provided
+        const queryString = new URLSearchParams(queryParams).toString();
+        // Append query string to the URL if it exists
+        if (queryString) {
+            finalUrl += `${finalUrl.includes('?') ? '&' : '?'}${queryString}`;
+        }
+
         $.ajax({
             ...rest,
+            url: finalUrl, // Use the updated URL with query string
             beforeSend: function (xhr, settings) {
-                if (automaticLoading)
-                    startLoading();
+                if (automaticLoading) startLoading();
                 if (typeof beforeSend === 'function') {
                     beforeSend.call(this, xhr, settings);
                 }
             },
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            dataType: "json",
-            success: function (data) {
-                resolve(data);
+            data: data && contentType === 'application/json' ? JSON.stringify(data) : data,
+            dataType,
+            contentType,
+            success: function (response) {
+                // Check if response is null or empty, resolve with a default value
+                if (response === null || response === undefined) {
+                    resolve(null); // Return null or any default you prefer
+                } else {
+                    resolve(response); // Return the valid response
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reject(new Error(`Error: ${textStatus}, ${errorThrown}`));
             },
             complete: function (xhr, status) {
-                if (automaticLoading)
-                    endLoading();
+                if (automaticLoading) endLoading();
                 if (typeof complete === 'function') {
                     complete.call(xhr, status);
                 }
             }
-        })
+        });
     });
-}
+};
+
 
 export const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -151,3 +179,55 @@ export const configSweetAlert2 = {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
 }
+
+export const formDataToJson = function (formElement, additionalFields = {}) {
+    const formData = new FormData(formElement);
+    const json = {};
+
+    for (const [key, value] of formData.entries()) {
+        const inputElements = formElement.elements[key];
+
+        if (inputElements) {
+            if (inputElements.length && inputElements[0].type === 'checkbox') {
+                // Handle multiple checkboxes with the same name
+                json[key] = Array.from(inputElements)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+            } else if (inputElements.nodeName === 'SELECT') {
+                // Handle <select multiple>
+                const selectElement = inputElements;
+                if (selectElement.multiple) {
+                    json[key] = Array.from(selectElement.selectedOptions).map(opt => opt.value);
+                } else {
+                    json[key] = value;
+                }
+            } else if (inputElements.type === 'checkbox' || inputElements.type === 'radio') {
+                // Handle single checkbox or radio button
+                if (inputElements.type === 'checkbox' && inputElements.checked) {
+                    if (!json[key]) json[key] = [];
+                    json[key].push(value);
+                } else if (inputElements.type === 'radio' && inputElements.checked) {
+                    json[key] = value;
+                }
+            } else {
+                // Handle other input types
+                if (json[key] === undefined) {
+                    json[key] = value; // Single value
+                } else if (Array.isArray(json[key])) {
+                    json[key].push(value); // Append to array if already an array
+                } else {
+                    json[key] = [json[key], value]; // Convert to array if duplicate keys
+                }
+            }
+        }
+    }
+
+    // Remove empty arrays for unchecked checkboxes
+    for (const key in json) {
+        if (Array.isArray(json[key]) && json[key].length === 0) {
+            delete json[key];
+        }
+    }
+
+    return { ...json, ...additionalFields };
+};

@@ -1,13 +1,12 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.controller.exception.ErrorForm;
 import com.spring.websellspringmvc.dto.mvc.request.SignInRequest;
 import com.spring.websellspringmvc.dto.mvc.request.SignUpRequest;
-import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.authentication.AuthenticationService;
 import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,11 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     SessionManager sessionManager;
 
+
     @GetMapping("/signIn")
     public ModelAndView signInPage() {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName(ConfigPage.SIGN_IN);
+        mav.setViewName(PageAddress.SIGN_IN.getPage());
         mav.addObject("user", new SignInRequest());
         return mav;
     }
@@ -43,15 +43,15 @@ public class AuthenticationController {
             throw new ErrorForm(bindingResult, new ErrorView(ErrorView.SIGN_IN_FAILED,
                     "user", request));
         }
-        User user = authenticationService.signIn(request);
-        sessionManager.addUser(user);
+        authenticationService.signIn(request);
+
         return new ModelAndView("redirect:/");
     }
 
     @GetMapping("/signUp")
     public ModelAndView signUpPage() {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName(ConfigPage.SIGN_UP);
+        mav.setViewName(PageAddress.SIGN_UP.getPage());
         mav.addObject("user", new SignUpRequest());
         return mav;
     }
@@ -66,14 +66,14 @@ public class AuthenticationController {
         return new ModelAndView("redirect:/");
     }
 
+
     @PostMapping("/verify")
     public ModelAndView verify(HttpServletRequest request) {
         String username = request.getParameter("username");
         String token = request.getParameter("token-verify");
         log.info("username {} tokenVerify {}", username, token);
-        request.setAttribute("username", username);
         authenticationService.verify(username, token);
-        return new ModelAndView("redirect:/").addObject("username", username);
+        return new ModelAndView(PageAddress.VERIFY_SUCCESS.getPage()).addObject("username", username);
     }
 
     @GetMapping("/signOut")

@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.exception;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,7 +30,7 @@ public class ErrorView {
 
     public static final ErrorView FORGET_PASSWORD_FAILED = new ErrorView(
             Map.of("email", "Email không tồn tại"),
-            ConfigPage.FORGET_PASSWORD
+            PageAddress.FORGET_PASSWORD.getPage()
     );
 
 

@@ -4,18 +4,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
-    <jsp:include page="/commonLink"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <title>Thông tin cá nhân</title>
 </head>
 <body>
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
@@ -24,13 +22,13 @@
                 <div class="card mb-4 mb-xl-0">
                     <div class="card-header">Ảnh đại diện</div>
                     <div class="card-body text-center">
-                        <c:set var="avatar" value="${requestScope.accountInfo.avatar}"/>
+                        <c:set var="avatar" value="${requestScope.user.avatar}"/>
                         <img id="preview-avatar"
                              class="img-account-profile object-fit-cover rounded-circle overflow-hidden mb-2"
-                             src="${not empty requestScope.accountInfo.avatar ? CloudinaryUploadServices.getINSTANCE().getImage("user/", requestScope.accountInfo.avatar) : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}"
+                             src="${not empty requestScope.user.avatar ? requestScope.user.avatar : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}"
                              alt="">
-                        <div id="username" class="medium  text-muted mb-2">${requestScope.accountInfo.username}</div>
-                        <div id="email" class="small  text-muted mb-4">${requestScope.accountInfo.email}</div>
+                        <div id="username" class="medium  text-muted mb-2">${requestScope.user.username}</div>
+                        <div id="email" class="small  text-muted mb-4">${requestScope.user.email}</div>
                         <div id="open-form" class="btn btn-primary ">Thay đổi ảnh</div>
                         <form id="form-avatar" enctype="multipart/form-data">
                             <input id="avatar" name="avatar" type="file" class="form-control" accept="image/png">
@@ -52,7 +50,7 @@
                                         <label class="medium mb-1" for="inputUsername">Họ và tên</label>
                                         <input name="fullName" class="form-control" id="inputUsername" type="text"
                                                placeholder="Vui lòng nhập tên của bạn"
-                                               value="${requestScope.accountInfo.fullName}">
+                                               value="${requestScope.user.fullName}">
                                         <div class="valid-feedback">
 
                                         </div>
@@ -62,11 +60,11 @@
                                 <div class="col-md-6">
                                     <label class="medium mb-1" for="inputGender">Giới tính</label>
                                     <select id="inputGender" name="gender" class="form-select" aria-label="Chọn">
-                                        <c:choose> <c:when test="${not empty requestScope.accountInfo.gender}">
-                                            <option value="Nam" ${requestScope.accountInfo.gender eq 'Nam'
+                                        <c:choose> <c:when test="${not empty requestScope.user.gender}">
+                                            <option value="Nam" ${requestScope.user.gender eq 'Nam'
                                                     ? 'selected' : '' }>Nam
                                             </option>
-                                            <option value="Nữ" ${requestScope.accountInfo.gender eq 'Nữ'
+                                            <option value="Nữ" ${requestScope.user.gender eq 'Nữ'
                                                     ? 'selected' : '' }>Nữ
                                             </option>
                                         </c:when> <c:otherwise>
@@ -83,7 +81,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <fmt:formatDate var="date" type="DATE" value="${requestScope.accountInfo.birthDay}"
+                                    <fmt:formatDate var="date" type="DATE" value="${requestScope.user.birthDay}"
                                                     pattern="dd-MM-yyy"/>
                                     <label class="medium mb-1" for="inputDate">Ngày sinh</label>
                                     <input class="form-select" name="birthDay" value="${date}" id="inputDate"
@@ -93,7 +91,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="medium mb-1" for="inputPhone"> Số điện thoại</label>
-                                    <input class="form-select" name="phone" value="${requestScope.accountInfo.phone}"
+                                    <input class="form-select" name="phone" value="${requestScope.user.phone}"
                                            id="inputPhone"
                                            type="text">
                                     <div class="valid-feedback">
@@ -196,7 +194,7 @@
      style="background-color: rgba(0,0,0,0.5)">
     <span class='position-absolute top-50 start-50 translate-middle loader'></span>
 </div>
-<c:import url="/footer"/>
+<jsp:include page="/WEB-INF/view/common/footer.jsp"/>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

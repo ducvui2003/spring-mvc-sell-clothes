@@ -27,7 +27,6 @@
                         </a>
                     </li>
                 </ul>
-                <%--                <c:set var="sessionId" value="${cookie['sessionId'].value}"/>--%>
                 <c:set var="auth" value="${sessionScope.user}"/>
                 <c:choose>
                     <c:when test="${empty auth}"> <!--cta == call to action-->
@@ -47,20 +46,14 @@
                         <div class="account__wrapper">
                             <!--Giỏ hàng-->
                             <div class="cart__wrapper">
-                                <a href="<c:url value="/public/user/shoppingCart.jsp" />" class="cart">
+                                <a href="/cart" class="cart">
                                         <span class="cart__content">
                                             <i class="cart__icon fa-solid fa-cart-shopping"></i>
                                             Giỏ hàng
                                         </span>
                                     <span class="qlt__swapper">
                                             <span class="qlt__value">
-<%--                                                <c:set var="userIdCart" value="${String.valueOf(auth.id)}"/>--%>
-<%--                                                <c:choose>--%>
-<%--                                                    <c:when test="${sessionScope[userIdCart] == null}"> 0 </c:when>--%>
-<%--                                                    <c:otherwise>--%>
-<%--                                                        ${sessionScope[userIdCart].getTotalItems()}--%>
-<%--                                                    </c:otherwise>--%>
-<%--                                                </c:choose>--%>
+                                                    ${empty sessionScope.quantity ? 0: sessionScope.quantity }
                                             </span>
                                         </span>
                                 </a>
@@ -87,7 +80,8 @@
                                             <div class="setting__link">Quản lý</div>
                                         </a>
                                     </c:if>
-                                    <a href="<c:url value="/signOut" />" class="setting__item">
+                                    <a href="<c:url value="/signOut" />" class="setting__item"
+                                       onclick="handleSignOut(event,this)">
                                         <div class="setting__link setting__logOut">Đăng xuất</div>
                                     </a>
                                 </div>
@@ -99,3 +93,24 @@
         </div>
     </nav>
 </header>
+<script>
+    function handleSignOut(e, element) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn đăng xuất?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            cancelButtonText: 'Không',
+            confirmButtonText: 'Đăng xuất'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = element.href;
+            }
+        })
+        return false;
+    }
+</script>

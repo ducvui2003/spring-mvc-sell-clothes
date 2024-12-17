@@ -28,4 +28,22 @@ public class SessionManager {
     public void clearSession() {
         session.invalidate();
     }
+
+    public void setQuantityCart(int quantity) {
+        session.setAttribute("quantity", quantity);
+    }
+
+    public void increaseQuantityCart() {
+        int quantity = getQuantityCart();
+        session.setAttribute("quantity", quantity + 1);
+    }
+
+    public void decreaseQuantityCart() {
+        int quantity = getQuantityCart();
+        session.setAttribute("quantity", quantity - 1);
+    }
+
+    public int getQuantityCart() {
+        return session.getAttribute("quantity") == null ? 0 : (int) session.getAttribute("quantity");
+    }
 }

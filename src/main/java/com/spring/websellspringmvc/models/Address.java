@@ -1,19 +1,24 @@
 package com.spring.websellspringmvc.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Address {
-    private Integer id;
-    private Integer userId;
-    private String detail;
-    private String province;
-    private String district;
-    private String ward;
-
-    public String exportAddressString() {
-        return String.format("%s, %s, %s, %s", detail, ward, district, province);
-    }
+    Integer id;
+    Integer userId;
+    String wardId;
+    String wardName;
+    String districtId;
+    String districtName;
+    String provinceId;
+    String provinceName;
+    String detail;
 }

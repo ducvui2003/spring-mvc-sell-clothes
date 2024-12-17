@@ -20,17 +20,11 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductCardServices {
-    @NonFinal
-    static final int LIMIT = 9;
     ProductCardDAO productCardDAO;
     ReviewDAO reviewDAO;
-    ProductDAO productDAO;
     SizeDAO sizeDAO;
-    ImageDAO imageDAO;
     ColorDAO colorDAO;
     CategoryDAO categoryDAO;
-    ProductMapper productMapper = ProductMapper.INSTANCE;
-    CloudinaryUploadServices cloudinaryUploadServices;
 
     public List<Category> getAllCategory() {
         return categoryDAO.getAllCategory();
@@ -42,26 +36,6 @@ public class ProductCardServices {
 
     public List<Size> getAllSize() {
         return sizeDAO.getAllSize();
-    }
-
-    public List<Product> getProducts(int numberPage) {
-        List<Product> productCardList = productCardDAO.getProducts(numberPage, LIMIT, true);
-        return productCardList;
-    }
-
-    public int getQuantityPage() {
-        double quantityPage = Math.ceil(Double.parseDouble(productCardDAO.getQuantityProduct(true) + "") / LIMIT);
-        return (int) quantityPage;
-    }
-
-    public int getQuantityPage(List<Integer> listId) {
-        double quantityPage = Math.ceil(Double.parseDouble(productCardDAO.getQuantityProduct(listId, true) + "") / LIMIT);
-        return (int) quantityPage;
-    }
-
-    public List<Product> filter(List<Integer> listId, int pageNumber) {
-        int offset = (pageNumber - 1) * LIMIT;
-        return productCardDAO.pagingAndFilter(listId, offset, LIMIT, true);
     }
 
     public List<Integer> getIdProductFromCategoryId(String[] categoryIds) {
@@ -106,69 +80,9 @@ public class ProductCardServices {
         return listId;
     }
 
-    public int getReviewCount(int productId) {
-        List<Review> list = reviewDAO.getReviewStar(productId);
-        if (list.isEmpty()) return 0;
-        return list.size();
-    }
-
-    public Map<String, Object> calculateStar(int productId) {
-        List<Review> list = reviewDAO.getReviewStar(productId);
-        if (list.isEmpty()) return null;
-        int totalStar = 0;
-        for (Review item : list) {
-            totalStar += item.getRatingStar();
-        }
-        return Map.of("ratingStar", totalStar / list.size(), "reviewCount", list.size());
-    }
-
-    public List<Product> getProductByCategoryId(int categoryId, int quantity, boolean isRandom) {
-        List<Product> productList = productCardDAO.getProductByCategoryId(categoryId);
-        List<Product> result = new ArrayList<>();
-        if ((productList.size() - quantity) < 10) {
-            for (int i = 0; i < quantity; i++) {
-                try {
-                    result.add(productList.get(i));
-                } catch (IndexOutOfBoundsException e) {
-                    break;
-                }
-            }
-            return result;
-        }
-        int numRd = 0;
-        Random rd = new Random();
-        for (int i = 0; i < quantity; i++) {
-            Product p = null;
-            if (isRandom) {
-                numRd = rd.nextInt(productList.size());
-                p = productList.get(numRd);
-                while (productList.contains(p)) {
-                    numRd = rd.nextInt(productList.size());
-                    System.out.println(rd);
-                    p = productList.get(numRd);
-                }
-            } else {
-                p = productList.get(i);
-            }
-            result.add(p);
-        }
-        return result;
-    }
-
-    public String getNameCategoryById(int id) {
-        return productCardDAO.getNameCategoryById(id).get(0).getNameType();
-    }
 
     public List<Parameter> getParameterByIdCategory(int id) {
         return productCardDAO.getParametersByProductId(id);
-    }
-
-    public Category getCategoryById(int id) {
-        return productCardDAO.getCategoryByProductId(id).get(0);
-    }
-
-    public String getNameProductByIdOrderDetail(int orderDetailId) {
-        return reviewDAO.getNameProductByOrderDetailId(orderDetailId).get(0).getName();
     }
 
     public String getNameProductById(int productId) {

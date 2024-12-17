@@ -17,7 +17,7 @@
 <c:import url="/public/header.jsp"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/public/admin/adminNavigator.jsp"/>
+    <c:import url="/common/adminNavigator"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">

@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.services.authentication;
 
+import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.http.google.GoogleClientAccessToken;
@@ -37,6 +38,7 @@ public class GoogleServices implements OAuthServices {
     @Value("${app.service.google.grant-type}")
     @NonFinal
     String grantType;
+    CartDAO cartDAO;
 
     @Override
     public String getToken(String code) throws IOException {
@@ -53,9 +55,12 @@ public class GoogleServices implements OAuthServices {
         String accessToken = getToken(code);
         GoogleUser googleUserAccount = (GoogleUser) getUserInfo(accessToken);
         String emailGoogle = googleUserAccount.getEmail();
-        Optional<User> userOptional = userDAO.findByEmail(emailGoogle);
-        if (userOptional.isPresent())
+        Optional<User> userOptional = userDAO.findById(emailGoogle);
+        if (userOptional.isPresent()) {
             sessionManager.addUser(userOptional.get());
+            int quantityCart = cartDAO.getQuantityCart(userOptional.get().getId());
+            sessionManager.setQuantityCart(quantityCart);
+        }
         else {
             User user = User.builder()
                     .role(Role.USER.name())

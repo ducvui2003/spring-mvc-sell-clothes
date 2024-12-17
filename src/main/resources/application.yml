@@ -4,10 +4,10 @@ spring:
   profiles:
     default: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: jdbc:mysql://localhost:3306/ltw
+    url: jdbc:mysql://localhost:3306/atbm
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: 123
+    password: 12345
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,7 +22,14 @@ server:
     whitelabel:
       enabled: false
     path: /error
-  port: 8080
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:key/keystore.p12
+    key-store-password: 123
+    key-alias: local-https
+    key-store-type: PKCS12
+  address: localhost
 
 app:
   service:
@@ -31,7 +38,14 @@ app:
       api-key: 959271713937367
       api-secret: 3tqA0quB3nZGk6o8qdtOVXN6dP0
     delivery:
-      url: https://online-gateway.ghn.vn/shiip/public-api/v2/
+      url: https://online-gateway.ghn.vn/shiip/public-api
+      province-id: 202
+      district-id: 1442
+      ward-code: 20101
+      weight: 500
+      service-type-id: 2
+      shop-id: 4969655
+      token: 015940b9-e810-11ee-b290-0e922fc774da
     map4d:
       url: https://api.map4d.vn/sdk/v2/geocode
       api-key: 508a31b5c17f02ca9530bf6f8110010e
@@ -50,7 +64,32 @@ app:
       user-info-uri: https://graph.facebook.com/me?fields=id,name,email&access_token=
       redirect-uri: http://localhost:${server.port}/oauth2/facebook/login/callback
       login-uri: https://www.facebook.com/v9.0/dialog/oauth?redirect_uri=${app.service.facebook.redirect-uri}&scope=email&client_id=${app.service.facebook.client-id}
+    vnpay:
+      pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      pay-return-url: https://localhost:${server.port}/checkout/vn-pay-return
+      tnn-code: 8QI437P2
+      hash-secret: AT3P2JYLC7DN394RY3X0FDCAJ3RCJCH9
+      api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+    yubikey:
+      id: ${server.address}
+      origins: http://${server.address}:${server.port},https://${server.address}:${server.port}
+      name: "YourStyle"
 logging:
   level:
     feign:
       Client=DEBUG: DEBUG
+    com:
+      spring:
+        websellspringmvc:
+          services:
+            http: DEBUG
+feign:
+  client:
+    config:
+      com:
+        spring:
+          websellspringmvc:
+            services:
+              http:
+                giaoHangNhanh:
+                  loggerLevel: DEBUG

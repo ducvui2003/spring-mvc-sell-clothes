@@ -13,4 +13,5 @@ public interface OrderMapper {
     ReviewDetailResponse.OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail);
 
     ReviewDetailResponse.OrderResponse toOrderResponse(Order order);
+
 }

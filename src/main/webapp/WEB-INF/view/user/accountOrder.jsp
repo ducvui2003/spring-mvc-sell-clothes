@@ -3,17 +3,16 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountOrder.css"/>">
-    <jsp:include page="/commonLink"/>
     <title>Lịch sử mua hàng</title>
 </head>
 <body>
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <div id="main" class="d-flex">
     <%@include file="accountNavigator.jsp" %>
     <div class="w-100 px-4 mt-4">
@@ -23,9 +22,6 @@
                     <div class=" py-3 list-group-item list-group-item-action active" aria-current="true"
                          data-status="1">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
-                    </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="2">
-                        <i class="fa-solid fa-spinner me-3"></i> Đang sản xuất
                     </div>
                     <div class="py-3 list-group-item list-group-item-action" data-status="3">
                         <i class="fa-solid fa-truck me-3"></i>Đang vận chuyển
@@ -58,7 +54,7 @@
 </div>
 <c:import url="/footer"/>
 <!--Modal-->
-<div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel">
     <div id="model" class="modal-dialog modal-dialog-scrollable" style="max-width: 80%">
         <div class="modal-content">
             <div class="modal-header">
@@ -130,7 +126,7 @@
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-6">Email</div>
-                                        <div class="text-end col-6" id="order__address"></div>
+                                        <div class="text-end col-6" id="order__email"></div>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +148,7 @@
                                     <div class="text-end col-6" id="order__ward"></div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-6">Chi tiết</div>
+                                    <div class="col-6">Đường, thị trấn, số nhà,...</div>
                                     <div class="text-end col-6" id="order__detail"></div>
                                 </div>
                             </div>
@@ -170,13 +166,46 @@
                                     <div class="col-6">Vận chuyển</div>
                                     <div class="text-end col-6" id="order__shipping-fee"></div>
                                 </div>
-                                <hr class=" my-2">
-                                <div class="row ">
-                                    <p class="fs-5 text-bold col-6">Tổng cộng</p>
-                                    <div class="text-end text-bold col-6" id="order__total">$123</div>
+                            </div>
+                        </div>
+                        <hr class="border border-1 opacity-75 my-4">
+                        <div class="row align-items-center">
+                            <div class="col-6 border-end flex-column  justify-content-center pe-auto">
+                                <div class=" d-flex justify-content-center">
+                                    <div class="text-center m-2">
+                                        <div class="rounded-circle bg-primary p-3" onclick="handleDownloadFile()">
+                                            <label class="text-light"
+                                                   style="cursor: pointer; font-size: 32px;">
+                                                <i class="fas fa-download"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Vui lòng tải thông tin đơn hàng thực hiện xác thực</p>
+                                </div>
+                            </div>
+                            <!-- Vertical Divider -->
+
+                            <div class="col-6 flex-column  justify-content-center pe-auto">
+                                <div class="d-flex justify-content-center ">
+                                    <div class="text-center m-2 w-100">
+                                        <input id="upload-sign-info" type="text"
+                                               class="border rounded-pill p-3 m-2 container-fluid"
+                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">
+                                        <button id="btn-verify" type="button" class="btn btn-primary">
+                                            Xác thực
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
+                        </div>
+
+                        <hr class="border border-1 opacity-75 my-4">
+                        <div class="row">
+                            <p class="fs-5 text-bold col-6">Tổng cộng</p>
+                            <div class="text-end text-bold col-6" id="order__total">$123</div>
                         </div>
                     </div>
                 </div>
@@ -188,12 +217,6 @@
     </div>
 </div>
 </body>
-
-<%--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"--%>
-<%--      integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="--%>
-<%--      crossorigin="anonymous" referrerpolicy="no-referrer"/>--%>
-<%--<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>--%>
-<%--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>--%>
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -209,13 +232,21 @@
         integrity="sha512-csaTzpLFmF+Zl81hRtaZMsMhaeQDHO8E3gBkN3y3sCX9B1QSut68NxqcrxXH60BXPUQ/GB3LZzzIq9ZrxPAMTg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="module" src="<c:url value="/js/user/accountOrder.js"/>"></script>
+
 <script>
+
+
     function selected(ind) {
         document.querySelectorAll('.navbar__link').forEach(tab => {
             if (tab.dataset.index == ind) {
                 tab.classList.add('navbar__link--clicked');
             }
         });
+    }
+
+    function handleDownloadFile() {
+        var order_id = $('span#order__id').html();
+        window.open(`/api/verify-order/download?uuid=` + order_id, '_blank');
     }
 
     selected(3);

@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.controller.web;
 
-import com.spring.websellspringmvc.config.ConfigPage;
 import com.spring.websellspringmvc.controller.exception.ResourceNotFoundException;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Parameter;
@@ -9,6 +8,7 @@ import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.ProductCardServices;
 import com.spring.websellspringmvc.services.ReviewServiceImpl;
 import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class ReviewController {
                                      @RequestParam("desc") String desc,
                                      HttpServletRequest request, HttpServletResponse response
     ) {
-        ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW_SUCCESS);
+        ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW_SUCCESS.getPage());
 
         User user = sessionManager.getUser();
         int userId = user.getId();
@@ -63,7 +63,7 @@ public class ReviewController {
 
     @GetMapping("/review")
     public ModelAndView reviewPage(@RequestParam("orderDetailId") int orderDetailId) {
-        ModelAndView mav = new ModelAndView(ConfigPage.USER_REVIEW);
+        ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW.getPage());
 //        Check
         boolean listReview = reviewServiceImpl.hasReview(orderDetailId);
         if (!listReview)

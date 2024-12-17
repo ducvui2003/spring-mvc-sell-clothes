@@ -1,12 +1,14 @@
 package com.spring.websellspringmvc.services;
 
 import com.spring.websellspringmvc.dao.OrderDAO;
-import com.spring.websellspringmvc.dto.OrderDetailResponseDTO;
-import com.spring.websellspringmvc.dto.OrderItemResponseDTO;
-import com.spring.websellspringmvc.dto.OrderResponseDTO;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.Image;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Product;
+import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,43 +23,25 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HistoryService {
     OrderDAO orderDAO;
+    CloudinaryUploadServices cloudinaryUploadServices;
 
-    public List<OrderDetail> getOrderDetailByOrderId(List<String> listId) {
-        if (listId.isEmpty()) return new ArrayList<>();
-        return orderDAO.getOrderDetailByOrderId(listId);
-    }
-
-    public List<OrderResponseDTO> getOrder(int userId, int statusOrder) {
+    public List<OrderResponse> getOrder(int userId, int statusOrder) {
         return orderDAO.getOrder(userId, statusOrder);
     }
 
-    public List<OrderDetail> getOrderDetailNotReview(int userId) {
-        return orderDAO.getOrderDetailNotReview(userId);
+
+    public List<OrderDetailItemResponse> getOrderDetailByOrderId(String orderId) {
+        return orderDAO.getOrderDetailsByOrderId(orderId).stream().peek(
+                orderItem -> orderItem.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), orderItem.getThumbnail()))).toList();
     }
 
-    public List<OrderDetail> getOrderDetailHasReview(int userId) {
-        return orderDAO.getOrderDetailHasReview(userId);
-    }
-
-    public List<Product> getProductInOrderDetail(int id) {
-        return orderDAO.getProductInOrderDetail(id);
-    }
-
-    public List<Image> getNameImageByProductId(int id) {
-        return orderDAO.getNameImageByProductId(id);
-    }
-
-    public List<OrderItemResponseDTO> getOrderDetailByOrderId(String orderId) {
-        return orderDAO.getOrderDetailsByOrderId(orderId);
-    }
-
-    public OrderDetailResponseDTO getOrderByOrderId(String orderId, int userId) {
-        Optional<OrderDetailResponseDTO> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId);
+    public OrderDetailResponse getOrderByOrderId(String orderId, int userId) {
+        Optional<OrderDetailResponse> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId);
         if (orderDetailResponseDTO.isPresent()) {
-            OrderDetailResponseDTO order = orderDetailResponseDTO.get();
-            List<OrderItemResponseDTO> orderDetails = getOrderDetailByOrderId(orderId);
+            OrderDetailResponse order = orderDetailResponseDTO.get();
+            List<OrderDetailItemResponse> orderDetails = getOrderDetailByOrderId(orderId);
             if (orderDetails == null) return null;
-            order.setOrderItems(orderDetails);
+            order.setItems(orderDetails);
             return order;
         }
         return null;

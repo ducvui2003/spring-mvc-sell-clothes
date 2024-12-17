@@ -1,26 +1,29 @@
 package com.spring.websellspringmvc.controller.api;
 
-import com.spring.websellspringmvc.dto.OrderResponseDTO;
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.UserServices;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
+import com.spring.websellspringmvc.services.user.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
-import com.spring.websellspringmvc.utils.ValidatePassword;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -33,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServices userServices;
+    UserServicesImpl userServices;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -58,32 +61,12 @@ public class UserController {
         response.getWriter().print(json);
     }
 
-    @PostMapping("/password")
-    public void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        JSONObject json = new JSONObject();
-
-        String currentPassword = request.getParameter("currentPassword");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<?>> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws IOException {
         User user = sessionManager.getUser();
+        userServices.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
 
-        if (currentPassword == null || newPassword == null || confirmPassword == null) {
-            json.put("error", "Missing required fields");
-            json.put("isValid", false);
-            response.getWriter().println(json.toString());
-            return;
-        }
-
-        ValidatePassword validatePassword = new ValidatePassword(newPassword);
-        boolean isValid = validatePassword.check();
-        if (isValid) {
-            userServices.updateUserPassword(user.getId(), Encoding.getINSTANCE().toSHA1(newPassword));
-            json.put("isValid", true);
-        } else {
-            json.put("isValid", false);
-            json.put("error", validatePassword.getErrorMap());
-        }
-        response.getWriter().println(json.toString());
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Change password success", null));
     }
 
     @PostMapping("/info")
@@ -126,13 +109,29 @@ public class UserController {
         return sqlDate;
     }
 
-    @GetMapping("/order")
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int statusId = Integer.parseInt(request.getParameter("statusId"));
+    @GetMapping("/order/{statusId}")
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrder(@PathVariable("statusId") Integer statusId) throws ServletException, IOException {
         User user = sessionManager.getUser();
-        List<OrderResponseDTO> orders = historyService.getOrder(user.getId(), statusId);
-        JSONObject json = new JSONObject();
-        json.put("data", orders);
-        response.getWriter().print(json);
+        List<OrderResponse> orders = historyService.getOrder(user.getId(), statusId);
+        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), "success", orders));
+    }
+
+    @GetMapping("/order/detail/{orderId}")
+    public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") String orderId) throws ServletException, IOException {
+        User user = sessionManager.getUser();
+        int userId = user.getId();
+        OrderDetailResponse orderDetail = historyService.getOrderByOrderId(orderId, userId);
+        if (orderDetail == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<OrderDetailResponse>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Order not found")
+                    .build());
+        } else {
+            return ResponseEntity.ok(ApiResponse.<OrderDetailResponse>builder()
+                    .code(HttpServletResponse.SC_OK)
+                    .message("Order found")
+                    .data(orderDetail)
+                    .build());
+        }
     }
 }

@@ -1,4 +1,4 @@
-.checkout__container{
+.checkout__container {
     margin: 60px 0px;
 }
 
@@ -7,18 +7,18 @@
     background-color: lightblue !important;
 }
 
-.delivery__info--container{
+.delivery__info--container {
     margin-bottom: 36px;
 }
 
-.checkout__title{
+.checkout__title {
     font-size: 40px;
     font-weight: 700;
     margin: 0 0 36px;
     color: var(--blue-color-high);
 }
 
-.checkout__subtitle{
+.checkout__subtitle {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 16px;
@@ -26,22 +26,22 @@
 }
 
 @keyframes bounce {
-    0%, 100%{
+    0%, 100% {
         transform: translateX(0);
     }
-    50%{
+    50% {
         transform: translateX(10px);
     }
 }
 
-.delivery__info--container .checkout__subtitle::before{
+.delivery__info--container .checkout__subtitle::before {
     content: "\f2bb";
     font-family: "Font Awesome 6 Free";
     margin-right: 8px;
     color: var(--blue-color-high)
 }
 
-.radio__button{
+.radio__button {
     margin: auto 14px;
     height: 22px;
     width: 22px;
@@ -49,18 +49,18 @@
     cursor: pointer;
 }
 
-label[class="label__selection"]{
+label[class="label__selection"] {
     width: 100%;
     font-weight: 500;
     font-size: 18px;
 }
 
-#delivery__info--form{
+#delivery__info--form {
     display: grid;
     gap: 12px;
 }
 
-.section__info--selection{
+.section__info--selection {
     display: flex;
     align-items: center;
     border-radius: 4px;
@@ -95,33 +95,33 @@ label[class="label__selection"]{
 
 /* new update*/
 
-.info__header{
+.info__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 500
 }
 
-.info__header h3{
+.info__header h3 {
     font-size: 20px;
     color: #696969;
 }
 
-.info__header span{
+.info__header span {
     color: var(--blue-color-high);
     cursor: pointer;
 }
 
-.info__header span:hover{
+.info__header span:hover {
     text-decoration: underline;
 }
 
-.info__items{
+.info__items {
     line-height: 28px;
     width: 100%;
 }
 
-.info__items .customer__name{
+.info__items .customer__name {
     font-size: 18px;
     font-weight: 600;
     display: flex;
@@ -129,7 +129,7 @@ label[class="label__selection"]{
     width: 100%;
 }
 
-.default__tag{
+.default__tag {
     font-size: 14px;
     padding: 6px;
     border-radius: 4px;
@@ -138,12 +138,12 @@ label[class="label__selection"]{
     line-height: normal;
 }
 
-#default__info{
+#default__info {
     box-shadow: rgb(94, 233, 94, 0.2) 0px 2px 8px 0px;
     border: 1px solid #5ee95e;
 }
 
-.delivery__info{
+.delivery__info {
     background-color: #f3f2f0;
     padding: 16px;
     border-radius: 4px;
@@ -153,16 +153,16 @@ label[class="label__selection"]{
     box-shadow: rgb(105, 105, 105, 0.2) 0px 2px 8px 0px;
 }
 
-.choice__remove{
+.choice__remove {
     display: flex;
     gap: 6px;
 }
 
-.choice__remove button{
+.choice__remove button {
     cursor: pointer;
 }
 
-.delivery__info .button__choice{
+.delivery__info .button__choice {
     font-size: 16px;
     width: fit-content;
     padding: 6px 8px;
@@ -172,7 +172,7 @@ label[class="label__selection"]{
     font-weight: 600;
 }
 
-.delivery__info .button__remove{
+.delivery__info .button__remove {
     font-weight: 600;
     font-size: 16px;
     padding: 6px 10px;
@@ -181,13 +181,13 @@ label[class="label__selection"]{
     color: white;
 }
 
-.other__info{
+.other__info {
     font-size: 16px;
     margin: 20px 0px;
     line-height: 20px;
 }
 
-.other__info span{
+.other__info span {
     font-weight: 600;
     cursor: pointer;
     color: var(--blue-color-high);
@@ -206,14 +206,14 @@ label[class="label__selection"]{
 /*}*/
 
 /*#customize__info--form.active{*/
-    /*display: grid;*/
-    /*gap: 18px;*/
-    /*animation: slideDown 0.3s ease-in-out forwards;*/
+/*display: grid;*/
+/*gap: 18px;*/
+/*animation: slideDown 0.3s ease-in-out forwards;*/
 /*}*/
 
 /* new update*/
 
-#customize__info--form{
+#customize__info--form {
     width: 100%;
     /*display: none;*/
     display: grid;
@@ -224,24 +224,24 @@ label[class="label__selection"]{
     /*box-shadow: rgb(105, 105, 105, 0.2) 0px 2px 8px 0px;*/
 }
 
-#customize__info--form .customize__item{
+#customize__info--form .customize__item {
     display: grid;
     gap: 6px;
 }
 
-#customize__info--form .customize__item .input__text{
+#customize__info--form .customize__item .input__text {
     font-weight: 500;
     font-size: 16px;
 }
 
-#customize__info--form .customize__item .input__content{
+#customize__info--form .customize__item .input__content {
     border: 1px solid #D9D9D9;
     padding: 12px 8px;
     border-radius: 4px;
     font-size: 14px;
 }
 
-#customize__info--form .customize__item .textarea__content{
+#customize__info--form .customize__item .textarea__content {
     border: 1px solid #D9D9D9;
     padding: 12px 8px;
     border-radius: 4px;
@@ -266,12 +266,12 @@ label[class="label__selection"]{
 
 /*New update*/
 
-.button__forward{
+.button__forward {
     display: flex;
     gap: 10px;
 }
 
-.button__forward button{
+.button__forward button {
     padding: 14px 0px;
     font-size: 18px;
     font-weight: 600;
@@ -279,51 +279,53 @@ label[class="label__selection"]{
     cursor: pointer;
 }
 
-.button__cancel{
+.button__cancel {
     color: white;
     background-color: #696969;
     flex: 1;
 }
 
-.button__cancel:hover{
+.button__cancel:hover {
     background-color: black;
 }
 
-.button__custom{
+.button__custom {
     background-color: var(--blue-color-medium);
     color: white;
     flex: 2;
 }
 
-.button__custom:hover{
+.button__custom:hover {
     background-color: var(--blue-color-high);
-}/*New update*/
+}
+
+/*New update*/
 
 /* New update template*/
-.delivery__method--container{
+.delivery__method--container {
     margin-bottom: 36px;
 }
 
-.delivery__method--container .checkout__subtitle::before{
+.delivery__method--container .checkout__subtitle::before {
     content: "\f48b";
     font-family: "Font Awesome 6 Free";
     margin-right: 8px;
     color: var(--blue-color-high)
 }
 
-#delivery__method--form{
+#delivery__method--form {
     display: grid;
     gap: 12px;
 }
 
-#delivery__method--form .label__selection{
+#delivery__method--form .label__selection {
     display: flex;
     justify-content: space-between;
     padding-right: 14px;
     align-items: center;
 }
 
-#delivery__method--form .label__selection span:last-child{
+#delivery__method--form #feeShipping, #delivery__method--form #leadDate{
     font-weight: 600;
     font-size: 20px;
     background-color: var(--blue-color-high);
@@ -332,12 +334,12 @@ label[class="label__selection"]{
     border-radius: 4px;
 }
 
-.method__content .description__method{
+.method__content .description__method {
     display: none;
     height: auto;
 }
 
-.method__content ul, .method__content p{
+.method__content ul, .method__content p {
     list-style: disc;
     word-wrap: normal;
     padding: 14px;
@@ -354,23 +356,23 @@ label[class="label__selection"]{
 /* New update template */
 
 
-.payment__method--container .checkout__subtitle::before{
+.payment__method--container .checkout__subtitle::before {
     content: "\f53c";
     font-family: "Font Awesome 6 Free";
     margin-right: 8px;
     color: var(--blue-color-high)
 }
 
-.payment__method--container #payment__method--form{
+.payment__method--container #payment__method--form {
     display: grid;
     gap: 12px;
 }
 
-.field__content.input-invalid{
+.field__content.input-invalid {
     border: 1.8px #E40F0A solid !important;
 }
 
-.error__notice{
+.error__notice {
     font-size: 12px;
     font-weight: 500;
     color: #E40F0A;
@@ -378,60 +380,63 @@ label[class="label__selection"]{
     line-height: 16px;
 }
 
-.order__detail--info{
+.order__detail--info {
     max-height: 560px;
     overflow-y: auto;
     margin: 16px 0px;
 }
 
-.order__detail--info .order__table{
+.order__detail--info .order__table {
     border-collapse: collapse;
     width: 100%;
 }
 
-td, th{
+td, th {
     border: 1px solid #D9D9D9;
     padding: 10px;
     vertical-align: middle;
 }
 
-.order__detail--info .order__table .row__header .thead__item{
+.order__detail--info .order__table .row__header .thead__item {
     background-color: var(--blue-color-high);
     color: white;
     font-weight: 600;
 }
 
-.order__detail--info .order__table .row__header .thead__item:first-child{
+.order__detail--info .order__table .row__header .thead__item:first-child {
     width: 280px;
 }
 
-.order__detail--info .order__table .row__header .thead__item:nth-child(2){
+.order__detail--info .order__table .row__header .thead__item:nth-child(2) {
     width: 90px;
 }
 
-.order__detail--info .order__table .row__header .thead__item:last-child{
+.order__detail--info .order__table .row__header .thead__item:last-child {
     width: 60px;
 }
 
-.row__content .td__item:nth-child(2), .row__content .td__item:last-child{
+.row__content .td__item:nth-child(2), .row__content .td__item:last-child {
     text-align: center;
 }
 
 .product__item {
     display: flex;
-    align-items: stretch;
+    justify-content: space-between;
     gap: 10px;
 }
 
-.product__item img{
+.product__item img {
     height: 90px;
+    flex-basis: 90px;
     width: 50px;
     object-fit: cover;
     border-radius: 6px;
 }
-.product__item .order__product--info{
+
+.product__item .order__product--info {
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 4px;
 }
 
@@ -441,7 +446,7 @@ td, th{
     font-size: 15px;
 }
 
-.invoice--final{
+.invoice--final {
     /* display: flex;
     justify-content: space-between;
     align-items: center; */
@@ -449,7 +454,7 @@ td, th{
     gap: 12px;
 }
 
-.invoice--final .total__price--final{
+.invoice--final .total__price--final {
     font-weight: 600;
     font-size: 18px;
     display: flex;
@@ -457,18 +462,18 @@ td, th{
     align-items: baseline;
 }
 
-.invoice--final .total__price--final .total__value{
+.invoice--final .total__price--final .total__value {
     font-size: 34px;
     color: var(--blue-color-high);
     margin-left: 4px;
 }
 
-.invoice--final .ground__button--forward{
+.invoice--final .ground__button--forward {
     display: flex;
     gap: 10px;
 }
 
-.invoice--final .ground__button--forward button{
+.invoice--final .ground__button--forward button {
     padding: 12px 30px;
     border-radius: 4px;
     font-size: 18px;
@@ -477,24 +482,24 @@ td, th{
     flex: 1;
 }
 
-.invoice--final .ground__button--forward button[class = "place__order"]{
+.invoice--final .ground__button--forward button[class = "place__order"] {
     background-color: var(--blue-color-high);
     color: white;
 }
 
-.invoice--final .ground__button--forward button[class = "back--shopping__cart"]{
+.invoice--final .ground__button--forward button[class = "back--shopping__cart"] {
     border: 1px solid var(--blue-color-high);
     background-color: white;
     color: var(--blue-color-high);
 }
 
-.invoice__content{
+.invoice__content {
     padding: 20px;
     border: 1px solid #D9D9D9;
     border-radius: 4px;
 }
 
-.price__item--detail{
+.price__item--detail {
     display: grid;
     gap: 14px;
     border-bottom: 1px solid #D9D9D9;
@@ -502,29 +507,29 @@ td, th{
     margin-bottom: 14px;
 }
 
-.price__item--detail > div{
+.price__item--detail > div {
     display: flex;
     font-weight: 600;
     justify-content: space-between;
     align-items: baseline;
 }
 
-.price__item--detail > div span:first-child{
+.price__item--detail > div span:first-child {
     font-weight: 500;
     color: #808080;
 }
 
-.price__item--detail > div span:last-child{
+.price__item--detail > div span:last-child {
     font-size: 24px;
 }
 
-.summary__cart{
+.summary__cart {
     color: var(--blue-color-high);
     font-weight: 600;
     font-size: 28px;
 }
 
-.free__ship{
+.free__ship {
     width: 100%;
     border-radius: 8px;
     padding: 16px;
@@ -539,19 +544,19 @@ td, th{
     margin-bottom: 36px;
 }
 
-.free__ship i{
+.free__ship i {
     font-size: 36px;
 }
 
-.compulsory{
+.compulsory {
     color: #E40F0A;
 }
 
-.shipping__container{
+.shipping__container {
     display: flex;
 }
 
-.order__color, .order__size{
+.order__color, .order__size {
     font-size: 12px;
     line-height: 18px;
 }
@@ -572,7 +577,7 @@ td, th{
     -ms-overflow-style: none;
 }
 
-.popup__bg::-webkit-scrollbar{
+.popup__bg::-webkit-scrollbar {
     display: none;
 }
 
@@ -586,11 +591,11 @@ td, th{
     margin-top: 160px;
 }
 
-.button__close{
+.button__close {
     cursor: pointer;
 }
 
-.form__header{
+.form__header {
     width: 100%;
     padding: 18px 22px;
     display: flex;
@@ -601,15 +606,15 @@ td, th{
     border-bottom: 1px solid #696969;
 }
 
-.form__header .form__title{
+.form__header .form__title {
     color: var(--blue-color-high);
 }
 
-.form__header .button__close{
+.form__header .button__close {
     color: #696969;
 }
 
-.popup__order{
+.popup__order {
     text-align: center;
     display: none;
     position: fixed;
@@ -628,7 +633,7 @@ td, th{
     line-height: 22px;
 }
 
-.popup__order.active{
+.popup__order.active {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
     width: 362px;
@@ -659,8 +664,8 @@ td, th{
     width: 80px;
     height: 106px;
     --c: linear-gradient(white 0 0);
-    background: var(--c) 0%   50%,
-    var(--c) 50%  50%,
+    background: var(--c) 0% 50%,
+    var(--c) 50% 50%,
     var(--c) 100% 50%;
     background-size: 16px 50%;
     background-repeat: no-repeat;
@@ -669,23 +674,23 @@ td, th{
 
 @keyframes bars-7s9ul0md {
     20% {
-        background-size: 16px 20% ,16px 50% ,16px 50%;
+        background-size: 16px 20%, 16px 50%, 16px 50%;
     }
 
     40% {
-        background-size: 16px 100%,16px 20% ,16px 50%;
+        background-size: 16px 100%, 16px 20%, 16px 50%;
     }
 
     60% {
-        background-size: 16px 50% ,16px 100%,16px 20%;
+        background-size: 16px 50%, 16px 100%, 16px 20%;
     }
 
     80% {
-        background-size: 16px 50% ,16px 50% ,16px 100%;
+        background-size: 16px 50%, 16px 50%, 16px 100%;
     }
 }
 
-.message__process{
+.message__process {
     font-size: 14px;
 }
 
@@ -693,40 +698,40 @@ td, th{
     pointer-events: none;
 }
 
-.disabled-link:hover{
+.disabled-link:hover {
     cursor: not-allowed;
 }
 
-.table__transaction{
+.table__transaction {
     font-size: 12px;
     border-collapse: collapse;
     width: 100%;
 }
 
-.table__transaction td{
+.table__transaction td {
     vertical-align: middle;
     padding: 12px 10px;
     /*width: max-content;*/
 }
 
-.table__transaction tr td:first-child{
+.table__transaction tr td:first-child {
     font-weight: 500;
     width: 30%;
     line-height: 16px;
 }
 
-.table__transaction tr td:last-child{
+.table__transaction tr td:last-child {
     width: 70%;
 }
 
-.table__transaction tr td:last-child div{
+.table__transaction tr td:last-child div {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
 
-.copy__button{
+.copy__button {
     padding: 8px;
     font-size: 10px;
     font-weight: 500;
@@ -736,7 +741,7 @@ td, th{
     cursor: pointer;
 }
 
-.information__transaction{
+.information__transaction {
     display: flex;
     flex-direction: column;
     padding: 14px;
@@ -744,20 +749,20 @@ td, th{
     background-color: #f3f2f0;
 }
 
-.payment__qr{
+.payment__qr {
     display: flex;
     gap: 10px;
     justify-content: space-between;
 }
 
-.payment__qr .qr__code{
+.payment__qr .qr__code {
     height: 160px;
     width: 160px;
     border: 1px solid black;
     border-radius: 6px;
 }
 
-.payment__qr div{
+.payment__qr div {
     display: grid;
     font-size: 12px;
     border-radius: 6px;
@@ -767,11 +772,11 @@ td, th{
     height: fit-content;
 }
 
-.payment__qr div span:first-child{
+.payment__qr div span:first-child {
     font-weight: 500;
 }
 
-.cod{
+.cod {
     font-size: 14px;
     margin: unset;
     line-height: 22px;
@@ -780,13 +785,13 @@ td, th{
     background-color: #f3f2f0;
 }
 
-.method__checked{
+.method__checked {
     background-color: var(--blue-color-high);
     color: white;
     opacity: 0.8;
 }
 
-.popup__deletion .popup__container{
+.popup__deletion .popup__container {
     position: fixed;
     inset: 0px;
     background-color: rgba(39, 39, 42, 0.7);
@@ -794,7 +799,7 @@ td, th{
     font-size: 14px;
 }
 
-.popup__deletion .popup__container .popup__content{
+.popup__deletion .popup__container .popup__content {
     position: absolute;
     inset: 50% 40px auto 50%;
     border: 1px solid rgb(204, 204, 204);
@@ -809,23 +814,23 @@ td, th{
     gap: 14px;
 }
 
-.popup__deletion .popup__container .popup__content .title__header{
+.popup__deletion .popup__container .popup__content .title__header {
     display: grid;
     gap: 10px;
 }
 
-.popup__deletion .popup__container .popup__content .title__header .title{
+.popup__deletion .popup__container .popup__content .title__header .title {
     font-weight: 600;
     display: flex;
     gap: 6px;
     font-size: 18px;
 }
 
-.popup__deletion .popup__container .popup__content .title__header .title i{
+.popup__deletion .popup__container .popup__content .title__header .title i {
     color: #FF820A;
 }
 
-.popup__deletion .popup__container .popup__content .button__control{
+.popup__deletion .popup__container .popup__content .button__control {
     display: flex;
     text-align: center;
     line-height: 20px;
@@ -834,7 +839,7 @@ td, th{
     gap: 6px;
 }
 
-.popup__deletion .popup__container .popup__content .button__control button{
+.popup__deletion .popup__container .popup__content .button__control button {
     padding: 8px 12px;
     border: 1px solid var(--blue-color-high);
     color: var(--blue-color-high);
@@ -844,7 +849,7 @@ td, th{
     cursor: pointer;
 }
 
-.popup__deletion .popup__container .popup__content .button__control .cancel__button{
+.popup__deletion .popup__container .popup__content .button__control .cancel__button {
     background-color: var(--blue-color-high);
     color: white;
 }

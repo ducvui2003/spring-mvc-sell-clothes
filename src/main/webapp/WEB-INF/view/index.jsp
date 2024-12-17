@@ -6,14 +6,14 @@
 <html lang="en">
 
 <head>
-    <jsp:include page="common/commonLink.jsp"/>
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/home.css" />">
     <title>Trang chủ</title>
 </head>
 
 <body>
 <!--Header-->
-<c:import url="/header" charEncoding="UTF-8"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <!--Main: chứa nội dung chính, các section như giới thiệu sản phầm, các cổ đông,...-->
 <!--Hero-->
 <main id="main" class="animate__animated animate__zoomIn">
@@ -24,24 +24,11 @@
             <p>Cùng chúng tôi tạo nên thiết kế khác biệt cho quần áo của bạn</p>
             <a href="<c:url value="/product/productBuying" />"
                class="hero__button button button--hover hvr-radial-out">
-                Bắt đầu đặt may
+                Bắt đầu mua hàng
             </a>
         </div>
     </div>
     <div class="container-xl">
-        <div class="mt-3 p-5 search">
-            <div class="form-inline my-2 my-lg-0 d-flex">
-                <input style="z-index: 2;" class="search__inp form-control mr-sm-2 p-3 me-2" type="search"
-                       placeholder="Search"
-                       aria-label="Search" name="keyword">
-                <button class="search__btn btn btn-outline-success my-2 my-sm-0 ps-4 pe-4 hvr-rectangle-out"
-                        type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </div>
-            <ul class="search__box shadow"></ul>
-        </div>
-
         <div id="slider__category--section">
             <div class="slider__container">
                 <div class="slider__items">
@@ -106,7 +93,7 @@
                                     </button>
                                     <a class="see__detail"
                                        target="_blank"
-                                       href="/showProductDetail?id=${product.id}">
+                                       href="/product/${product.id}">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </form>
@@ -130,10 +117,28 @@
                                         </c:forEach>
                                     </div>
                                     <a class="number__turns--ratting"
-                                       href="/showProductDetail?id=${product.id}"> ${product.reviewCount}
+                                       href="/product/${product.id}"> ${product.reviewCount}
                                         nhận xét
                                     </a>
                                 </div>
+                                <span class="product__price">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${product.salePrice == null}">
+                                            <strong class="priority__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </strong>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <strong class="sale__price">
+                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                            </strong>
+                                            <s class="original__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </s>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -173,7 +178,7 @@
                                     </button>
                                     <a class="see__detail"
                                        target="_blank"
-                                       href="/showProductDetail?id=${product.id}">
+                                       href="/product/${product.id}">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </form>
@@ -181,7 +186,7 @@
 
                             <div class="product__info">
                                 <a class="product__name" target="_blank"
-                                   href="/showProductDetail?id=${product.id}">${product.name}
+                                   href="/product/${product.id}">${product.name}
                                 </a>
                                 <div class="product__review">
                                     <div class="review__icon">
@@ -197,11 +202,28 @@
                                         </c:forEach>
                                     </div>
                                     <a class="number__turns--ratting"
-                                       href="/showProductDetail?id=${product.id}"> ${product.reviewCount}
+                                       href="/product/${product.id}"> ${product.reviewCount}
                                         nhận xét
                                     </a>
                                 </div>
-
+                                <span class="product__price">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${product.salePrice == null}">
+                                            <strong class="priority__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </strong>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <strong class="sale__price">
+                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                            </strong>
+                                            <s class="original__price">
+                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                            </s>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -275,94 +297,8 @@
     <div class="modal_hidden_search__box"></div>
 </main>
 <!--Footer-->
-<c:import url="common/footer.jsp"/>
+<jsp:include page="/WEB-INF/view/common/footer.jsp"/>
 <script src="<c:url value="/js/home.js" />"></script>
-<script type="text/javascript">
-    // function addToCartAjax() {
-    //     $(document).ready(function () {
-    //         $('.action__bar').each(function (index, actionBar) {
-    //             $(actionBar).on('submit', function (event) {
-    //                 event.preventDefault();
-    //                 const form = $(actionBar);
-    //                 let productId = form.find('input[name="productId"]').val();
-    //                 $.ajax({
-    //                     type: form.attr('method'),
-    //                     url: form.attr('action'),
-    //                     data: {productId: productId},
-    //                     success: function (response) {
-    //                         let addToCartSuccessHTML = `<div class="notification__cart">
-    //                                                     <div class="status__success">
-    //                                                         <span>
-    //                                                         <i class="fa-solid fa-circle-check icon__success"></i>
-    //                                                         Đã thêm vào giỏ hàng thành công
-    //                                                         </span>
-    //                                                         <span onclick="handleCloseNotificationCart()">
-    //                                                         <i class="fa-solid fa-xmark close__notification"></i>
-    //                                                         </span>
-    //                                                     </div>
-    //                                                     <a class="view__cart" href="/public/user/shoppingCart.jsp">Xem giỏ hàng và thanh toán</a>
-    //                                                 </div>`;
-    //                         $('.cart__wrapper').append(addToCartSuccessHTML)
-    //                         $('.qlt__value').text(response);
-    //                     },
-    //                     error: function (error) {
-    //                         console.error('Lỗi khi thêm sản phẩm vào giỏ hàng', error);
-    //                     }
-    //                 })
-    //             })
-    //         })
-    //     })
-    // }
-    //
-    // let ulCom = $('.search__box')[0]
-    //
-    // function handelSearch() {
-    //     let debounceTimer;
-    //     $('.search__inp').keydown(function () {
-    //
-    //         var formData = $(this).serialize();
-    //
-    //         clearTimeout(debounceTimer);
-    //
-    //         debounceTimer = setTimeout(() => {
-    //             $.ajax({
-    //                 url: '/searchProduct',
-    //                 method: 'GET',
-    //                 data: formData,
-    //                 success: function (response) {
-    //                     console.log(response)
-    //                     ulCom.innerHTML = ""
-    //                     for (let i = 0; i < response.length; ++i) {
-    //                         const li = document.createElement("li")
-    //                         li.setAttribute("class", "mb-1")
-    //                         const a = document.createElement("a")
-    //                         a.setAttribute("class", "text-dark mb-2 search__box-item")
-    //                         a.setAttribute("href", "/")
-    //                         a.innerText = response[i].name
-    //                         li.appendChild(a)
-    //                         ulCom.appendChild(li)
-    //                     }
-    //                 },
-    //                 error: function (xhr, status, error) {
-    //                     console.error(xhr.responseText);
-    //                 }
-    //             })
-    //         }, 800);
-    //     })
-    // }
-    //
-    // $('.search__inp').on('focus', function () {
-    //     $('.search__box').addClass('focused');
-    // });
-    //
-    // $('.search__inp').on('blur', function () {
-    //     $('.search__box').removeClass('focused');
-    // });
-    //
-    // $('#header').addClass("animate__animated animate__backInDown")
-    // handelSearch()
-    // addToCartAjax()
-</script>
 </body>
 
 </html>

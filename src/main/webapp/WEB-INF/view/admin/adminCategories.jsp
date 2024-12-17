@@ -19,7 +19,7 @@
 <c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="adminNavigator.jsp"/>
+    <c:import url="/common/adminNavigator"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -49,7 +49,6 @@
             </div>
         </div>
     </section>
-
 </main>
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

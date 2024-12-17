@@ -47,7 +47,7 @@
 <c:import url="/header"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="../common/adminNavigator.jsp"/>
+    <c:import url="/common/adminNavigator"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -58,17 +58,6 @@
                         <i class="fa-solid fa-filter"></i> Bộ lọc
                     </button>
                     <div class="d-flex gap-2">
-                        <a href="<c:url value="/public/admin/adminImportProducts.jsp" />"
-                           class="btn btn-primary d-flex align-items-center gap-1">
-                            <i class="fa-solid fa-file-excel"></i>
-                            <span>Thêm sản phẩm qua excel</span>
-                        </a>
-                        <form action="<c:url value="/exportExcelProduct"/>" method="POST" class="">
-                            <button class="btn_export" type="submit">
-                                <i class="fa-solid fa-file-export"></i>
-                                Xuất file excel
-                            </button>
-                        </form>
                         <button class="button button__add" id="button-modal" type="button" data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
                             <i class="fa-solid fa-plus"></i>
@@ -104,7 +93,7 @@
 <!--Modal filter-->
 <div class="modal fade" id="modal-filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form id="form-filter" action="<c:url value="/filterProductAdmin"/>" class="modal-content">
+        <form id="form-filter" class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lọc và tìm kiếm</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

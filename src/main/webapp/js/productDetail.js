@@ -1,3 +1,5 @@
+import {BASE_URL, http} from "./base.js";
+
 $(document).ready(() => {
     // Animation for head title
     const idTitle = '#product__name'
@@ -50,8 +52,8 @@ $(document).ready(() => {
             productDesc.style.display = "none";
             productReview.style.display = "block";
         }
-        var reviewPara = document.querySelectorAll(".review__para");
-        reviewPara.forEach(function (element) {
+        var reviewParam = document.querySelectorAll(".review__para");
+        reviewParam.forEach(function (element) {
             element.onclick = function () {
                 this.classList.toggle("line-clamp");
             }
@@ -106,34 +108,36 @@ $(document).ready(() => {
         console.log("call method ajax")
         const form = $('#form__product');
         let productId = $(form).find('input[name=productId]').val();
+        let sizeId = $(form).find('input[name=size]:checked').val();
+        let colorId = $(form).find('input[name=color]:checked').val();
         let quantity = $(form).find('input[name=quantity]').val();
-        let size = $(form).find('input[name=size]:checked').val();
-        let color = $(form).find('input[name=color]:checked').val();
-        $.ajax({
-            url: form.attr('action'),
-            type: form.attr('method'),
+        http({
+            url: `${BASE_URL}/api/cart/add`,
+            type: "POST",
             data: {
                 productId: productId,
-                size: size,
-                color: color,
+                sizeId: sizeId,
+                colorId: colorId,
                 quantity: quantity
             },
-            success: function (response) {
-                console.log("run ajax success")
-                let addToCartSuccessHTML = `<div class="notification__cart">
+        }).then(() => {
+            console.log("run ajax success")
+            let addToCartSuccessHTML = `<div class="notification__cart">
                                                                 <div class="status__success">
                                                                     <span><i class="fa-solid fa-circle-check icon__success"></i>Đã thêm vào giỏ hàng thành công</span>
                                                                     <span onclick="handleCloseNotificationCart()"><i class="fa-solid fa-xmark close__notification"></i></span>
                                                                 </div>
-                                                                <a class="view__cart" href="/public/user/shoppingCart.jsp">Xem giỏ hàng và thanh toán</a>
+                                                                <a class="view__cart" href="/cart">Xem giỏ hàng và thanh toán</a>
                                                             </div>`;
-                $('.cart__wrapper').append(addToCartSuccessHTML)
-                $('.qlt__value').text(response);
-            }
+            $('.cart__wrapper').append(addToCartSuccessHTML)
+            const quantityItemCartElement = $(".qlt__value")
+            const quantityItemCart = parseInt(quantityItemCartElement.text()) || 0;
+            quantityItemCartElement.text(quantityItemCart + 1);
         })
     }
 
     const moreProducts = $("#product-related");
+
     const getMoreProducts = () => {
         $.ajax({
             url: '/api/product/filter?size=4',
@@ -182,7 +186,7 @@ $(document).ready(() => {
                         </a>
                         
                         <div class="product__info">
-                            <a class="product__name" target="_blank" href="/showProductDetail?id=${id}">${name}</a>
+                            <a class="product__name" target="_blank" href="/product/${id}">${name}</a>
                         
                             <div class="product__review">
                                 <div class="product__review-stars">
@@ -190,7 +194,7 @@ $(document).ready(() => {
                                     ${noStarResult}
                                 </div>
                                 
-                                   <a class="product__review-num" target="_blank" href="/showProductDetail?id=${id}">
+                                   <a class="product__review-num" target="_blank" href="/product/${id}">
                                        ${reviewCounts} nhận xét
                                    </a>
                             </div> 

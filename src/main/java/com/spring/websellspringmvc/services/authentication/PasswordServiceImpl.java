@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.services.authentication;
 
 import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.dto.mvc.request.ForgetPasswordRequest;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -32,8 +32,8 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Override
     public void forgetPassword(ForgetPasswordRequest dto) {
-        Optional<User> userOptional = userDAO.findByEmail(dto.getEmail());
-        User user = userOptional.orElseThrow(() -> new AppException(new ErrorView(ErrorView.FORGET_PASSWORD_FAILED, "email", dto)));
+        Optional<User> userOptional = userDAO.findById(dto.getEmail());
+        User user = userOptional.orElseThrow(() -> new AppException(ErrorCode.NOT_VALID));
         String token = Token.generateToken();
         Timestamp timestampExpiredToken = Token.addTime(LocalDateTime.now(), MailProperties.getDurationTokenRestPassword());
         userDAO.updateTokenResetPassword(user.getId(), token, timestampExpiredToken);
@@ -49,7 +49,7 @@ public class PasswordServiceImpl implements PasswordService {
     @Override
     public void resetPassword(ResetPasswordRequest dto) {
         String passwordEncoding = Encoding.getINSTANCE().toSHA1(dto.getPassword());
-        Optional<User> userOptional = userDAO.findByEmail(dto.getEmail(), true);
+        Optional<User> userOptional = userDAO.findById(dto.getEmail(), true);
         User user = userOptional.orElseThrow(() -> new AppException(ErrorView.ERROR_404));
         if (user.getTokenResetPassword() == null) throw new AppException(ErrorView.ERROR_404);
         userDAO.updatePasswordEncoding(user.getId(), passwordEncoding);

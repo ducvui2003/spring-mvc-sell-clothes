@@ -1,12 +1,12 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
 import com.spring.websellspringmvc.dto.request.CreateUserRequest;
-import com.spring.websellspringmvc.dto.request.DatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateUserRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.utils.Encoding;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserController {
     UserMapper userMapper = UserMapper.INSTANCE;
-    UserServices userServices;
+    UserServicesImpl userServicesImpl;
 
     @PostMapping("/datatable")
     public ResponseEntity<DatatableResponse<User>> getDatatable(@RequestBody DatatableRequest request) {
@@ -34,8 +34,8 @@ public class AdminUserController {
         String[] columnNames = {"id", "username", "email", "fullName", "gender"};
         String orderBy = request.getOrderColumn() < columnNames.length ? columnNames[request.getOrderColumn()] : columnNames[0];
         // Fetch filtered and sorted logs
-        List<User> users = userServices.getUser(request.getStart(), request.getLength(), request.getSearchValue(), orderBy, request.getOrderDir());
-        long size = userServices.getTotalWithCondition(request.getSearchValue());
+        List<User> users = userServicesImpl.getUser(request.getStart(), request.getLength(), request.getSearchValue(), orderBy, request.getOrderDir());
+        long size = userServicesImpl.getTotalWithCondition(request.getSearchValue());
 
         return ResponseEntity.ok(DatatableResponse.<User>builder()
                 .draw(request.getDraw())
@@ -51,7 +51,7 @@ public class AdminUserController {
         try {
             User user = userMapper.toUser(request);
             user.setPasswordEncoding(Encoding.getINSTANCE().toSHA1(request.getPassword()));
-            userServices.insertUser(user);
+            userServicesImpl.insertUser(user);
             jsonObject.put("success", true);
         } catch (Exception e) {
             jsonObject.put("success", false);
@@ -64,7 +64,7 @@ public class AdminUserController {
         JSONObject jsonObject = new JSONObject();
         try {
             User user = userMapper.toUser(request);
-            userServices.updateUser(user);
+            userServicesImpl.updateUser(user);
             jsonObject.put("success", true);
         } catch (Exception e) {
             jsonObject.put("success", false);

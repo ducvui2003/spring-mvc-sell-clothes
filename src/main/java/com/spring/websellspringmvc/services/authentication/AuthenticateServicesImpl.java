@@ -1,7 +1,9 @@
 package com.spring.websellspringmvc.services.authentication;
 
 import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
+import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.dto.mvc.request.SignInRequest;
 import com.spring.websellspringmvc.dto.mvc.request.SignUpRequest;
@@ -9,11 +11,10 @@ import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.MailProperties;
 import com.spring.websellspringmvc.services.mail.IMailServices;
-import com.spring.websellspringmvc.services.mail.MailResetPasswordServices;
 import com.spring.websellspringmvc.services.mail.MailVerifyServices;
+import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
 import com.spring.websellspringmvc.utils.Token;
-import com.spring.websellspringmvc.utils.Validation;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -35,9 +33,11 @@ import java.util.Optional;
 public class AuthenticateServicesImpl implements AuthenticationService {
     UserDAO userDAO;
     UserMapper userMapper = UserMapper.INSTANCE;
+    CartDAO cartDAO;
+    SessionManager sessionManager;
 
     @Override
-    public User signIn(SignInRequest dto) {
+    public void signIn(SignInRequest dto) {
         User user = userDAO.findByUsername(dto.getUsername(), true);
         if (user == null)
             throw new AppException(new ErrorView(ErrorView.SIGN_IN_FAILED, "user", dto));
@@ -45,15 +45,16 @@ public class AuthenticateServicesImpl implements AuthenticationService {
         String encode = Encoding.getINSTANCE().toSHA1(dto.getPassword());
         if (!user.getPasswordEncoding().equals(encode))
             throw new AppException(ErrorView.SIGN_IN_FAILED);
-
-        return user;
+        int quantityCart = cartDAO.getQuantityCart(user.getId());
+        sessionManager.addUser(user);
+        sessionManager.setQuantityCart(quantityCart);
     }
 
     @Override
     public void signUp(SignUpRequest dto) {
         User user = userDAO.findByUsername(dto.getUsername(), true);
         if (user != null)
-            throw new AppException(new ErrorView(ErrorView.SIGN_UP_FAILED, "user", dto));
+            throw new AppException(ErrorCode.CREATE_FAILED);
         String passwordEncoding = Encoding.getINSTANCE().toSHA1(dto.getPassword());
         User userSaved = userMapper.toUser(dto);
         userSaved.setPasswordEncoding(passwordEncoding);
@@ -85,10 +86,6 @@ public class AuthenticateServicesImpl implements AuthenticationService {
         Timestamp userTokenExpired = user.getTokenVerifyTime();
         Timestamp timestampCurrent = Timestamp.valueOf(LocalDateTime.now());
         if (timestampCurrent.compareTo(userTokenExpired) > 0) throw new AppException(ErrorView.ERROR_404);
-
-        userDAO.updateTokenVerify(user.getId(), null, null);
-        userDAO.updateVerify(user.getId(), true);
+        userDAO.updateTokenVerify(user.getId(), true, null, null);
     }
-
-
 }
