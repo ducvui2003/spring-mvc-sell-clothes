@@ -54,7 +54,7 @@
 </div>
 <c:import url="/footer"/>
 <!--Modal-->
-<div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel">
     <div id="model" class="modal-dialog modal-dialog-scrollable" style="max-width: 80%">
         <div class="modal-content">
             <div class="modal-header">
@@ -189,20 +189,16 @@
 
                             <div class="col-6 flex-column  justify-content-center pe-auto">
                                 <div class="d-flex justify-content-center ">
-                                    <div class="text-center m-2">
-                                        <div class="rounded-circle bg-primary p-3">
-                                            <label for="upload-sign-info" class="text-light"
-                                                   style="cursor: pointer; font-size: 32px;">
-                                                <i class="fas fa-upload"></i>
-                                            </label>
-                                            <input id="upload-sign-info" type="file" class="d-none"
-                                                   onchange="handleUploadFile(event)" accept=".sign"/>
-                                        </div>
+                                    <div class="text-center m-2 w-100">
+                                        <input id="upload-sign-info" type="text"
+                                               class="border rounded-pill p-3 m-2 container-fluid"
+                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">
+                                        <button id="btn-verify" type="button" class="btn btn-primary">
+                                            Xác thực
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="text-center">
-                                    <p>Vui lòng tải thông tin đơn hàng đã xác thực</p>
-                                </div>
+
                             </div>
                         </div>
 
@@ -238,42 +234,7 @@
 <script type="module" src="<c:url value="/js/user/accountOrder.js"/>"></script>
 
 <script>
-    function handleUploadFile(event) {
-        var order_id = $('span#order__id').html();
-        var file = event.target.files[0];
-        var formData = new FormData();
-        formData.append('file', file);
-        formData.append('uuid', order_id);
-        $.ajax({
-            url: '/api/verifyOrder/upload',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-                if (data.status == 200) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Tải lên thành công',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Tải lên thất bại',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                }
-            }
-        });
-    }
 
-    function handleDownloadFile() {
-        var order_id = $('span#order__id').html();
-        window.open(`/api/verifyOrder/download?uuid=` + order_id, '_blank');
-    }
 
     function selected(ind) {
         document.querySelectorAll('.navbar__link').forEach(tab => {
@@ -281,6 +242,11 @@
                 tab.classList.add('navbar__link--clicked');
             }
         });
+    }
+
+    function handleDownloadFile() {
+        var order_id = $('span#order__id').html();
+        window.open(`/api/verify-order/download?uuid=` + order_id, '_blank');
     }
 
     selected(3);

@@ -1,7 +1,12 @@
 package com.spring.websellspringmvc.controller.api;
 
+import com.spring.websellspringmvc.dao.KeyDAO;
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.services.HistoryService;
+import com.spring.websellspringmvc.services.admin.AdminOrderServices;
 import com.spring.websellspringmvc.services.cart.CartService;
 import com.spring.websellspringmvc.services.cart.CartServiceImpl;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
@@ -25,9 +30,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/verifyOrder")
+@RequestMapping("/api/verify-order")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UploadDownloadController {
@@ -35,30 +46,40 @@ public class UploadDownloadController {
     SessionManager sessionManager;
     HistoryService historyService;
     SignedOrderFile signedOrderFile;
+    AdminOrderServices adminOrderServices;
+    KeyDAO keyDAO;
 
     @PostMapping("/upload")
-    public void uploadFile(@RequestParam("uuid") String uuid, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<Boolean>> uploadFile(@RequestParam("uuid") String uuid, @RequestParam("signed") String signed) {
         try {
-            // Save or process the file
-            String fileName = file.getOriginalFilename();
-            long fileSize = file.getSize();
-            System.out.println(fileSize);
-            OrderDetailResponse orderDetailResponse =signedOrderFile.readDataFile(file.getBytes());
-            if (orderDetailResponse == null) {
-                return ;
+            int userId = sessionManager.getUser().getId();
+            OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
+            List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
+            byte[] fileData = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
+            if (fileData == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.<Boolean>builder()
+                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .message("Error verifying signed order")
+                        .data(false)
+                        .build());
             }
-            System.out.println(orderDetailResponse.toString());
-            // For example, save the file to a directory
-//            Path filePath = Paths.get("uploads/" + fileName);
-//            Files.createDirectories(filePath.getParent());
-//            Files.write(filePath, file.getBytes());
+            List<Key> keys = keyDAO.getKeys(userId);
+            PublicKey k = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(keys.get(0).getPublicKey())));
 
-
-//            return ResponseEntity.ok("File uploaded successfully with UUID: " + uuid);
-        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
+            boolean b = signedOrderFile.verifyData(fileData, signed, k);
+            return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                    .code(HttpStatus.OK.value())
+                    .message(b ? "Success verifying signed order" : "Error verifying signed order")
+                    .data(b)
+                    .build());
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchProviderException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -66,15 +87,15 @@ public class UploadDownloadController {
     public void downloadFile(@RequestParam("uuid") String uuid, HttpServletResponse res) {
         int userId = sessionManager.getUser().getId();
         OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
-
-        if (orderDetailResponse == null) {
-            return ;
+        List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
+        if (orderPrevious == null) {
+            return;
         }
-        byte[] file = signedOrderFile.writeDateFile(orderDetailResponse);
+        byte[] file = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
         String LOCATION = "Downloads";
         String fileName = uuid + ".data";
         try {
-            FileOutputStream stream = new FileOutputStream( System.getenv("USERPROFILE")+ File.separator +LOCATION+ File.separator + fileName);
+            FileOutputStream stream = new FileOutputStream(System.getenv("USERPROFILE") + File.separator + LOCATION + File.separator + fileName);
             ServletOutputStream out = res.getOutputStream();
             res.setContentType("application/data");
             res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
@@ -85,7 +106,7 @@ public class UploadDownloadController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            return ;
+            return;
         } finally {
         }
     }

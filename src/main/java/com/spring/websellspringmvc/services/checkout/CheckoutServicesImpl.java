@@ -5,7 +5,9 @@ import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.mvc.request.CheckoutRequest;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.Address;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
@@ -149,4 +151,17 @@ public class CheckoutServicesImpl implements CheckoutServices {
     public void updateTransactionStatusVNPay(String paymentRef, TransactionStatus status) {
         orderDAO.updateTransactionStatusVNPay(paymentRef, status.getValue());
     }
+
+    @Override
+    public boolean verifyOrder(OrderDetailResponse orderDetail, List<AdminOrderDetailResponse> orderPrevious) {
+        if (orderDetail == null || orderPrevious == null) {
+            return false;
+        }
+//        boolean exsist = orderDAO.getOrderById(orderDetail.getOrderId());
+        boolean[] exsistHistory = orderDAO.verifyHistory(orderPrevious);
+        System.out.println("exsistHistory: " + exsistHistory);
+        return false;
+    }
+
+
 }

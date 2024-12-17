@@ -146,4 +146,43 @@ $(document).ready(function () {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     }
+
+
+    function handleVerifyButton(event) {
+        var order_id = $('span#order__id').html();
+        var file = $('input#upload-sign-info').val();
+        var formData = new FormData();
+        formData.append('signed', file);
+        formData.append('uuid', order_id);
+        $.ajax({
+            url: '/api/verify-order/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                console.log("success")
+                if (data.data) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Xác thực thành công',
+                        showConfirmButton: false,
+                        target: document.querySelector("#modal"),
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
+                        showConfirmButton: false,
+                        target: document.querySelector("#modal"),
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    }
+
+    $("#btn-verify").on("click", handleVerifyButton);
+
 });
