@@ -95,4 +95,12 @@ public class HomeController {
         return mav;
     }
 
+    @GetMapping("/fido")
+    ModelAndView fidoPage() {
+        return new ModelAndView("fido-login");
+    }
+    @GetMapping("/fido-register")
+    ModelAndView fidoRegisterPage() {
+        return new ModelAndView("fido-register");
+    }
 }

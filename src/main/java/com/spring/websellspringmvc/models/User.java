@@ -32,4 +32,5 @@ public class User implements Serializable {
     Timestamp tokenVerifyTime;
     String tokenResetPassword;
     Timestamp tokenResetPasswordTime;
+    String userHandle;
 }
