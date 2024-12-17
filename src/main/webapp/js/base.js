@@ -142,7 +142,12 @@ export const http = ({
             dataType,
             contentType,
             success: function (response) {
-                resolve(response);
+                // Check if response is null or empty, resolve with a default value
+                if (response === null || response === undefined) {
+                    resolve(null); // Return null or any default you prefer
+                } else {
+                    resolve(response); // Return the valid response
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reject(new Error(`Error: ${textStatus}, ${errorThrown}`));

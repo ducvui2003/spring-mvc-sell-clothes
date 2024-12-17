@@ -2,22 +2,19 @@ package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
-import com.spring.websellspringmvc.dto.request.KeyRequest;
-import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
-import com.spring.websellspringmvc.models.Key;
+import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
+import com.spring.websellspringmvc.services.user.UserServices;
+import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
-import com.spring.websellspringmvc.utils.ValidatePassword;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,13 +24,11 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -41,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServicesImpl userServicesImpl;
+    UserServicesImpl userServices;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -58,7 +53,7 @@ public class UserController {
         }
         String nameAvatar = uploadImageServices.getNameImages().get(0);
         JSONObject json = new JSONObject();
-        userServicesImpl.updateInfoUser(user.getId(), nameAvatar);
+        userServices.updateInfoUser(user.getId(), nameAvatar);
         user.setAvatar(nameAvatar);
         json.put("status", "success");
         json.put("message", "Upload avatar success");
@@ -68,10 +63,8 @@ public class UserController {
 
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<?>> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws IOException {
-        JSONObject json = new JSONObject();
-
         User user = sessionManager.getUser();
-        userServicesImpl.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
+        userServices.changePassword(user.getId(), Encoding.getINSTANCE().toSHA1(request.getNewPassword()));
 
         return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Change password success", null));
     }
@@ -91,7 +84,7 @@ public class UserController {
             e.printStackTrace();
         }
 
-        userServicesImpl.updateUserByID(userId, fullName, gender, phone, birthDay);
+        userServices.updateUserByID(userId, fullName, gender, phone, birthDay);
         try {
             // Nghỉ đảm bảo trong db cập nhật trước
             Thread.sleep(1000);
@@ -141,6 +134,4 @@ public class UserController {
                     .build());
         }
     }
-
-
 }

@@ -59,6 +59,8 @@
                         Google</a>
                     <a class="btn btn-primary" data-btn-style="facebook" href="/oauth2/facebook/login">Đăng nhập với
                         Facebook</a>
+                    <span class="btn btn-primary" id="btn-passkey" data-btn-style="passkey">Đăng nhập với
+                        Passkey</span>
                 </div>
             </form:form>
             <a href="<c:url value="/signUp"/>" id="form__link--signUp" class="form__link
@@ -70,6 +72,7 @@
 </main>
 <!--JS validate-->
 <script src="<c:url value="/js/validateForm.js"/>"></script>
+<script type="module" src="/js/signIn.js"></script>
 <script>
     // Check nhập không phù hợp
     // $("input.form__input").on({
