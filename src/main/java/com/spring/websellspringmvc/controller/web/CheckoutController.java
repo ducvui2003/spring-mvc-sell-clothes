@@ -46,27 +46,27 @@ public class CheckoutController {
 
     @GetMapping("/checkout/vn-pay-return")
     public ModelAndView checkout(@RequestParam("vnp_ResponseCode") String responseCode,
-                                 @RequestParam("vnp_TxnRef") String vnp_TxnRef) {
+                                 @RequestParam("vnpTxnRef") String vnpTxnRef) {
         log.info("vnp_ResponseCode: " + responseCode);
-        log.info("vnp_TxnRef: " + vnp_TxnRef);
+        log.info("vnp_TxnRef: " + vnpTxnRef);
         String status = "";
         switch (responseCode) {
             case VN_PAY_SUCCESS:
-                checkoutServices.updateTransactionStatusVNPay(vnp_TxnRef, TransactionStatus.PAID);
+                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PAID);
                 status = "Giao dịch thành công";
                 break;
             case VN_PAY_PROCESSING:
-                checkoutServices.updateTransactionStatusVNPay(vnp_TxnRef, TransactionStatus.PROCESSING);
+                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PROCESSING);
                 status = "Giao dịch đang được Vn Pay xử lý";
                 break;
             default:
-                checkoutServices.updateTransactionStatusVNPay(vnp_TxnRef, TransactionStatus.ERROR);
+                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.ERROR);
                 status = "Giao dịch thất bại, vui lòng liên hệ Vn Pay";
                 break;
         }
         ModelAndView mov = new ModelAndView();
         mov.addObject("status", status);
-        mov.addObject("orderId", vnp_TxnRef);
+        mov.addObject("orderId", vnpTxnRef);
         mov.setViewName(PageAddress.USER_ORDER_SUCCESS.getPage());
         return mov;
     }

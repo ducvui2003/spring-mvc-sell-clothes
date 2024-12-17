@@ -1,25 +1,26 @@
 import {getFeeAndLeadTime} from "../shipping.js";
-import {http} from "../base.js";
+import {http, ORDER_STATUS} from "../base.js";
 
 $(document).ready(function () {
     // Lấy ra trạng thái đơn hàng chưa xác nhận khi mới vào trang
-    let statusId = 1;
+    let status = ORDER_STATUS["VERIFYING"];
     const modal = $('#modal');
 
-    getOrders(statusId);
+    getOrders(status);
+
     $('.list-group-item-action').click(function () {
         $('.list-group-item-action').removeClass('active');
         $(this).addClass('active');
-        statusId = $(this).data('status');
-        getOrders(statusId);
+        status = $(this).data('status');
+        getOrders(status);
     });
 
-    function getOrders(statusId) {
+    function getOrders(status) {
         http({
             url: '/api/user/order/:statusId',
             type: 'GET',
             pathVariables: {
-                statusId: statusId,
+                statusId: status,
             },
         }).then(function (response) {
             loadDataToTable(response.data)

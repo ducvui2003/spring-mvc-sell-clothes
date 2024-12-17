@@ -2,13 +2,10 @@ package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
-import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
-import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
-import com.spring.websellspringmvc.services.HistoryService;
+import com.spring.websellspringmvc.services.order.OrderServicesImpl;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
-import com.spring.websellspringmvc.services.user.UserServices;
 import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
@@ -21,15 +18,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -37,7 +35,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
     UserServicesImpl userServices;
-    HistoryService historyService;
     SessionManager sessionManager;
 
     @PostMapping("/upload-avatar")
@@ -109,29 +106,5 @@ public class UserController {
         return sqlDate;
     }
 
-    @GetMapping("/order/{statusId}")
-    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrder(@PathVariable("statusId") Integer statusId) throws ServletException, IOException {
-        User user = sessionManager.getUser();
-        List<OrderResponse> orders = historyService.getOrder(user.getId(), statusId);
-        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), "success", orders));
-    }
 
-    @GetMapping("/order/detail/{orderId}")
-    public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") String orderId) throws ServletException, IOException {
-        User user = sessionManager.getUser();
-        int userId = user.getId();
-        OrderDetailResponse orderDetail = historyService.getOrderByOrderId(orderId, userId);
-        if (orderDetail == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<OrderDetailResponse>builder()
-                    .code(HttpStatus.NOT_FOUND.value())
-                    .message("Order not found")
-                    .build());
-        } else {
-            return ResponseEntity.ok(ApiResponse.<OrderDetailResponse>builder()
-                    .code(HttpServletResponse.SC_OK)
-                    .message("Order found")
-                    .data(orderDetail)
-                    .build());
-        }
-    }
 }

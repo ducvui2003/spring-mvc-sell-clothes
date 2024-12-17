@@ -140,7 +140,7 @@
                                 </thead>
                                 <tbody class="cart__items">
                                 <!--Cart-->
-                                <c:forEach var="item" varStatus="status" items="${requestScope.carts}">
+                                <c:forEach var="item" items="${requestScope.carts}">
                                     <tr class="cart__item"
                                         data-card-item-id="${item.id}"
                                         data-product-id="${item.productId}">

@@ -1,4 +1,3 @@
-
 export const addParam = (form, {key, value}) => {
     let formDataArray = $(form).serializeArray();
     formDataArray.push({name: key, value: value}); // Add your custom parameter
@@ -229,5 +228,13 @@ export const formDataToJson = function (formElement, additionalFields = {}) {
         }
     }
 
-    return { ...json, ...additionalFields };
+    return {...json, ...additionalFields};
 };
+export const ORDER_STATUS = {
+    PENDING: "Chờ xác nhận ",
+    CONFIRMED: "Đang sản xuất",
+    DELIVERY: "Đang vận chuyển",
+    COMPLETED: "Giao hàng thành công ",
+    CANCELLED: "Giao hàng thất bại ",
+    VERIFYING: "Đang xác nhận",
+}

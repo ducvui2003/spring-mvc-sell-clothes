@@ -21,7 +21,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/key")
+@RequestMapping("/api/user/key")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KeyController {

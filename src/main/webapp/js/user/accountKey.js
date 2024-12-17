@@ -56,7 +56,7 @@ $(document).ready(function () {
         submitHandler: function (form) {
             var formData = new FormData(form);
             $.ajax({
-                url: "/api/user/add-key",
+                url: "/api/user/key/add-key",
                 type: "POST",
                 data: formData,
                 processData: false,

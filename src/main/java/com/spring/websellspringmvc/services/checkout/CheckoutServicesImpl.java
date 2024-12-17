@@ -61,6 +61,8 @@ public class CheckoutServicesImpl implements CheckoutServices {
     Integer serviceTypeId;
     VnPayServices vnPayServices;
 
+    OrderStatus statusBegin = OrderStatus.VERIFYING;
+
     //    Trả về danh sách các sản phẩm được ngưởi dùng chọn mua
     @Override
     public List<CartItemResponse> getCarts(List<Integer> listCartItemId, Integer userId) {
@@ -76,7 +78,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setFullName(request.getFullName());
         order.setEmail(request.getEmail());
         order.setPhone(request.getPhone());
-        order.setOrderStatusId(OrderStatus.PENDING.getValue());
+        order.setOrderStatusId(statusBegin.getValue());
         order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
 
         Address address = addressDAO.getAddressById(request.getAddressId());
@@ -102,7 +104,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setFullName(request.getFullName());
         order.setEmail(request.getEmail());
         order.setPhone(request.getPhone());
-        order.setOrderStatusId(OrderStatus.PENDING.getValue());
+        order.setOrderStatusId(statusBegin.getValue());
         order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
 
         Address address = addressDAO.getAddressById(request.getAddressId());

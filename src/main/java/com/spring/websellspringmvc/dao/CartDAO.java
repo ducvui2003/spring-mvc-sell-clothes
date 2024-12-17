@@ -47,8 +47,7 @@ public interface CartDAO {
 
     @SqlQuery("""
             SELECT 
-                   cart_items.id  
-                   as id,
+                   cart_items.id  as id, 
                    products.id as productId,
                    products.name          as name,
                    images.nameImage       AS thumbnail,

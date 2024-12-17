@@ -21,19 +21,23 @@
             <div class="col-3">
                 <div class="list-group">
                     <div class=" py-3 list-group-item list-group-item-action active" aria-current="true"
-                         data-status="1">
+                         data-status="VERIFYING">
+                        <i class="fa-solid fa-signature me-4"></i>Chờ xác thực
+                    </div>
+                    <div class=" py-3 list-group-item list-group-item-action " aria-current="true"
+                         data-status="PENDING">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="2">
-                        <i class="fa-solid fa-spinner me-3"></i> Đang sản xuất
+                    <div class="py-3 list-group-item list-group-item-action" data-status="PACKAGE">
+                        <i class="fa-solid fa-spinner me-3"></i> Chờ đóng gói
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="3">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="DELIVERY">
                         <i class="fa-solid fa-truck me-3"></i>Đang vận chuyển
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="4">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="COMPLETED">
                         <i class="fa-regular fa-circle-check me-3"></i> Hoàn thành
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="5">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="CANCELLED">
                         <i class="fa-regular fa-circle-xmark me-3"></i> Hủy
                     </div>
                 </div>
@@ -67,7 +71,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-12">
                         <h1 class="h2" id="">Mã đơn hàng: <span id="order__id">...</span></h1>
                     </div>
                     <div class="col-12 mt-3">
@@ -152,7 +156,7 @@
                                     <div class="text-end col-6" id="order__ward"></div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-6">Đường, thị trấn, số nhà,... </div>
+                                    <div class="col-6">Đường, thị trấn, số nhà,...</div>
                                     <div class="text-end col-6" id="order__detail"></div>
                                 </div>
                             </div>
