@@ -104,7 +104,7 @@ public interface OrderDAO {
             orders.dateOrder, 
             orders.paymentMethod as payment 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
-            WHERE orders.id = :orderId AND orders.userId = :userId
+            WHERE orders.id = :orderId
             """)
     @RegisterBeanMapper(OrderDetailResponse.class)
     public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId, @Bind("userId") int userId);
@@ -198,14 +198,16 @@ public interface OrderDAO {
                    district,
                    ward,
                    detail,
-                   fee 
+                   fee,
+                   createAt,
+                   previousId
             FROM orders 
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id 
-            WHERE orders.previous = :id 
+            WHERE orders.previousId = :id OR orders.id = :id
             ORDER BY orders.createAt DESC
             """)
-    @RegisterBeanMapper(Order.class)
+    @RegisterBeanMapper(AdminOrderDetailResponse.class)
     List<AdminOrderDetailResponse> getOrderPrevious(@Bind("id") String id);
 
     @SqlUpdate("""
@@ -268,4 +270,20 @@ public interface OrderDAO {
             WHERE o.id = :orderId  AND o.userId = :userId
             """)
     int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
+
+    @SqlBatch("""
+            IF EXISTS (SELECT * FROM order
+             WHERE orderId = :orderId AND 
+             fullName=:orderDetail.fullName AND 
+             email=:orderDetail.email AND 
+             phone=:orderDetail.phone AND 
+             province=:orderDetail.province AND 
+             district=:orderDetail.district AND 
+             ward=:orderDetail.ward AND 
+             detail=:orderDetail.detail AND 
+             paymentMethod=:orderDetail.paymentMethod AND 
+             voucherId=:orderDetail.voucherId AND 
+             fee=:orderDetail.fee)
+            """)
+    boolean[] verifyHistory(@BindBean("orderDetail") List<AdminOrderDetailResponse> orderDetail);
 }

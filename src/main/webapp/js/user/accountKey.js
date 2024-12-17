@@ -21,9 +21,6 @@ $(document).ready(function () {
     // Form validation for Update Key
     formAddKey.validate({
         rules: {
-            // inputNewKey: {
-            //     required: true,
-            // },
             inputUploadKey: {
                 required: true,
                 singleFile: true,
@@ -56,7 +53,7 @@ $(document).ready(function () {
         submitHandler: function (form) {
             var formData = new FormData(form);
             $.ajax({
-                url: "/api/user/key/add-key",
+                url: "/api/key/add-key",
                 type: "POST",
                 data: formData,
                 processData: false,
