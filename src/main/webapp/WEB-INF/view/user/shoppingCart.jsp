@@ -204,6 +204,7 @@
                                                         name="quality__required"
                                                         class="quality__required"
                                                         min="1"
+                                                        readonly
                                                         value="${item.quantity}">
                                                 <button
                                                         type="submit"

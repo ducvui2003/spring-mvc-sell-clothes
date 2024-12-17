@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 8074934311683817530L;
-    Integer id;
+    int id;
     String username;
     String passwordEncoding;
     String fullName;

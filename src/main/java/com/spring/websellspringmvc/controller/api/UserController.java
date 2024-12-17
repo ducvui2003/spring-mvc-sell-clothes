@@ -1,13 +1,12 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
-import com.spring.websellspringmvc.dto.request.ChangePasswordRequest;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.properties.PathProperties;
 import com.spring.websellspringmvc.services.HistoryService;
-import com.spring.websellspringmvc.services.user.UserServicesImpl;
+import com.spring.websellspringmvc.services.UserServices;
 import com.spring.websellspringmvc.services.image.UploadImageServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Encoding;
@@ -16,7 +15,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    UserServicesImpl userServicesImpl;
+    UserServices userServices;
     HistoryService historyService;
     SessionManager sessionManager;
 
@@ -53,7 +51,7 @@ public class UserController {
         }
         String nameAvatar = uploadImageServices.getNameImages().get(0);
         JSONObject json = new JSONObject();
-        userServicesImpl.updateInfoUser(user.getId(), nameAvatar);
+        userServices.updateInfoUser(user.getId(), nameAvatar);
         user.setAvatar(nameAvatar);
         json.put("status", "success");
         json.put("message", "Upload avatar success");
@@ -86,7 +84,7 @@ public class UserController {
             e.printStackTrace();
         }
 
-        userServicesImpl.updateUserByID(userId, fullName, gender, phone, birthDay);
+        userServices.updateUserByID(userId, fullName, gender, phone, birthDay);
         try {
             // Nghỉ đảm bảo trong db cập nhật trước
             Thread.sleep(1000);

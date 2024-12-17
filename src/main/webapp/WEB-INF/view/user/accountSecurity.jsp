@@ -5,12 +5,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/account.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountInfo.css"/>">
     <link rel="stylesheet" href="<c:url value="/assets/css/user/accountSecurity.css"/>">
-    <jsp:include page="/WEB-INF/view/common/commonLink.jsp"/>
     <title>Bảo mật</title>
 
 </head>
