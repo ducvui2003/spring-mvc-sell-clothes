@@ -15,14 +15,26 @@ import java.util.List;
 @RegisterBeanMapper(Key.class)
 public interface KeyDAO {
     @SqlUpdate("""
-    INSERT INTO `keys` (id, publicKey, keyId, userId, createAt, updateAt ) VALUES (:id, :publicKey, :keyId, :userId, NOW(), NOW())""")
+            INSERT INTO `keys` (id, publicKey, previousId, userId, createAt, updateAt ) VALUES (:id, :publicKey, :previousId, :userId, NOW(), NOW())""")
     @GetGeneratedKeys
     Long insert(@BindBean Key key);
+
 
     @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId ORDER BY createAt DESC")
     List<Key> getKeys(@Bind("userId") int userId);
 
+    @SqlQuery("""
+            SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC LIMIT 1;
+            """)
+    Key getCurrentKey(@Bind("userId") int userId);
+
     @SqlUpdate("""
-        update `keys` set isDelete = 1 where  userId = :userId AND isDelete = 0;""")
-    void deleteCurrentKey(@Bind("userId") int userId);
+                      UPDATE `users` SET isBlockKey = 1 , keyOTP = :otp WHERE id = :userId;
+            """)
+    void deleteCurrentKey(@Bind("userId") int userId, @Bind("otp") String otp);
+
+    @SqlQuery("""
+            SELECT Exists(SELECT COUNT(*) FROM `users` WHERE id = :userId AND isBlock = 1);
+            """)
+    boolean isBlockKey(int userId);
 }

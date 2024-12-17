@@ -4,17 +4,20 @@ import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.key.KeyServiceImpl;
+import com.spring.websellspringmvc.services.key.KeyServices;
+import com.spring.websellspringmvc.services.mail.IMailServices;
+import com.spring.websellspringmvc.services.mail.MailLostKey;
+import com.spring.websellspringmvc.services.mail.MailVerifyServices;
 import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.Token;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.DataInputStream;
@@ -26,11 +29,9 @@ import java.io.IOException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KeyController {
     SessionManager sessionManager;
-    private final KeyServiceImpl keyServiceImpl;
-
+    KeyServices keyService;
     @PostMapping("/add-key")
     public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
-        String currentKeyId = "";
         User user = sessionManager.getUser();
         if (request == null || request.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.<String>builder()
@@ -66,11 +67,28 @@ public class KeyController {
                     .build());
         }
         int userID = sessionManager.getUser().getId();
-        keyServiceImpl.insertKey(currentKeyId ,publicKey, userID);
+        keyService.insertKey(publicKey, userID);
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key added successfully")
                 .data(publicKey.toString())
+                .build());
+    }
+    @PutMapping("/lost-key")
+    public ResponseEntity<ApiResponse<?>> lostKey() {
+        User user = sessionManager.getUser();
+        String otp =Token.generateOTPCode();
+        keyService.setInvalidKey(user.getId(),otp);
+        IMailServices mailServices = new MailLostKey(user.getEmail(), user.getUsername(),otp );
+        try {
+            mailServices.send();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(HttpServletResponse.SC_OK)
+                .message("Key blocked successfully")
                 .build());
     }
 }

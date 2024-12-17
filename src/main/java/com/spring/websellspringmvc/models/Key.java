@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Key {
     String id;
     String publicKey;
-    String keyId;
+    String previousId;
     int userId;
     LocalDateTime createAt;
     LocalDateTime updateAt;
