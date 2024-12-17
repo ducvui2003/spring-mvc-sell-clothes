@@ -1,6 +1,7 @@
-package com.spring.websellspringmvc.passkey;
+package com.spring.websellspringmvc.passkey.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -10,12 +11,13 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Credential {
-    int id;
-    int userId;
-    byte[] credentialId;
-    LocalDate crateAt;
+    String id;
+    String userId;
     String publicKey;
-    int signCount;
+    long signCount;
+    String type;
+    LocalDate createAt;
 }

@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.model.Credential;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -24,6 +25,9 @@ public interface UserDAO {
 
     @SqlQuery("SELECT * FROM users WHERE username = :username AND isVerify = :isVerify")
     User findByUsername(@Bind("username") String username, @Bind("isVerify") boolean isVerify);
+
+    @SqlQuery("SELECT * FROM users WHERE email = :email AND isVerify = :isVerify")
+    User findByEmail(@Bind("email") String email, @Bind("isVerify") boolean isVerify);
 
     @SqlQuery("SELECT * FROM users WHERE email = :email")
     Optional<User> findById(@Bind("email") String email);
@@ -87,5 +91,11 @@ public interface UserDAO {
 
     @SqlQuery("SELECT COUNT(*) count FROM users WHERE username LIKE :search OR fullName LIKE %:search% OR email LIKE :search OR phone LIKE :search")
     public long getSizeWithCondition(@Bind("searchValue") String search);
+
+    @SqlUpdate("UPDATE users SET userHandle = :userHandle WHERE id = :id")
+    void updateUserHandle(@Bind("id") Integer id, @Bind("userHandle") String userHandle);
+
+    @SqlUpdate("INSERT INTO users_credentials (id, public_key, sign_count, user_id, type) VALUES (:id, :publicKey, :signCount, :userId, :type)")
+    void addCredential(@BindBean Credential credential);
 
 }

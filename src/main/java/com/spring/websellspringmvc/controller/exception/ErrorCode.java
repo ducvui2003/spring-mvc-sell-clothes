@@ -20,7 +20,8 @@ public enum ErrorCode {
     NOT_VALID(HttpStatus.BAD_REQUEST.value(), "Not valid"),
     CREATE_FAILED(HttpStatus.CONFLICT.value(), "Create Failed"),
     UPDATE_FAILED(HttpStatus.CONFLICT.value(), "Update Failed"),
-    DELETE_FAILED(HttpStatus.CONFLICT.value(), "Delete Failed");
+    DELETE_FAILED(HttpStatus.CONFLICT.value(), "Delete Failed"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(),"UNAUTHORIZED"),;
 
     private Integer code;
     private String message;
@@ -30,4 +31,4 @@ public enum ErrorCode {
         this.code = code;
         this.message = message;
     }
-}
+    }

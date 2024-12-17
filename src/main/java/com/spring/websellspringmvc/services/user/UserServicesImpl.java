@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dao.UserDAO;
 import com.spring.websellspringmvc.dto.response.UserInfoResponse;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.model.Credential;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,4 +65,20 @@ public class UserServicesImpl implements UserServices {
     public long getTotalWithCondition(String searchValue) {
         return userDAO.getSizeWithCondition(searchValue);
     }
+
+    @Override
+    public void addCredential(Credential credential) {
+        userDAO.addCredential(credential);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email, boolean verify) {
+        return Optional.ofNullable(userDAO.findByEmail(email, verify));
+    }
+
+    @Override
+    public void updateUserHandle(Integer id, String userHandle) {
+        userDAO.updateUserHandle(id, userHandle);
+    }
+
 }

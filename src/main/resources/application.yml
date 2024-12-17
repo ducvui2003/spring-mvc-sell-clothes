@@ -8,6 +8,7 @@ spring:
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 12345
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -70,6 +71,10 @@ app:
       tnn-code: 8QI437P2
       hash-secret: AT3P2JYLC7DN394RY3X0FDCAJ3RCJCH9
       api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+    yubikey:
+      id: ${server.address}
+      origins: http://${server.address}:${server.port},https://${server.address}:${server.port}
+      name: "YourStyle"
 logging:
   level:
     feign:

@@ -185,6 +185,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -193,13 +194,6 @@
         <dependency>
             <groupId>com.yubico</groupId>
             <artifactId>webauthn-server-core</artifactId>
-            <version>2.5.4</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.yubico.yubikit/core -->
-        <dependency>
-            <groupId>com.yubico.yubikit</groupId>
-            <artifactId>core</artifactId>
             <version>2.5.0</version>
         </dependency>
 

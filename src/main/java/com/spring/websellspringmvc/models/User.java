@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 8074934311683817530L;
-    int id;
+    Integer id;
     String username;
     String passwordEncoding;
     String fullName;
@@ -32,4 +32,5 @@ public class User implements Serializable {
     Timestamp tokenVerifyTime;
     String tokenResetPassword;
     Timestamp tokenResetPasswordTime;
+    String userHandle;
 }
