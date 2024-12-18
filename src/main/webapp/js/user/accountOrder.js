@@ -260,7 +260,7 @@ function loadDataToModalChangeOrder(addressList) {
 
 function handleCheckCanChangeOrder(orderId) {
     return http({
-        url: "/api/user/key/is-blocking",
+        url: "/api/key/is-blocking",
         type: 'GET',
         queryParams: {
             orderId: orderId
