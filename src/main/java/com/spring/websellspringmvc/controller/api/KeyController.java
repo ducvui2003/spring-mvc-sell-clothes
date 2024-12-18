@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/key")
@@ -77,12 +78,13 @@ public class KeyController {
                 .data(publicKey.toString())
                 .build());
     }
+
     @PutMapping("/lost-key")
     public ResponseEntity<ApiResponse<?>> lostKey() {
         User user = sessionManager.getUser();
-        String otp =Token.generateOTPCode();
-        keyService.setInvalidKey(user.getId(),otp);
-        IMailServices mailServices = new MailLostKey(user.getEmail(), user.getUsername(),otp );
+        String otp = Token.generateOTPCode();
+        keyService.setInvalidKey(user.getId(), otp);
+        IMailServices mailServices = new MailLostKey(user.getEmail(), user.getUsername(), otp);
         try {
             mailServices.send();
         } catch (MessagingException e) {
@@ -92,6 +94,30 @@ public class KeyController {
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key blocked successfully")
+                .build());
+    }
+
+    @PutMapping("/verify-otp")
+    public ResponseEntity<ApiResponse<?>> verifyOTP(@RequestBody Map<String, String> inp) {
+        User user = sessionManager.getUser();
+        String otp = inp.get("inputPassword");
+        if (otp == null || otp.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("OTP is empty")
+                    .build());
+        }
+        if (otp.length() != 6) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Invalid OTP")
+                    .build());
+        }
+        boolean valid = keyService.setValidKey(user.getId(), otp);
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .code(HttpServletResponse.SC_OK)
+                .message("Key verified successfully")
+                .data(valid)
                 .build());
     }
 
