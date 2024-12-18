@@ -58,11 +58,11 @@
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
                                     data-bs-target="#addKeyModal">Thêm khóa mới
                             </button>
-                            <c:if test="${requestScope.hasKey == true}">
-                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#reportKeyModal">Báo mất khóa
-                                </button>
-                            </c:if>
+                            <%--                            <c:if test="${requestScope.hasKey == true}">--%>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#reportKeyModal">Báo mất khóa
+                            </button>
+                            <%--                            </c:if>--%>
                         </div>
                     </div>
                 </div>

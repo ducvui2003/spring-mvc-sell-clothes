@@ -12,21 +12,33 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class KeyServiceImpl implements KeyServices{
+public class KeyServiceImpl implements KeyServices {
     KeyDAO keyDAO;
+
+    @Override
+    public boolean isBlockKey(int userId) {
+        return keyDAO.isBlockKey(userId);
+    }
+
     @Override
     public List<Key> getKeys(int userId) {
         return keyDAO.getKeys(userId);
     }
 
-    public void insertKey(String currentKeyId,String publicKey, int userId){
+    public void insertKey(String publicKey, int userId) {
         //TODO get current key
         Key keyToInsert = new Key();
         keyToInsert.setId(UUID.randomUUID().toString());
         keyToInsert.setPublicKey(publicKey);
         keyToInsert.setUserId(userId);
-        if (currentKeyId!=null) keyToInsert.setKeyId(currentKeyId);
+        Key currentKeyId = keyDAO.getCurrentKey(userId);
+        if (currentKeyId != null)
+            keyToInsert.setPreviousId(currentKeyId.getId());
         keyDAO.insert(keyToInsert);
     }
 
+    @Override
+    public void setInvalidKey(int userID, String otp) {
+        keyDAO.deleteCurrentKey(userID, otp);
+    }
 }

@@ -26,4 +26,10 @@ public class Token {
         Timestamp result = Timestamp.valueOf(newDateTime);
         return result;
     }
+
+    public static String generateOTPCode(){
+        int random = (int) (Math.random() * 1000000);
+        return String.format("%06d", random);
+    }
+
 }
