@@ -82,13 +82,7 @@ public class UserController {
         }
 
         userServices.updateUserByID(userId, fullName, gender, phone, birthDay);
-        try {
-            // Nghỉ đảm bảo trong db cập nhật trước
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-//        SessionManager.getInstance(request, response).updateUser();
+
         JSONObject json = new JSONObject();
         json.put("status", "success");
         response.setStatus(200);

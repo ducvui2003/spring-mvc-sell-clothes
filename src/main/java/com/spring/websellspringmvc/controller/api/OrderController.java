@@ -55,7 +55,7 @@ public class OrderController {
     }
 
     @PutMapping("/address/{orderId}")
-    public ResponseEntity<ApiResponse<OrderDetailResponse>> changeAddressOrder(@PathVariable("orderId") String orderId, ChangeOrderRequest request
+    public ResponseEntity<ApiResponse<OrderDetailResponse>> changeAddressOrder(@PathVariable("orderId") String orderId, @RequestBody ChangeOrderRequest request
     ) {
         User user = sessionManager.getUser();
         int userId = user.getId();

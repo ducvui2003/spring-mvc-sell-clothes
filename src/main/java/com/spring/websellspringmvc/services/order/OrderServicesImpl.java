@@ -14,6 +14,7 @@ import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -55,21 +57,9 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public void changeOrder(String orderId, Integer userId, ChangeOrderRequest request) {
-        try {
-            addressServices.validate(AddressRequest.builder()
-                    .detail(request.getDetail())
-                    .wardId(request.getWardId())
-                    .districtId(request.getDistrictId())
-                    .provinceId(request.getProvinceId())
-                    .districtName(request.getDistrictName())
-                    .provinceName(request.getProvinceName())
-                    .wardName(request.getWardName())
-                    .build());
-        } catch (URISyntaxException | IOException e) {
-            throw new AppException(ErrorCode.UPDATE_FAILED);
-        }
         if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
         int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request);
+        log.info("row effect: {}", rowEffect);
         if (rowEffect == 0) {
             throw new AppException(ErrorCode.UPDATE_FAILED);
         }

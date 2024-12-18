@@ -218,12 +218,13 @@ public interface OrderDAO {
     void updateTransactionStatusVNPay(@Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
 
     @SqlUpdate("""
-            UPDATE orders 
-            SET orders.province = :request.provinceName, 
-                orders.district = :request.districtName, 
-                orders.ward = :request.wardName, 
-                orders.detail = :request.detail 
-            WHERE orders.id = :orderId AND orders.userId = :userId
+            UPDATE orders o
+            JOIN address a ON a.id = :request.addressId
+            SET o.province = a.provinceName,
+                o.district = a.districtName,
+                o.ward = a.wardName,
+                o.detail = a.detail
+            WHERE o.id = :orderId AND o.userId = :userId;
             """)
     int changeInfoOrder(
             @Bind("orderId") String orderId,
