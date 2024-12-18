@@ -166,27 +166,29 @@ function addEventViewDetail() {
     modal.on('show.bs.modal', function (event) {
         const btn = $(event.relatedTarget);
         const orderId = btn.data('id');
-        http({
-            url: "/api/user/order/detail/:orderId",
-            pathVariables: {
-                orderId: orderId
-            },
-            type: 'GET',
-        }).then((response) => {
-            if (response.code === 200) {
-                const data = response.data;
-                loadDataModal(data, orderId);
-                modalChangeOrder.find("[data-bs-target='#modal']").attr('data-id', orderId);
-            } else {
-                modal.modal('hide');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Đã có lỗi xảy ra',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-            }
-        })
+        const noReload = btn.data('noreload');
+        if (!noReload)
+            http({
+                url: "/api/user/order/detail/:orderId",
+                pathVariables: {
+                    orderId: orderId
+                },
+                type: 'GET',
+            }).then((response) => {
+                if (response.code === 200) {
+                    const data = response.data;
+                    loadDataModal(data, orderId);
+                    modalChangeOrder.find("[data-bs-target='#modal']").attr('data-id', orderId);
+                } else {
+                    modal.modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Đã có lỗi xảy ra',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            })
     });
 }
 
@@ -229,7 +231,7 @@ function handleLoadAddress() {
                 loadDataToModalChangeOrder(addressList);
             }
         });
-    });
+    })
 }
 
 // Load danh sách địa chỉ vào UI
@@ -256,36 +258,72 @@ function loadDataToModalChangeOrder(addressList) {
     });
 }
 
+function handleCheckCanChangeOrder(orderId) {
+    return http({
+        url: "/api/user/key/is-blocking",
+        type: 'GET',
+        queryParams: {
+            orderId: orderId
+        }
+    }).then((response) => {
+        if (!response.data) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Khóa chưa được cập nhập',
+                text: "Vui lòng cập nhập khóa trước khi thay đổi địa chỉ",
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Đóng',
+            });
+            return false;
+        }
+        return true;
+    })
+}
+
 function handleSubmitModelChangeOrder() {
     btnAddressSubmit.on('click', function () {
         const addressId = tableAddress.find('tr.table-primary').data('id');
+        const province = tableAddress.find('tr.table-primary').find('td').eq(1).text();
+        const district = tableAddress.find('tr.table-primary').find('td').eq(2).text();
+        const ward = tableAddress.find('tr.table-primary').find('td').eq(3).text();
+        const detail = tableAddress.find('tr.table-primary').find('td').eq(4).text();
         const orderId = modalChangeOrder.find("[data-bs-target='#modal']").data('id');
         if (addressId) {
-            http({
-                url: "/api/user/order/address/:orderId",
-                type: 'PUT',
-                pathVariables: {
-                    orderId: orderId
-                },
-                data: {
-                    addressId: addressId
-                }
-            }).then((response) => {
-                if (response.code === 200) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Đã thay đổi địa chỉ cho đơn hàng thành công',
-                        showConfirmButton: false,
-                        timer: 1500
+            handleCheckCanChangeOrder(orderId).then((response) => {
+                if (response)
+                    http({
+                        url: "/api/user/order/address/:orderId",
+                        type: 'PUT',
+                        pathVariables: {
+                            orderId: orderId
+                        },
+                        data: {
+                            addressId: addressId
+                        }
+                    }).then((response) => {
+                        if (response.code === 200) {
+                            updateAddressInModal({
+                                province: province,
+                                district: district,
+                                ward: ward,
+                                detail: detail
+                            });
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã thay đổi địa chỉ cho đơn hàng thành công',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Thay đổi địa chỉ cho đơn hàng không thành công',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
                     });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Thay đổi địa chỉ cho đơn hàng không thành công',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                }
             });
         } else {
             Swal.fire({
@@ -296,4 +334,12 @@ function handleSubmitModelChangeOrder() {
             });
         }
     });
+}
+
+
+function updateAddressInModal(address) {
+    modal.find("#order__province").text(address.province);
+    modal.find("#order__district").text(address.district);
+    modal.find("#order__ward").text(address.ward);
+    modal.find("#order__detail").text(address.detail);
 }

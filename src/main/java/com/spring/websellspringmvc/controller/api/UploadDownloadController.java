@@ -6,7 +6,6 @@ import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.services.admin.AdminOrderServices;
-import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.order.OrderServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.SignedOrderFile;
@@ -32,7 +31,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UploadDownloadController {
-    CheckoutServices checkoutServices;
     SessionManager sessionManager;
     OrderServices orderServices;
     SignedOrderFile signedOrderFile;
@@ -76,6 +74,8 @@ public class UploadDownloadController {
     @GetMapping("/download")
     public void downloadFile(@RequestParam("uuid") String uuid, HttpServletResponse res) {
         int userId = sessionManager.getUser().getId();
+
+
         OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
         List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
         if (orderPrevious == null) {

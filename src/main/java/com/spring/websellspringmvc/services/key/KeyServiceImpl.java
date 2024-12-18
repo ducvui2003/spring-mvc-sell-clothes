@@ -16,8 +16,8 @@ public class KeyServiceImpl implements KeyServices {
     KeyDAO keyDAO;
 
     @Override
-    public boolean isBlockKey(int userId) {
-        return keyDAO.isBlockKey(userId);
+    public boolean isBlockKey(int userId, String orderId) {
+        return keyDAO.isBlockKey(userId, orderId) != 0;
     }
 
     @Override
@@ -39,6 +39,7 @@ public class KeyServiceImpl implements KeyServices {
 
     @Override
     public void setInvalidKey(int userID, String otp) {
-        keyDAO.deleteCurrentKey(userID, otp);
+        keyDAO.blockKey(userID, otp);
+        keyDAO.deleteKey(userID);
     }
 }

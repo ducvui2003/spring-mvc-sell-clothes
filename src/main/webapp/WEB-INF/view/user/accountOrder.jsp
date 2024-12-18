@@ -273,6 +273,7 @@
                 <button type="button"
                         class="btn btn-primary"
                         data-bs-target="#modal"
+                        data-noreload="true"
                         data-bs-toggle="modal">Quay lại
                 </button>
                 <button type="button"

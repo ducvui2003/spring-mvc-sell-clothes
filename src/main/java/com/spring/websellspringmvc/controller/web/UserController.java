@@ -65,7 +65,7 @@ public class UserController {
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.USER_KEY.getPage());
         mov.addObject("hasKey", hasKey);
-        mov.addObject("currentKey", keys.get(0));
+        mov.addObject("currentKey", !keys.isEmpty() ? keys.getFirst() : new Key());
         return mov;
     }
 }

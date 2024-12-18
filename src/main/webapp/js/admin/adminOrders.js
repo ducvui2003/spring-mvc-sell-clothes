@@ -390,7 +390,7 @@ $(document).ready(function () {
                 ...data
             }
         }, false).then(response => {
-            if (response.code = 200)
+            if (response.code === 200)
                 Swal.fire({
                     ...configSweetAlert2,
                     title: 'Cập nhập trạng thái thành công!',
@@ -417,5 +417,4 @@ $(document).ready(function () {
             });
         });
     }
-})
-;
+});

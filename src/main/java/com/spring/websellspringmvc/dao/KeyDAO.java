@@ -20,7 +20,7 @@ public interface KeyDAO {
     Long insert(@BindBean Key key);
 
 
-    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId ORDER BY createAt DESC")
+    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC")
     List<Key> getKeys(@Bind("userId") int userId);
 
     @SqlQuery("""
@@ -29,12 +29,42 @@ public interface KeyDAO {
     Key getCurrentKey(@Bind("userId") int userId);
 
     @SqlUpdate("""
-                      UPDATE `users` SET isBlockKey = 1 , keyOTP = :otp WHERE id = :userId;
+                      UPDATE `users` SET isBlockKey = 1 , keyOTP = :otp, blockKeyAt = NOW() WHERE id = :userId;
             """)
-    void deleteCurrentKey(@Bind("userId") int userId, @Bind("otp") String otp);
+    void blockKey(@Bind("userId") int userId, @Bind("otp") String otp);
+
+    @SqlUpdate("""
+                      UPDATE `keys` SET isDelete = 1 WHERE userId = :userId;
+            """)
+    void deleteKey(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT Exists(SELECT COUNT(*) FROM `users` WHERE id = :userId AND isBlock = 1);
+            SELECT Count(*) FROM `users` u\s
+                              JOIN (
+                                  SELECT userId, previousId, orderStatusId, createAt
+                                  FROM (
+                                       SELECT userId,previousId, orderStatusId, createAt,
+                                           ROW_NUMBER() OVER (
+                                           PARTITION BY previousId
+                                           ORDER BY
+                                              CASE orderStatusId
+                                                  WHEN 6 THEN 1
+                                                  WHEN 1 THEN 2
+                                                  WHEN 2 THEN 3
+                                                  ELSE 4
+                                                  END DESC,
+                                                  createAt ASC ) AS row_num
+                                       FROM orders o\s
+                                       WHERE o.previousId NOT IN (
+                                           SELECT DISTINCT previousId\s
+                                           FROM orders\s
+                                           WHERE orderStatusId IN (3,4,5)
+                                       )
+                                        AND previousId LIKE  ':uuid' ) AS subquery
+                                          WHERE row_num = 1
+                              ) o ON u.id = o.userId
+                          WHERE u.id = :userId AND u.isBlockKey = 1 AND o.previousId = ':uuid'
+                          AND o.createAt < u.blockKeyAt
             """)
-    boolean isBlockKey(int userId);
+    int isBlockKey(@Bind("userId") int userId, @Bind("uuid") String uuid);
 }

@@ -102,7 +102,8 @@ public interface OrderDAO {
             orders.detail, 
             orders.voucherId, 
             orders.dateOrder, 
-            orders.paymentMethod as payment 
+            orders.paymentMethod as payment, 
+            orders.fee as fee 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
