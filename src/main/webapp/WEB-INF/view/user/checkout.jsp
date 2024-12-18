@@ -21,15 +21,15 @@
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
                     <div class="row" id="address-list">
                         <c:if test="${not empty requestScope.addresses}">
-                            <c:forEach items="${requestScope.addresses}" var="address" varStatus="status">
+                            <c:forEach items="${requestScope.addresses}" var="address" varStatus="item">
                                 <div class="col-sm-12 mb-3">
                                     <div class="card">
-                                        <label class="card-body focus__address <c:if test="${status.first}">selected</c:if>"
+                                        <label class="card-body focus__address <c:if test="${item.first}">selected</c:if>"
                                                onclick="selectCard(this)" style="cursor: pointer"
                                         >
                                             <span class=" card-title fs-5 fs-bold">Địa chỉ giao hàng</span>
                                             <span class="card-tex d-block mt-2">${address.detail}, ${address.wardName}, ${address.districtName}, ${address.provinceName}</span>
-                                            <input type="radio" name="addressId" ${status.first ? 'checked' : ''}
+                                            <input type="radio" name="addressId" ${item.first ? 'checked' : ''}
                                                    value="${address.id}" hidden="hidden"
                                                    data-province="${address.provinceId}"
                                                    data-district="${address.districtId}"

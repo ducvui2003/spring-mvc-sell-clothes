@@ -92,12 +92,12 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         switch (OrderStatus.getByValue(order.getOrderStatusId())) {
             case PENDING:
                 orderStatusCanChange.add(OrderStatus.PENDING);
-                orderStatusCanChange.add(OrderStatus.CONFIRMED);
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
                 orderStatusCanChange.add(OrderStatus.CANCELLED);
                 break;
-            case CONFIRMED:
+            case PACKAGE:
                 orderStatusCanChange.add(OrderStatus.DELIVERY);
-                orderStatusCanChange.add(OrderStatus.CONFIRMED);
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
                 break;
             case DELIVERY:
                 orderStatusCanChange.add(OrderStatus.DELIVERY);

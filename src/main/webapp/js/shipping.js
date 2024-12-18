@@ -112,7 +112,12 @@ function getDistrictId(provinceId, districtName) {
     return callAPI(URL_DISTRICT, {
         province_id: provinceId
     }).then(data => {
-        return data.data.find(district => district.NameExtension.includes(districtName)).DistrictID;
+        console.log("districtName", districtName)
+        return data.data.find(district => {
+            console.log(district)
+            console.log("district", district.NameExtension)
+            return district.NameExtension.includes(districtName)
+        }).DistrictID;
     });
 }
 

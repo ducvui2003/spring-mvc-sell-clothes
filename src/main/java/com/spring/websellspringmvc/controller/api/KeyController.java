@@ -1,14 +1,10 @@
 package com.spring.websellspringmvc.controller.api;
 
-import com.spring.websellspringmvc.dao.KeyDAO;
 import com.spring.websellspringmvc.dto.ApiResponse;
-import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
-import com.spring.websellspringmvc.services.key.KeyServiceImpl;
 import com.spring.websellspringmvc.services.key.KeyServices;
 import com.spring.websellspringmvc.services.mail.IMailServices;
 import com.spring.websellspringmvc.services.mail.MailLostKey;
-import com.spring.websellspringmvc.services.mail.MailVerifyServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.Token;
 import jakarta.mail.MessagingException;
@@ -32,7 +28,6 @@ import java.util.Map;
 public class KeyController {
     SessionManager sessionManager;
     KeyServices keyService;
-//    private final KeyDAO keyDAO;
 
     @PostMapping("/add-key")
     public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
@@ -122,7 +117,7 @@ public class KeyController {
     }
 
     @GetMapping("/is-blocking")
-    public ResponseEntity<ApiResponse<?>> isBlocking(String uuid) {
+    public ResponseEntity<ApiResponse<Boolean>> isBlocking(String uuid) {
         User user = sessionManager.getUser();
         boolean isBlock = keyService.isBlockKey(user.getId(), uuid);
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()

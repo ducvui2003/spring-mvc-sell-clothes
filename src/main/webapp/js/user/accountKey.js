@@ -6,7 +6,7 @@ $(document).ready(function () {
     const formLostKey = $("#form-report-key");
     formLostKey.on('submit', function (event) {
         event.preventDefault();
-        const form= formDataToJson(this);
+        const form = formDataToJson(this);
         http({
             url: "/api/key/verify-otp",
             method: "PUT",
@@ -21,13 +21,20 @@ $(document).ready(function () {
 
 
     const lostKeyButton = $('#reportKeyModal');
+
     lostKeyButton.on('show.bs.modal', function (event) {
         http({
             "url": "/api/key/lost-key",
             method: "PUT",
         }).then(response => {
-        //TODO:show dialog notify
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'Vui lòng kiểm tra email để nhận mã OTP',
+                icon: 'info',
+                confirmButtonText: 'Đồng ý'
+            })
         })
+
     }).on('hide.bs.modal', function (event) {
         $('#reportKeyForm').trigger('reset');
     });

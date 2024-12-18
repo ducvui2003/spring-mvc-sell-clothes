@@ -18,7 +18,6 @@ public interface AdminOrderServices {
 
     List<AdminOrderDetailResponse> getOrderPrevious(String orderId);
 
-
     List<OrderStatus> getListAllOrderStatus();
 
     List<TransactionStatus> getListAllTransactionStatus();

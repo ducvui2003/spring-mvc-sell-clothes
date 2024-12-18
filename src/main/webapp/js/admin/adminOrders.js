@@ -1,9 +1,9 @@
 import {
     configSweetAlert2,
-    convertFormDataToObject,
     endLoading,
     formatCurrency,
-    formatDate, formDataToJson,
+    formatDate,
+    formDataToJson,
     http,
     startLoading
 } from "../base.js";
@@ -108,7 +108,6 @@ $(document).ready(function () {
     const modalFilter = $("#modal-filter");
     const modalView = $("#modal-view")
     const tableOrderDetail = $("#table-order-detail tbody");
-    let objFilter;
 
     function initEventDatatable() {
         table.find("tbody").on('click', 'button', function (e) {
@@ -391,7 +390,7 @@ $(document).ready(function () {
                 ...data
             }
         }, false).then(response => {
-            if (response.code = 200)
+            if (response.code === 200)
                 Swal.fire({
                     ...configSweetAlert2,
                     title: 'Cập nhập trạng thái thành công!',
@@ -418,5 +417,4 @@ $(document).ready(function () {
             });
         });
     }
-})
-;
+});

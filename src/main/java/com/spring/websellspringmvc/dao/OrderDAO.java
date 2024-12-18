@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.dao;
 
+import com.spring.websellspringmvc.dto.request.ChangeOrderRequest;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
@@ -19,10 +20,6 @@ import java.util.Optional;
 
 @Repository
 public interface OrderDAO {
-    @SqlQuery("SELECT id, typePayment FROM payment_methods")
-    @RegisterBeanMapper(PaymentMethod.class)
-    public List<PaymentMethod> getListAllPaymentMethodManage();
-
 
     @SqlQuery("SELECT * FROM orders WHERE id = :id")
     public Order getOrderById(@Bind("id") String id);
@@ -94,19 +91,24 @@ public interface OrderDAO {
     public List<OrderDetail> getOrderDetailHasReview(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT orders.id, 
-            order_statuses.typeStatus, 
+            SELECT orders.id as orderId, 
+            order_statuses.typeStatus as status, 
             orders.fullName, 
             orders.phone, 
             orders.email, 
             orders.province, 
             orders.district, 
-            orders.ward, orders.detail, orders.voucherId, orders.dateOrder 
+            orders.ward, 
+            orders.detail, 
+            orders.voucherId, 
+            orders.dateOrder, 
+            orders.paymentMethod as payment, 
+            orders.fee as fee 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
     @RegisterBeanMapper(OrderDetailResponse.class)
-    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId);
+    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId, @Bind("userId") int userId);
 
     @SqlQuery("""
             SELECT 
@@ -215,6 +217,61 @@ public interface OrderDAO {
             WHERE orders.paymentRef = :paymentRef
             """)
     void updateTransactionStatusVNPay(@Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
+
+    @SqlUpdate("""
+            UPDATE orders o
+            JOIN address a ON a.id = :request.addressId
+            SET o.province = a.provinceName,
+                o.district = a.districtName,
+                o.ward = a.wardName,
+                o.detail = a.detail
+            WHERE o.id = :orderId AND o.userId = :userId;
+            """)
+    int changeInfoOrder(
+            @Bind("orderId") String orderId,
+            @Bind("userId") int userId,
+            @BindBean("request") ChangeOrderRequest request
+    );
+
+    @SqlUpdate("""
+            INSERT INTO orders (
+            id, 
+            userId, 
+            dateOrder, 
+            paymentMethod, 
+            paymentRef, 
+            fullName, 
+            email, 
+            phone, 
+            transactionStatusId, 
+            orderStatusId, 
+            province, 
+            district, 
+            ward, 
+            detail, 
+            fee, 
+            previousId
+            )
+            SELECT   UUID(),
+                     o.userId,
+                     o.dateOrder,
+                     o.paymentMethod,
+                     o.paymentRef,
+                     o.fullName,
+                     o.email,
+                     o.phone,
+                     o.transactionStatusId,
+                     o.orderStatusId,
+                     o.province,
+                     o.district,
+                     o.ward,
+                     o.detail,
+                     o.fee,
+                     :orderId 
+            FROM orders o
+            WHERE o.id = :orderId  AND o.userId = :userId
+            """)
+    int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
 
     @SqlBatch("""
             IF EXISTS (SELECT * FROM order

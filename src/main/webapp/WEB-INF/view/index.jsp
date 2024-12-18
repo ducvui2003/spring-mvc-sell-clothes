@@ -73,14 +73,14 @@
             <button class="left__button"><i
                     class="fa-solid fa-arrow-left"></i></button>
             <div class="product__items">
-                <c:forEach step="1" varStatus="status" var="product" items="${list6TrendingProducts}">
+                <c:forEach step="1" varStatus="item" var="product" items="${list6TrendingProducts}">
                     <div class="product__item">
                         <div class="product__content">
                             <div class="image--tag">
                                 <img src="${product.thumbnail}" alt=""/>
                                 <span class="product__tag"
-                                      data-style="${status.index % 2== 1 ? "popular" : "guaranteed"}">
-                                        ${status.index % 2== 1 ? "Thịnh hành" : "Phổ biến"}
+                                      data-style="${item.index % 2== 1 ? "popular" : "guaranteed"}">
+                                        ${item.index % 2== 1 ? "Thịnh hành" : "Phổ biến"}
                                 </span>
                                 <form action="/api/cart/add"
                                       class="action__bar" method="post">

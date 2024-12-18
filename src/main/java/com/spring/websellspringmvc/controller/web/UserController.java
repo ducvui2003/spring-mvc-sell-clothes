@@ -6,6 +6,7 @@ import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.key.KeyServices;
 import com.spring.websellspringmvc.services.user.UserServices;
 import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,8 @@ public class UserController {
 
     @GetMapping("/order")
     public ModelAndView getOrderPage() {
-        return new ModelAndView(PageAddress.USER_ORDER.getPage());
+        ModelAndView mov = new ModelAndView(PageAddress.USER_ORDER.getPage());
+        return mov;
     }
 
     @GetMapping("/key")

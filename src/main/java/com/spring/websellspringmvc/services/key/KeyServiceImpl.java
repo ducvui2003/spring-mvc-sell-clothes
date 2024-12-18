@@ -16,8 +16,8 @@ public class KeyServiceImpl implements KeyServices {
     KeyDAO keyDAO;
 
     @Override
-    public boolean isBlockKey(int userId, String uuid) {
-        return keyDAO.isBlockKey(userId, uuid) != 0;
+    public boolean isBlockKey(int userId, String orderId) {
+        return keyDAO.isBlockKey(userId, orderId) != 0;
     }
 
     @Override

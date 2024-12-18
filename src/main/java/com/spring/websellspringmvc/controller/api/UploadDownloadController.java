@@ -5,14 +5,10 @@ import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.Key;
-import com.spring.websellspringmvc.services.HistoryService;
 import com.spring.websellspringmvc.services.admin.AdminOrderServices;
-import com.spring.websellspringmvc.services.cart.CartService;
-import com.spring.websellspringmvc.services.cart.CartServiceImpl;
-import com.spring.websellspringmvc.services.checkout.CheckoutServices;
+import com.spring.websellspringmvc.services.order.OrderServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.SignedOrderFile;
-import jakarta.mail.Multipart;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -20,31 +16,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/verify-order")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UploadDownloadController {
-    CheckoutServices checkoutServices;
     SessionManager sessionManager;
-    HistoryService historyService;
+    OrderServices orderServices;
     SignedOrderFile signedOrderFile;
     AdminOrderServices adminOrderServices;
     KeyDAO keyDAO;
@@ -53,7 +41,7 @@ public class UploadDownloadController {
     public ResponseEntity<ApiResponse<Boolean>> uploadFile(@RequestParam("uuid") String uuid, @RequestParam("signed") String signed) {
         try {
             int userId = sessionManager.getUser().getId();
-            OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
+            OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
             List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
             byte[] fileData = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
             if (fileData == null) {
@@ -88,7 +76,7 @@ public class UploadDownloadController {
         int userId = sessionManager.getUser().getId();
 
 
-        OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
+        OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
         List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
         if (orderPrevious == null) {
             return;

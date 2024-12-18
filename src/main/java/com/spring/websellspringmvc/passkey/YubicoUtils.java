@@ -1,9 +1,8 @@
-package com.spring.websellspringmvc.utils;
+package com.spring.websellspringmvc.passkey;
 
 import com.yubico.webauthn.data.ByteArray;
 
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 public class YubicoUtils {
 
