@@ -198,10 +198,8 @@
         cards.forEach(function (card) {
             card.classList.remove('selected');
         });
-
         // Thêm lớp 'selected' vào thẻ đã được click
         card.classList.add('selected');
     }
-
 </script>
 </html>

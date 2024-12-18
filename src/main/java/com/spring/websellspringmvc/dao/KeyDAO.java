@@ -67,4 +67,10 @@ public interface KeyDAO {
                           AND o.createAt < u.blockKeyAt
             """)
     int isBlockKey(@Bind("userId") int userId, @Bind("uuid") String uuid);
+
+
+    @SqlUpdate("""
+                      UPDATE `users` SET isBlockKey = 0 , keyOTP = NULL, blockKeyAt = '2022-12-31 23:59:59' WHERE id = :userId AND keyOTP = :otp;
+            """)
+    boolean unblockKey(int userId, String otp);
 }
