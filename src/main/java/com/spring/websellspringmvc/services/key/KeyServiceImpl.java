@@ -38,6 +38,11 @@ public class KeyServiceImpl implements KeyServices {
     }
 
     @Override
+    public boolean setValidKey(int id, String otp) {
+        return keyDAO.unblockKey(id, otp);
+    }
+
+    @Override
     public void setInvalidKey(int userID, String otp) {
         keyDAO.blockKey(userID, otp);
         keyDAO.deleteKey(userID);

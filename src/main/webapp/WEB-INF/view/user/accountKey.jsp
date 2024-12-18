@@ -104,24 +104,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row gx-3 mb-3 mt-2">
-                    <div class="mb-3">
-                        <label class="small mb-1" for="inputPassword">Mã xác thực</label>
-                        <input class="form-control" name="inputPassword" id="inputPassword" type="text"
-                               value="" placeholder="Nhập mã xác thực">
+                    <div class="row gx-3 mb-3 mt-2">
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputPassword">Mã xác thực</label>
+                            <input class="form-control" name="inputPassword" id="inputPassword" type="text"
+                                   value="" placeholder="Nhập mã xác thực">
+                        </div>
                     </div>
-                </div>
-                <div class="row gx-3 mb-3 mt-2">
-                    <div class="mb-3">
-                        <label class="small mb-1" for="reason">Lý do</label>
-                        <textarea class="form-control" name="reason" id="reason" rows="3"
-                                  placeholder="Nhập lý do báo mất khóa"></textarea>
+                    <div class="row gx-3 mb-3 mt-2">
+                        <div class="mb-3">
+                            <label class="small mb-1" for="reason">Lý do</label>
+                            <textarea class="form-control" name="reason" id="reason" rows="3"
+                                      placeholder="Nhập lý do báo mất khóa"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Báo cáo</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Báo cáo</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
             </div>
         </form>
     </div>

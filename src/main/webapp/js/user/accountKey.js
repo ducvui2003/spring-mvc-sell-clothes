@@ -4,7 +4,20 @@ import {formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
     const formLostKey = $("#form-report-key");
-    formLostKey.on('submit', verifyOTPLostKey(formLostKey, event));
+    formLostKey.on('submit', function (event) {
+        event.preventDefault();
+        const form= formDataToJson(this);
+        http({
+            url: "/api/key/verify-otp",
+            method: "PUT",
+            data: form,
+        }).then(response => {
+
+        }).catch(error => {
+
+        })
+
+    });
 
 
     const lostKeyButton = $('#reportKeyModal');
@@ -153,11 +166,4 @@ function updateCurrentKey(newKey) {
         $("#alertWarning").show();
         $("#currentKey").val(""); // Xóa nếu không có khóa
     }
-}
-
-function verifyOTPLostKey(form, e) {
-    // e.preventDefault();
-    // const formData = new FormData(form);
-    // console.log()
-    // console.log(form.serialize())
 }
