@@ -38,11 +38,11 @@ public class UploadDownloadController {
     KeyDAO keyDAO;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<Boolean>> uploadFile(@RequestParam("uuid") String uuid, @RequestParam("signed") String signed) {
+    public ResponseEntity<ApiResponse<Boolean>> uploadFile(@RequestParam("orderId") String orderId, @RequestParam("signature") String signature) {
         try {
             int userId = sessionManager.getUser().getId();
-            OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
-            List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
+            OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(orderId, userId);
+            List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(orderId);
             byte[] fileData = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
             if (fileData == null) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.<Boolean>builder()
@@ -54,19 +54,18 @@ public class UploadDownloadController {
             List<Key> keys = keyDAO.getKeys(userId);
             PublicKey k = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(keys.get(0).getPublicKey())));
 
-            boolean b = signedOrderFile.verifyData(fileData, signed, k);
+            boolean isVerifySuccess = signedOrderFile.verifyData(fileData, signature, k);
+
+            if (isVerifySuccess)
+                orderServices.updateOrderStatusVerify(orderId, userId);
+
+
             return ResponseEntity.ok(ApiResponse.<Boolean>builder()
                     .code(HttpStatus.OK.value())
-                    .message(b ? "Success verifying signed order" : "Error verifying signed order")
-                    .data(b)
+                    .message(isVerifySuccess ? "Success verifying signed order" : "Error verifying signed order")
+                    .data(isVerifySuccess)
                     .build());
-        } catch (InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }

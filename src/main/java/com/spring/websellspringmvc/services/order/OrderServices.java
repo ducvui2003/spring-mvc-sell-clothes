@@ -15,4 +15,6 @@ public interface OrderServices {
     OrderDetailResponse getOrderByOrderId(String orderId, int userId);
 
     void changeOrder(String orderId, Integer userId, ChangeOrderRequest request);
+
+    void updateOrderStatusVerify(String orderId, int userId);
 }

@@ -21,4 +21,9 @@ public interface AdminOrderServices {
     List<OrderStatus> getListAllOrderStatus();
 
     List<TransactionStatus> getListAllTransactionStatus();
+
+    List<com.spring.websellspringmvc.utils.constraint.OrderStatus> getOrderStatusCanChangeByOrderId(String orderId);
+
+    List<com.spring.websellspringmvc.utils.constraint.TransactionStatus> getTransactionStatusCanChangeByOrderId(String orderId);
+
 }

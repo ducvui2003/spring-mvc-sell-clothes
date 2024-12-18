@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.dto.response.datatable;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class OrderDatatable {
     LocalDateTime dateOrder;
     String fullName;
     String paymentMethod;
-    Integer orderStatusId;
+    OrderStatus orderStatus;
 }

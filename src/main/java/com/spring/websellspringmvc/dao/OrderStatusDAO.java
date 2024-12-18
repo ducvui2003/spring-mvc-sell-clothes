@@ -18,4 +18,12 @@ public interface OrderStatusDAO {
     @SqlQuery("SELECT id, typeStatus FROM order_statuses WHERE id = :orderStatusId")
     @RegisterBeanMapper(OrderStatus.class)
     public OrderStatus getOrderStatusById(@Bind("orderStatusId") int orderStatusId);
+
+    @SqlQuery("SELECT order_statuses.alias FROM order_statuses JOIN orders ON order_statuses.id = orders.orderStatusId WHERE orders.id = :orderId")
+    public String getOrderStatusByOrderId(@Bind("orderId") String orderId);
+
+    default com.spring.websellspringmvc.utils.constraint.OrderStatus getOrderStatus(String orderId) {
+        String status = getOrderStatusByOrderId(orderId);
+        return com.spring.websellspringmvc.utils.constraint.OrderStatus.valueOf(status.toUpperCase());
+    }
 }

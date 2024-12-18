@@ -8,8 +8,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">--%>
-    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">--%>
+        <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
+        <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
     <title>Quản lý đơn hàng</title>
 </head>
 <body>
@@ -141,7 +141,7 @@
             <div class="modal-body" style="max-height: 80vh">
                 <div class="section__dialog">
                     <div class="section__heading">
-                        <h1 class="h3">1. Thông tin giao hàng của khách hàng</h1>
+                        <h1 class="h3">1. Thông tin giao hàng</h1>
                     </div>
                     <table class="section__content">
                         <tbody>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="section__dialog">
                     <div class="section__heading">
-                        <h1 class="h3">2. Thông tin đơn hàng của khách hàng</h1>
+                        <h1 class="h3">2. Thông tin đơn hàng</h1>
                     </div>
                     <table class="section__content">
                         <tbody>

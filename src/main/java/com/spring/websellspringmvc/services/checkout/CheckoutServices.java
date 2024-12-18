@@ -7,6 +7,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CheckoutServices {
@@ -20,4 +21,7 @@ public interface CheckoutServices {
 
     boolean verifyOrder(OrderDetailResponse orderDetail, List<AdminOrderDetailResponse> orderPrevious);
 
+    double getFeeShipping(String provinceId, String districtId, String wardCode);
+
+    LocalDateTime getLeadTime(String provinceId, String districtId, String wardCode);
 }

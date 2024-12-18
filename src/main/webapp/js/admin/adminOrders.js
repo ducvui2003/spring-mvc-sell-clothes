@@ -4,8 +4,8 @@ import {
     formatCurrency,
     formatDate,
     formDataToJson,
-    http,
-    startLoading
+    http, ORDER_STATUS,
+    startLoading, TRANSACTION_STATUS
 } from "../base.js";
 import {getFeeAndLeadTime} from "../shipping.js";
 
@@ -14,14 +14,7 @@ $(document).ready(function () {
         1: "COD",
         3: "VNPAY"
     }
-    const ORDER_STATUS = {
-        1: "Chờ xác nhận ",
-        2: "Đang sản xuất",
-        3: "Đang vận chuyển",
-        4: "Giao hàng thành công ",
-        5: "Giao hàng thất bại ",
-    }
-    const searchSelect = $("#searchSelect");
+
     const
         configDatatable = {
             paging: true,
@@ -49,7 +42,7 @@ $(document).ready(function () {
                     data: "paymentMethod",
                 },
                 {
-                    data: "orderStatusId",
+                    data: "orderStatus",
                     render: function
                         (data) {
                         return `${ORDER_STATUS[data]}`;
@@ -79,11 +72,6 @@ $(document).ready(function () {
                 style: 'multi'
             }
             ,
-            // layout: {
-            //     topStart: {
-            //         buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
-            //     }
-            // },
             createdRow: function (row, data, dataIndex) {
                 if (data.orderStatusId == 5) {
                     $(row).addClass('table-danger');
@@ -239,8 +227,9 @@ $(document).ready(function () {
         modalView.find(".createAt").text(order.dateOrder);
         modalView.find(".voucherApply").text(order?.voucherId || "Không sử dụng mã giảm giá");
         modalView.find(".paymentMethod").text(order.paymentMethod);
-        modalView.find(".orderStatus").text(order.orderStatus);
-        modalView.find(".transaction").text(order.transactionStatus);
+        modalView.find(".orderStatus").text(ORDER_STATUS[order.orderStatus]);
+        modalView.find(".payment-fee").text(formatCurrency(order.fee));
+        modalView.find(".transaction").text(TRANSACTION_STATUS[order.transactionStatus]);
         loadListOrderDetail(order.items);
         if (order.orderStatus === ORDER_STATUS[1] || order.status === ORDER_STATUS[2]) return;
 
@@ -317,10 +306,9 @@ $(document).ready(function () {
 
     function configModalUpdateStatus(modal, id) {
         http({
-            url: "/api/admin/order",
+            url: "/api/admin/order/status-target/:orderId",
             type: "GET",
-            data: {
-                action: "showDialogUpdate",
+            pathVariables: {
                 orderId: id
             }
         }).then(response => {

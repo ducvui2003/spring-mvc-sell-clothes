@@ -22,8 +22,8 @@ public class DatatableImpl implements DatatableDAO {
     public List<OrderDatatable> datatable(OrderDatatableRequest request) {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, fullName, dateOrder, paymentMethod, orderStatusId ");
-        sql.append("FROM orders WHERE 1=1 ");
+        sql.append("SELECT orders.id, fullName, dateOrder, paymentMethod, order_statuses.alias AS orderStatus ");
+        sql.append("FROM orders JOIN order_statuses ON orders.orderStatusId = order_statuses.id  WHERE 1=1 AND orders.previousId = orders.id ");
 
         Map<String, Object> params = new HashMap<>();
 
