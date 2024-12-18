@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 import org.jdbi.v3.core.enums.EnumByName;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +32,7 @@ public class Order {
     String ward;
     String detail;
     double fee;
+    LocalDateTime leadTime;
 
     @EnumByName
     PaymentMethod paymentMethod;

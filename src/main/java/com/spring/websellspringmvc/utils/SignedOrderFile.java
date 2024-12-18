@@ -3,6 +3,7 @@ package com.spring.websellspringmvc.utils;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -110,7 +111,7 @@ public class SignedOrderFile {
                 adminOrderDetailResponse.setDistrict(reader.readLine());
                 adminOrderDetailResponse.setWard(reader.readLine());
                 adminOrderDetailResponse.setDetail(reader.readLine());
-                adminOrderDetailResponse.setPaymentMethod(reader.readLine());
+                adminOrderDetailResponse.setPaymentMethod(PaymentMethod.valueOf(reader.readLine()));
                 adminOrderDetailResponses.add(adminOrderDetailResponse);
             }
             return Map.of(orderDetailResponse, adminOrderDetailResponses);

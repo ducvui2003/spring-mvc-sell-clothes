@@ -15,6 +15,7 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +25,11 @@ public interface OrderDAO {
     @SqlQuery("SELECT * FROM orders WHERE id = :id")
     public Order getOrderById(@Bind("id") String id);
 
-
     @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId, transactionStatusId = :transactionStatusId WHERE id = :orderId")
     public void updateStatusByOrderId(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId, @Bind("transactionStatusId") int transactionStatusId);
 
     @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId WHERE id = :orderId")
-    public void updateOrderStatus(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
+    void updateOrderStatus(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
 
     @SqlUpdate("UPDATE orders SET transactionStatusId = :transactionStatusId WHERE id = :orderId")
     public void updateOrderTransaction(@Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
@@ -37,13 +37,7 @@ public interface OrderDAO {
     @SqlQuery("SELECT id, code, description, minimumPrice, discountPercent FROM vouchers WHERE id = :id")
     public Voucher getVoucherById(@Bind("id") int id);
 
-    @SqlQuery("SELECT COUNT(*) count FROM orders")
-    public long getQuantity();
 
-    @SqlQuery("select * from orders limit :limit offset :offset")
-    public List<Order> getLimit(@Bind("limit") int limit, @Bind("offset") int offset);
-
-    //    User
     @SqlQuery("""
             SELECT orders.id AS id, orders.dateOrder AS dateOrder, COUNT(order_details.orderId) AS quantity 
             FROM orders JOIN order_details ON orders.id = order_details.orderId 
@@ -52,43 +46,6 @@ public interface OrderDAO {
             """)
     @RegisterBeanMapper(OrderResponse.class)
     public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("statusOrder") int statusOrder);
-
-    @SqlQuery("""
-            SELECT id,  productId, quantityRequired, price 
-            FROM order_details 
-            WHERE orderId IN (<listId>)
-            """)
-    public List<OrderDetail> getOrderDetailByOrderId(@BindList("listId") List<String> listId);
-
-    @SqlQuery("""
-            SELECT DISTINCT id, name, categoryId 
-            FROM products 
-            WHERE id = :id
-            """)
-    public List<Product> getProductInOrderDetail(@Bind("id") int id);
-
-    @SqlQuery("""
-            SELECT nameImage 
-            FROM images 
-            WHERE productId = :id
-            """)
-    public List<Image> getNameImageByProductId(@Bind("id") int id);
-
-    @SqlQuery("""
-            SELECT order_details.id 
-            FROM orders JOIN order_details ON orders.id = order_details.orderId 
-            WHERE orders.userId = :userId AND orders.orderStatusId = 4 
-            AND order_details.id NOT IN (SELECT reviews.orderDetailId FROM reviews) 
-            """)
-    public List<OrderDetail> getOrderDetailNotReview(@Bind("userId") int userId);
-
-    @SqlQuery("""
-            SELECT order_details.id 
-            FROM orders JOIN order_details ON orders.id = order_details.orderId 
-            WHERE orders.userId = :userId AND orders.orderStatusId = 4 
-            AND order_details.id IN (SELECT reviews.orderDetailId FROM reviews) 
-            """)
-    public List<OrderDetail> getOrderDetailHasReview(@Bind("userId") int userId);
 
     @SqlQuery("""
             SELECT orders.id as orderId, 
@@ -103,7 +60,8 @@ public interface OrderDAO {
             orders.voucherId, 
             orders.dateOrder, 
             orders.paymentMethod as payment, 
-            orders.fee as fee 
+            orders.fee as fee,
+            orders.leadTime as leadTime 
             FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
             WHERE orders.id = :orderId
             """)
@@ -132,9 +90,10 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders (id, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
-                                fee, province, district, ward, detail)
+            INSERT INTO orders (id, previousId, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+                                fee, leadTime, province, district, ward, detail)
             SELECT :order.id,
+                    :order.previousId,
                    :order.userId,
                    :order.paymentMethod,
                    :order.paymentRef,
@@ -145,6 +104,7 @@ public interface OrderDAO {
                    :order.transactionStatusId,
                    :order.voucherId,
                    :order.fee,
+                   :order.leadTime,
                    a.provinceName,
                    a.districtName,
                    a.wardName,
@@ -163,43 +123,45 @@ public interface OrderDAO {
             @BindBean("orderDetail") OrderDetail... orderDetails);
 
     @SqlQuery("""
-            SELECT orders.id                       as orderId,
+            SELECT orders.id                       as id,
                    dateOrder,
                    fullName,
                    email,
                    phone,
                    paymentMethod,
-                   order_statuses.typeStatus       AS orderStatus,
-                   transaction_statuses.typeStatus AS transactionStatus,
-                   voucherId,
-                   province,
-                   district,
-                   ward,
-                   detail,
-                   fee
-            FROM orders
-                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id
-                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
-            WHERE orders.id = :id AND orders.previousId IS NULL
-            """)
-    @RegisterBeanMapper(AdminOrderDetailResponse.class)
-    public AdminOrderDetailResponse getOrder(@Bind("id") String id);
-
-    @SqlQuery("""
-            SELECT orders.id                       as orderId,
-                   dateOrder,
-                   fullName,
-                   email,
-                   phone,
-                   paymentMethod,
-                   order_statuses.typeStatus       AS orderStatus,
-                   transaction_statuses.typeStatus AS transactionStatus,
+                   order_statuses.alias       AS orderStatus,
+                   transaction_statuses.alias AS transactionStatus,
                    voucherId,
                    province,
                    district,
                    ward,
                    detail,
                    fee,
+                   leadTime 
+            FROM orders
+                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id
+                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
+            WHERE orders.id = :id AND orders.previousId = orders.id
+            """)
+    @RegisterBeanMapper(AdminOrderDetailResponse.class)
+    public AdminOrderDetailResponse getOrder(@Bind("id") String id);
+
+    @SqlQuery("""
+            SELECT orders.id                       as id,
+                   dateOrder,
+                   fullName,
+                   email,
+                   phone,
+                   paymentMethod,
+                   order_statuses.alias       AS orderStatus,
+                   transaction_statuses.alias AS transactionStatus,
+                   voucherId,
+                   province,
+                   district,
+                   ward,
+                   detail,
+                   fee,
+                   leadTime,
                    createAt,
                    previousId
             FROM orders 
@@ -225,12 +187,17 @@ public interface OrderDAO {
                 o.district = a.districtName,
                 o.ward = a.wardName,
                 o.detail = a.detail
+                o.fee = :fee,
+                o.leadTime = :leadTime
             WHERE o.id = :orderId AND o.userId = :userId;
             """)
     int changeInfoOrder(
             @Bind("orderId") String orderId,
             @Bind("userId") int userId,
-            @BindBean("request") ChangeOrderRequest request
+            @BindBean("request") ChangeOrderRequest request,
+            @Bind("leadTime") LocalDateTime leadTime,
+            @Bind("fee") double fee
+
     );
 
     @SqlUpdate("""
@@ -250,6 +217,7 @@ public interface OrderDAO {
             ward, 
             detail, 
             fee, 
+            leadTime,
             previousId
             )
             SELECT   UUID(),
@@ -267,9 +235,10 @@ public interface OrderDAO {
                      o.ward,
                      o.detail,
                      o.fee,
+                     o.leadTime,
                      :orderId 
             FROM orders o
-            WHERE o.id = :orderId  AND o.userId = :userId
+            WHERE o.id = :orderId AND o.previousId = orderId AND o.userId = :userId
             """)
     int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
 

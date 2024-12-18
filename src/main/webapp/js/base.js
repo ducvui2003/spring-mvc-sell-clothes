@@ -230,11 +230,19 @@ export const formDataToJson = function (formElement, additionalFields = {}) {
 
     return {...json, ...additionalFields};
 };
+
 export const ORDER_STATUS = {
-    PENDING: "Chờ xác nhận ",
-    CONFIRMED: "Đang sản xuất",
+    PENDING: "Chờ xác nhận",
+    PACKAGE: "Chờ đóng gói",
     DELIVERY: "Đang vận chuyển",
     COMPLETED: "Giao hàng thành công ",
     CANCELLED: "Giao hàng thất bại ",
     VERIFYING: "Đang xác nhận",
+}
+
+export const TRANSACTION_STATUS = {
+    UN_PAID: "Chưa thanh toán",
+    PROCESSING: "Đang xử lý",
+    PAID: "Đã thanh toán",
+    CANCELLED: "Đã hủy",
 }

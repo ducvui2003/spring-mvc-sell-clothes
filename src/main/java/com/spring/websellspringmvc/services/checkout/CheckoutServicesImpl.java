@@ -27,7 +27,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -92,8 +96,11 @@ public class CheckoutServicesImpl implements CheckoutServices {
         double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
         order.setFee(fee);
 
+        order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
+
         String orderId = UUID.randomUUID().toString();
         order.setId(orderId);
+        order.setPreviousId(orderId);
         orderDAO.createOrder(order, address.getId());
         createOrderDetail(request.getCartItemId(), orderId, userId);
     }
@@ -117,6 +124,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
         double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
         order.setFee(fee);
+        order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
 
 // Tạo order id và payment ref
         String orderId = UUID.randomUUID().toString();
@@ -138,15 +146,17 @@ public class CheckoutServicesImpl implements CheckoutServices {
         return orderDetails.stream().map(orderDetail -> orderDetail.getPrice() * orderDetail.getQuantityRequired()).reduce(Double::sum).orElse(0.0);
     }
 
-
-    private double getFeeShipping(String provinceId, String districtId, String wardCode) {
+    @Override
+    public double getFeeShipping(String provinceId, String districtId, String wardCode) {
         ApiResponse<GiaoHangNhanhFeeResponse> response = giaoHangNhanhHttp.getFee(token, shopId, provinceIdShop, districtIdShop, wardCodeShop, provinceId, districtId, wardCode, weight, serviceTypeId);
         return response.getData().getTotal();
     }
 
-    private int getLeadTime(String provinceId, String districtId, String wardCode) {
+    @Override
+    public LocalDateTime getLeadTime(String provinceId, String districtId, String wardCode) {
         ApiResponse<GiaoHangNhanhLeadDayResponse> response = giaoHangNhanhHttp.getLeadTime(token, shopId, provinceIdShop, districtIdShop, wardCodeShop, provinceId, districtId, wardCode, weight, serviceTypeId);
-        return response.getData().getLeadTime();
+        Optional<LocalDateTime> optionalLocalDateTime = Optional.of(LocalDateTime.ofEpochSecond(response.getData().getLeadTime(), 0, ZoneOffset.UTC));
+        return optionalLocalDateTime.orElse(null);
     }
 
     @Override
@@ -164,6 +174,4 @@ public class CheckoutServicesImpl implements CheckoutServices {
         System.out.println("exsistHistory: " + exsistHistory);
         return false;
     }
-
-
 }

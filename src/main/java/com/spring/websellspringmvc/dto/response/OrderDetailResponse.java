@@ -33,4 +33,5 @@ public class OrderDetailResponse implements Serializable {
     LocalDateTime dateOrder;
     List<OrderDetailItemResponse> items;
     double fee;
+    LocalDateTime leadTime;
 }

@@ -1,16 +1,22 @@
 package com.spring.websellspringmvc.services.order;
 
+import ch.qos.logback.core.util.Loader;
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
+import com.spring.websellspringmvc.dao.AddressDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
+import com.spring.websellspringmvc.dao.OrderStatusDAO;
 import com.spring.websellspringmvc.dto.request.AddressRequest;
 import com.spring.websellspringmvc.dto.request.ChangeOrderRequest;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
+import com.spring.websellspringmvc.models.Address;
 import com.spring.websellspringmvc.services.address.AddressServices;
+import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +36,8 @@ import java.util.Optional;
 public class OrderServicesImpl implements OrderServices {
     OrderDAO orderDAO;
     CloudinaryUploadServices cloudinaryUploadServices;
-    AddressServices addressServices;
+    CheckoutServices checkoutServices;
+    AddressDAO addressDAO;
 
     @Override
     public List<OrderResponse> getOrder(int userId, int statusOrder) {
@@ -58,10 +66,21 @@ public class OrderServicesImpl implements OrderServices {
     @Override
     public void changeOrder(String orderId, Integer userId, ChangeOrderRequest request) {
         if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
-        int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request);
+        Address address = addressDAO.getAddressById(request.getAddressId());
+        if (address == null) throw new AppException(ErrorCode.NOT_VALID);
+        double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+        LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+        int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
         log.info("row effect: {}", rowEffect);
         if (rowEffect == 0) {
             throw new AppException(ErrorCode.UPDATE_FAILED);
         }
+    }
+
+    @Override
+    public void updateOrderStatusVerify(String orderId, int userId) {
+        if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
+        orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
+        log.info("Update order status success");
     }
 }

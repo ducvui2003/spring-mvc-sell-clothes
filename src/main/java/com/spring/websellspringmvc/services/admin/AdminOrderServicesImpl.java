@@ -31,6 +31,8 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     TransactionStatusDAO transactionStatusDao;
     CloudinaryUploadServices cloudinaryUploadServices;
     DatatableDAO datatableDAO;
+    OrderStatusDAO orderStatusDAO;
+    TransactionStatusDAO transactionStatusDAO;
 
     @Override
     public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) {
@@ -46,9 +48,9 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
     @Override
     public AdminOrderDetailResponse getOrderDetail(String orderId) {
+        AdminOrderDetailResponse order = orderDAO.getOrder(orderId);
         List<OrderDetailItemResponse> items = orderDAO.getOrderDetailsByOrderId(orderId).stream().peek(
                 orderItem -> orderItem.setThumbnail(cloudinaryUploadServices.getImage(ImagePath.PRODUCT.getPath(), orderItem.getThumbnail()))).toList();
-        AdminOrderDetailResponse order = orderDAO.getOrder(orderId);
         order.setItems(items);
         return order;
     }
@@ -108,6 +110,46 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return orderStatusCanChange.contains(orderStatus);
     }
 
+    @Override
+    public List<OrderStatus> getOrderStatusCanChangeByOrderId(String orderId) {
+        OrderStatus orderStatus = orderStatusDAO.getOrderStatus(orderId);
+        if (orderStatus == null) return null;
+        List<OrderStatus> orderStatusCanChange = new ArrayList<>();
+        switch (orderStatus) {
+            case PENDING:
+                orderStatusCanChange.add(OrderStatus.PENDING);
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
+                break;
+            case PACKAGE:
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                break;
+            case DELIVERY:
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
+                orderStatusCanChange.add(OrderStatus.COMPLETED);
+                break;
+        }
+        return orderStatusCanChange;
+    }
+
+
+    @Override
+    public List<TransactionStatus> getTransactionStatusCanChangeByOrderId(String orderId) {
+        TransactionStatus transactionStatus = transactionStatusDAO.getTransactionStatus(orderId);
+        if (transactionStatus == null) return null;
+        List<TransactionStatus> transactionStatusCanChange = new ArrayList<>();
+        switch (transactionStatus) {
+            case UN_PAID, PROCESSING:
+                transactionStatusCanChange.add(TransactionStatus.UN_PAID);
+                transactionStatusCanChange.add(TransactionStatus.PROCESSING);
+                transactionStatusCanChange.add(TransactionStatus.PAID);
+                break;
+        }
+        return transactionStatusCanChange;
+    }
+
     private boolean canUpdateTransactionByOrderId(Order order, int transactionStatusId) {
         TransactionStatus transactionStatus = TransactionStatus.getByValue(transactionStatusId);
         if (transactionStatus == null) return false;
@@ -136,18 +178,5 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
             return true;
         }
         return false;
-    }
-
-    public Voucher getVoucherById(int id) {
-        return orderDAO.getVoucherById(id);
-    }
-
-
-    public long getQuantity() {
-        return orderDAO.getQuantity();
-    }
-
-    public List<Order> getLimit(int limit, int offset) {
-        return orderDAO.getLimit(limit, offset);
     }
 }

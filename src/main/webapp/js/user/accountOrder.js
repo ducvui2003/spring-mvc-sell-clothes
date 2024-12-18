@@ -34,33 +34,41 @@ function handleVerifyButton(event) {
     var order_id = $('span#order__id').html();
     var file = $('input#upload-sign-info').val();
     var formData = new FormData();
-    formData.append('signed', file);
-    formData.append('uuid', order_id);
-    $.ajax({
+    formData.append('signature', file);
+    formData.append('orderId', order_id);
+    http({
         url: '/api/verify-order/upload',
         type: 'POST',
         data: formData,
         contentType: false,
         processData: false,
-        success: function (data) {
-            console.log("success")
-            if (data.data) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Xác thực thành công',
-                    showConfirmButton: false,
-                    target: document.querySelector("#modal"),
-                    timer: 1500
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
-                    showConfirmButton: false,
-                    target: document.querySelector("#modal"),
-                    timer: 1500
-                });
-            }
+    }).then((response) => {
+        // Xóa dòng đơn hàng đã xác thực trong table tag
+        deleteRowTable(order_id);
+        if (response.data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Xác thực thành công',
+                showConfirmButton: false,
+                target: document.querySelector("#modal"),
+                timer: 1500
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
+                showConfirmButton: false,
+                target: document.querySelector("#modal"),
+                timer: 1500
+            });
+        }
+    });
+}
+
+function deleteRowTable(orderId) {
+    tableAddress.find('tr').each(function () {
+        if ($(this).find('td').eq(0).text() === orderId) {
+            $(this).remove();
         }
     });
 }
