@@ -16,7 +16,7 @@ export function alert(mes, type) {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        showCancelButton: false,
+        // showCancelButton: false,
         // confirmButtonText: 'Yes!'
     })
 }
