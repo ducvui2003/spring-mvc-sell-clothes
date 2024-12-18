@@ -156,6 +156,8 @@ function updateCurrentKey(newKey) {
 }
 
 function verifyOTPLostKey(form, e) {
-    e.preventDefault();
-    console.log(form.serialize()    )
+    // e.preventDefault();
+    // const formData = new FormData(form);
+    // console.log()
+    // console.log(form.serialize())
 }

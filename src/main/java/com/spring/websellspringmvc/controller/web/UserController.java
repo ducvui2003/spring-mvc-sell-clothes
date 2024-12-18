@@ -54,16 +54,16 @@ public class UserController {
         User user = sessionManager.getUser();
         List<Key> keys = keyServices.getKeys(user.getId());
         boolean hasKey;
-        if(keys.isEmpty()) {
+        if (keys.isEmpty()) {
             hasKey = true;
-        }else{
+        } else {
             hasKey = false;
         }
-        System.out.println("Kiem tra hasKey: "+hasKey);
+        System.out.println("Kiem tra hasKey: " + hasKey);
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.USER_KEY.getPage());
         mov.addObject("hasKey", hasKey);
-        mov.addObject("currentKey", keys.get(0));
+        mov.addObject("currentKey", !keys.isEmpty() ? keys.getFirst() : new Key());
         return mov;
     }
 }
