@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.controller.api;
 
+import com.spring.websellspringmvc.dao.KeyDAO;
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
@@ -30,6 +31,8 @@ import java.io.IOException;
 public class KeyController {
     SessionManager sessionManager;
     KeyServices keyService;
+//    private final KeyDAO keyDAO;
+
     @PostMapping("/add-key")
     public ResponseEntity<ApiResponse<?>> addKey(@RequestParam("inputUploadKey") MultipartFile request) throws IOException {
         User user = sessionManager.getUser();
@@ -89,6 +92,17 @@ public class KeyController {
         return ResponseEntity.ok(ApiResponse.<String>builder()
                 .code(HttpServletResponse.SC_OK)
                 .message("Key blocked successfully")
+                .build());
+    }
+
+    @GetMapping("/is-blocking")
+    public ResponseEntity<ApiResponse<?>> isBlocking(String uuid) {
+        User user = sessionManager.getUser();
+        boolean isBlock = keyService.isBlockKey(user.getId(), uuid);
+        return ResponseEntity.ok(ApiResponse.<Boolean>builder()
+                .code(HttpServletResponse.SC_OK)
+                .message("Key is blocking")
+                .data(isBlock)
                 .build());
     }
 }
