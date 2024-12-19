@@ -48,13 +48,14 @@ public interface OrderDAO {
     public Map<String, String> getStatusById(@Bind("id") String id);
 
     @SqlQuery("""
-            SELECT orders.id AS id, orders.dateOrder AS dateOrder, COUNT(order_details.orderId) AS quantity 
-            FROM orders JOIN order_details ON orders.id = order_details.orderId 
-            WHERE orders.orderStatusId = :statusOrder AND orders.userId = :userId AND orders.previousId IS NULL
-            GROUP BY order_details.orderId 
+            SELECT orders.id AS id, orders.dateOrder AS dateOrder 
+            FROM orders 
+            WHERE orders.orderStatusId = :orderStatus 
+            AND orders.userId = :userId 
+            AND orders.previousId = orders.id
             """)
     @RegisterBeanMapper(OrderResponse.class)
-    public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("statusOrder") int statusOrder);
+    public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("orderStatus") int orderStatus);
 
     @SqlQuery("""
             SELECT orders.id as orderId, 
@@ -195,7 +196,7 @@ public interface OrderDAO {
             SET o.province = a.provinceName,
                 o.district = a.districtName,
                 o.ward = a.wardName,
-                o.detail = a.detail
+                o.detail = a.detail,
                 o.fee = :fee,
                 o.leadTime = :leadTime
             WHERE o.id = :orderId AND o.userId = :userId;
@@ -247,7 +248,7 @@ public interface OrderDAO {
                      o.leadTime,
                      :orderId 
             FROM orders o
-            WHERE o.id = :orderId AND o.previousId = orderId AND o.userId = :userId
+            WHERE o.id = :orderId AND o.previousId = :orderId AND o.userId = :userId
             """)
     int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
 

@@ -95,7 +95,6 @@ function loadDataToTable(data) {
         return `<tr>
                         <td>${order.id}</td>
                         <td>${order.dateOrder}</td>
-                        <td>${order.quantity}</td>
                         <td><button class="btn btn-primary btn__order-detail" data-id="${order.id}" data-bs-toggle="modal" data-bs-target="#modal">Xem chi tiet</button></td>
                     </tr>`
     })
@@ -274,7 +273,7 @@ function handleCheckCanChangeOrder(orderId) {
             orderId: orderId
         }
     }).then((response) => {
-        if (!response.data) {
+        if (response.data) {
             Swal.fire({
                 icon: 'error',
                 title: 'Khóa chưa được cập nhập',

@@ -47,7 +47,6 @@
                     <tr>
                         <th>#</th>
                         <th>Ngày đặt</th>
-                        <th>Số lượng</th>
                         <th>Xem chi tiết</th>
                     </tr>
                     </thead>
