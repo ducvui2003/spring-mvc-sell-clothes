@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.services.admin;
 
+import com.spring.websellspringmvc.dto.request.OrderStatusChangeRequest;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
@@ -26,4 +27,5 @@ public interface AdminOrderServices {
 
     List<com.spring.websellspringmvc.utils.constraint.TransactionStatus> getTransactionStatusCanChangeByOrderId(String orderId);
 
+    boolean changeStatus(String orderId, OrderStatusChangeRequest request);
 }

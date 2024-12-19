@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface OrderStatusDAO {
 
-    @SqlQuery("SELECT id, typeStatus FROM order_statuses")
+    @SqlQuery("SELECT id, alias, typeStatus FROM order_statuses WHERE order_statuses.id <> 6")
     @RegisterBeanMapper(OrderStatus.class)
     public List<OrderStatus> getListAllOrderStatus();
 

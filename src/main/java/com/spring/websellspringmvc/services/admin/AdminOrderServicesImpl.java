@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dao.DatatableDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderStatusDAO;
 import com.spring.websellspringmvc.dao.TransactionStatusDAO;
+import com.spring.websellspringmvc.dto.request.OrderStatusChangeRequest;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -71,44 +73,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return transactionStatusDao.getListAllTransactionStatus();
     }
 
-    public com.spring.websellspringmvc.models.OrderStatus getOrderStatusById(int orderStatusId) {
-        return orderStatusDao.getOrderStatusById(orderStatusId);
-    }
-
-    public com.spring.websellspringmvc.models.TransactionStatus getTransactionStatusById(int transactionStatusId) {
-        return transactionStatusDao.getTransactionStatusById(transactionStatusId);
-    }
-
-    private boolean updateStatusAndOrderTransaction(Order order, Integer orderStatusId, Integer transactionStatusId) {
-        if (canUpdateStatusByOrderId(order, orderStatusId) && canUpdateTransactionByOrderId(order, transactionStatusId)) {
-            orderDAO.updateStatusByOrderId(order.getId(), orderStatusId, transactionStatusId);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean canUpdateStatusByOrderId(Order order, int orderStatusId) {
-        OrderStatus orderStatus = OrderStatus.getByValue(orderStatusId);
-        if (orderStatus == null) return false;
-        List<OrderStatus> orderStatusCanChange = new ArrayList<>();
-        switch (OrderStatus.getByValue(order.getOrderStatusId())) {
-            case PENDING:
-                orderStatusCanChange.add(OrderStatus.PENDING);
-                orderStatusCanChange.add(OrderStatus.PACKAGE);
-                orderStatusCanChange.add(OrderStatus.CANCELLED);
-                break;
-            case PACKAGE:
-                orderStatusCanChange.add(OrderStatus.DELIVERY);
-                orderStatusCanChange.add(OrderStatus.PACKAGE);
-                break;
-            case DELIVERY:
-                orderStatusCanChange.add(OrderStatus.DELIVERY);
-                orderStatusCanChange.add(OrderStatus.CANCELLED);
-                orderStatusCanChange.add(OrderStatus.COMPLETED);
-                break;
-        }
-        return orderStatusCanChange.contains(orderStatus);
-    }
 
     @Override
     public List<OrderStatus> getOrderStatusCanChangeByOrderId(String orderId) {
@@ -150,33 +114,54 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         return transactionStatusCanChange;
     }
 
-    private boolean canUpdateTransactionByOrderId(Order order, int transactionStatusId) {
-        TransactionStatus transactionStatus = TransactionStatus.getByValue(transactionStatusId);
-        if (transactionStatus == null) return false;
+
+    @Override
+    public boolean changeStatus(String orderId, OrderStatusChangeRequest request) {
+        Map<String, String> status = orderDAO.getStatusById(orderId);
+
+        if (status == null) return false;
+
+        TransactionStatus transactionStatusSrc = TransactionStatus.getByValue(Integer.parseInt(status.get("transactionStatus")));
+        OrderStatus orderStatusSrc = OrderStatus.getByValue(Integer.parseInt(status.get("orderStatus")));
+
+        if (canUpdateStatusByOrderId(orderStatusSrc, request.getOrderStatus())
+                && canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
+            orderDAO.updateStatusByOrderId(orderId, request.getOrderStatus().getValue(), request.getTransactionStatus().getValue());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canUpdateStatusByOrderId(OrderStatus src, OrderStatus target) {
+        List<OrderStatus> orderStatusCanChange = new ArrayList<>();
+        switch (src) {
+            case PENDING:
+                orderStatusCanChange.add(OrderStatus.PENDING);
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
+                break;
+            case PACKAGE:
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                orderStatusCanChange.add(OrderStatus.PACKAGE);
+                break;
+            case DELIVERY:
+                orderStatusCanChange.add(OrderStatus.DELIVERY);
+                orderStatusCanChange.add(OrderStatus.CANCELLED);
+                orderStatusCanChange.add(OrderStatus.COMPLETED);
+                break;
+        }
+        return orderStatusCanChange.contains(target);
+    }
+
+    private boolean canUpdateTransactionByOrderId(TransactionStatus src, TransactionStatus target) {
         List<TransactionStatus> transactionStatusCanChange = new ArrayList<>();
-        switch (TransactionStatus.getByValue(order.getTransactionStatusId())) {
+        switch (src) {
             case UN_PAID, PROCESSING:
                 transactionStatusCanChange.add(TransactionStatus.UN_PAID);
                 transactionStatusCanChange.add(TransactionStatus.PROCESSING);
                 transactionStatusCanChange.add(TransactionStatus.PAID);
                 break;
         }
-        return transactionStatusCanChange.contains(transactionStatus);
-    }
-
-    public boolean updateOrderTransaction(Order order, int transactionStatusId) {
-        if (canUpdateTransactionByOrderId(order, transactionStatusId)) {
-            orderDAO.updateOrderTransaction(order.getId(), transactionStatusId);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean updateOrderStatus(Order order, int statusId) {
-        if (canUpdateStatusByOrderId(order, statusId)) {
-            orderDAO.updateOrderStatus(order.getId(), statusId);
-            return true;
-        }
-        return false;
+        return transactionStatusCanChange.contains(target);
     }
 }

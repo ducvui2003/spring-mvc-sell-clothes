@@ -5,11 +5,12 @@ import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
-import com.spring.websellspringmvc.models.*;
+import com.spring.websellspringmvc.models.Order;
+import com.spring.websellspringmvc.models.OrderDetail;
+import com.spring.websellspringmvc.models.Voucher;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
-import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -37,6 +39,13 @@ public interface OrderDAO {
     @SqlQuery("SELECT id, code, description, minimumPrice, discountPercent FROM vouchers WHERE id = :id")
     public Voucher getVoucherById(@Bind("id") int id);
 
+    @SqlQuery("""
+            SELECT order_statuses.alias AS orderStatus, transaction_statuses.alias AS transactionStatus
+            FROM orders JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
+            JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
+            WHERE orders.id = :id
+            """)
+    public Map<String, String> getStatusById(@Bind("id") String id);
 
     @SqlQuery("""
             SELECT orders.id AS id, orders.dateOrder AS dateOrder, COUNT(order_details.orderId) AS quantity 

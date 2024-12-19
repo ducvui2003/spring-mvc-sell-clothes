@@ -56,14 +56,29 @@
                 </div>
             </div>
         </div>
-    </div>
 
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <div class="card-header">Quản lý passkeys</div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between border border-1">
+                            <div class="">
+                                <div class="d-flex gap-2">
+                                    <img src="/assets/img/icon_passkey.png">
+                                    <span>Name</span>
+                                </div>
+                                <div>Them vao ngay</div>
+                            </div>
+                            <button class="btn btn-danger">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <c:import url="/footer"/>
-<div class='d-none loader__wrapper position-fixed top-0 start-0 end-0 bottom-0'
-     style="background-color: rgba(0,0,0,0.5)">
-    <span class='position-absolute top-50 start-50 translate-middle loader'></span>
-</div>
 
 <%--<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>--%>
 <%--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>--%>

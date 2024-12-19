@@ -103,6 +103,8 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setPreviousId(orderId);
         orderDAO.createOrder(order, address.getId());
         createOrderDetail(request.getCartItemId(), orderId, userId);
+
+        cartDAO.deleteCartItemIn(request.getCartItemId());
     }
 
     @Override
@@ -131,6 +133,9 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setId(orderId);
         order.setPaymentRef(orderId);
         orderDAO.createOrder(order, address.getId());
+
+        cartDAO.deleteCartItemIn(request.getCartItemId());
+
         double totalPrice = createOrderDetail(request.getCartItemId(), orderId, userId);
 
         String urlPayment = vnPayServices.generateUrl(totalPrice, orderId, ip);
