@@ -1,5 +1,3 @@
-import {alert} from "../notify.js";
-import {addSpinner, cancelSpinner} from "../spinner.js";
 import {formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {

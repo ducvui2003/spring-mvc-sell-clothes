@@ -36,9 +36,10 @@
                             <thead>
                             <tr class="table__row">
                                 <th class="table__head">#</th>
-                                <th class="table__head">Ngày tạo</th>
+                                <th class="table__head">Ngày đặt hàng</th>
                                 <th class="table__head">Khách hàng</th>
                                 <th class="table__head">Phương thức thanh toán</th>
+                                <th class="table__head">Tình trạng thanh toán</th>
                                 <th class="table__head">Tình trạng đơn hàng</th>
                                 <th class="table__head">Xem</th>
                                 <th class="table__head">Cập nhật</th>
@@ -242,7 +243,7 @@
                 <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
                 <select id="orderStatus" class="orderStatus" name="orderStatus">
                     <c:forEach var="item" items="${requestScope.orderStatus}">
-                        <option value="${item.id}">${item.typeStatus}</option>
+                        <option value="${item.alias}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -251,7 +252,7 @@
                 <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
                                items="${requestScope.transactionStatus}">
-                        <option value="${item.id}">${item.typeStatus}</option>
+                        <option value="${item.alias}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
