@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class OrderServicesImpl implements OrderServices {
     CloudinaryUploadServices cloudinaryUploadServices;
     CheckoutServices checkoutServices;
     AddressDAO addressDAO;
+    Jdbi jdbi;
 
     @Override
     public List<OrderResponse> getOrder(int userId, int statusOrder) {
@@ -65,22 +67,26 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public void changeOrder(String orderId, Integer userId, ChangeOrderRequest request) {
-        if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
-        Address address = addressDAO.getAddressById(request.getAddressId());
-        if (address == null) throw new AppException(ErrorCode.NOT_VALID);
-        double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
-        LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
-        int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
-        log.info("row effect: {}", rowEffect);
-        if (rowEffect == 0) {
-            throw new AppException(ErrorCode.UPDATE_FAILED);
-        }
+        jdbi.useTransaction(handle -> {
+            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
+            Address address = addressDAO.getAddressById(request.getAddressId());
+            if (address == null) throw new AppException(ErrorCode.NOT_VALID);
+            double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+            LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+            int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
+            log.info("row effect: {}", rowEffect);
+            if (rowEffect == 0) {
+                throw new AppException(ErrorCode.UPDATE_FAILED);
+            }
+        });
     }
 
     @Override
     public void updateOrderStatusVerify(String orderId, int userId) {
-        if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
-        orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
-        log.info("Update order status success");
+        jdbi.useTransaction(handle -> {
+            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
+            orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
+            log.info("Update order status success");
+        });
     }
 }

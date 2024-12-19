@@ -139,4 +139,9 @@ public interface CartDAO {
             """)
     @RegisterBeanMapper(OrderDetail.class)
     public List<OrderDetail> getOrderDetailPreparedAdded(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
+
+    @SqlUpdate("""
+            DELETE FROM cart_items WHERE id IN (<cartItems>)
+            """)
+    public void deleteCartItemIn(@BindList("cartItems") List<Integer> cartItems);
 }

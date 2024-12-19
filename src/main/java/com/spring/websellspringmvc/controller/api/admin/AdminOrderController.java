@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.request.OrderStatusChangeRequest;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
@@ -49,6 +50,19 @@ public class AdminOrderController {
                         .orderStatusTarget(orderStatusList)
                         .transactionStatusTarget(transactionStatusList)
                         .build())
+                .build());
+    }
+
+    @PutMapping("/status-target/{orderId}")
+    public ResponseEntity<ApiResponse<?>> changeStatus(@PathVariable("orderId") String orderId, @RequestBody OrderStatusChangeRequest request) {
+        boolean changedSuccess = orderServices.changeStatus(orderId, request);
+        if (changedSuccess) {
+            return ResponseEntity.ok(ApiResponse.builder()
+                    .message("Change status failed")
+                    .build());
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.builder()
+                .message("Change status failed")
                 .build());
     }
 }

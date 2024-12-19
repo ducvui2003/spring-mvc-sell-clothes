@@ -117,7 +117,7 @@ public class KeyController {
     }
 
     @GetMapping("/is-blocking")
-    public ResponseEntity<ApiResponse<Boolean>> isBlocking(String uuid) {
+    public ResponseEntity<ApiResponse<Boolean>> isBlocking(@RequestParam("orderId") String uuid) {
         User user = sessionManager.getUser();
         boolean isBlock = keyService.isBlockKey(user.getId(), uuid);
         return ResponseEntity.ok(ApiResponse.<Boolean>builder()
