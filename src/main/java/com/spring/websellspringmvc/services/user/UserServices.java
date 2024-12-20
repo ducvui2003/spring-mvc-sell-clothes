@@ -11,8 +11,6 @@ public interface UserServices {
 
     void changePassword(int userId, String password);
 
-    void addCredential(Credential credential);
-
     Optional<User> findByEmail(String email, boolean verify);
 
     void updateUserHandle(Integer id, String userHandle);

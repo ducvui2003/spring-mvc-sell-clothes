@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorView;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.dto.RegistrationFinishRequest;
 import com.spring.websellspringmvc.passkey.model.Credential;
 import com.spring.websellspringmvc.passkey.dto.RegistrationStartRequest;
 import com.spring.websellspringmvc.services.user.UserServices;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class RegistrationFidoService {
     RelyingParty relyingParty;
     UserServices userServices;
+    PasskeyService passkeyService;
 
     public PublicKeyCredentialCreationOptions startRegistration(RegistrationStartRequest startRequest) throws Base64UrlException {
         Optional<User> userOptional = userServices.findByEmail(startRequest.getEmail(), true);
@@ -72,15 +74,15 @@ public class RegistrationFidoService {
         return options;
     }
 
-    public boolean finishRegistration(
-            PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> finishRequest,
+    public Credential finishRegistration(
+            RegistrationFinishRequest finishRequest,
             PublicKeyCredentialCreationOptions credentialCreationOptions)
             throws RegistrationFailedException, JsonProcessingException {
 
         FinishRegistrationOptions options =
                 FinishRegistrationOptions.builder()
                         .request(credentialCreationOptions)
-                        .response(finishRequest)
+                        .response(finishRequest.getRequest())
                         .build();
         RegistrationResult registrationResult = this.relyingParty.finishRegistration(options);
 
@@ -90,16 +92,16 @@ public class RegistrationFidoService {
         Credential credential =
                 Credential.builder()
                         .id(registrationResult.getKeyId().getId().getBase64Url()) // credentialId
+                        .name(finishRequest.getName())
                         .publicKey(registrationResult.getPublicKeyCose().getBase64Url())
                         .userId(credentialCreationOptions.getUser().getId().getBase64Url())
                         .type(registrationResult.getKeyId().getType().name())
                         .signCount(registrationResult.getSignatureCount())
-                        .createAt(LocalDate.now())
                         .build();
 
-        this.userServices.addCredential(credential);
+        this.passkeyService.addCredential(credential);
 
-        return true;
+        return credential;
     }
 
     private byte[] generateUserHandle() {
