@@ -186,16 +186,6 @@
                         </div>
                     </div>
                 </div>
-
-                <%--                <div class="row gx-3 mb-3 mt-2">--%>
-                <%--                    <div class="mb-3">--%>
-                <%--                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>--%>
-                <%--                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"--%>
-                <%--                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>--%>
-                <%--                        <div class="valid-feedback">--%>
-                <%--                        </div>--%>
-                <%--                    </div>--%>
-                <%--                </div>--%>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

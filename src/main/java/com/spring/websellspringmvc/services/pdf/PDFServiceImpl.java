@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class PDFServiceImpl implements PDFService {
     }
 
     private String loadHtmlTemplate() throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream("/invoice_template.html");
+        InputStream inputStream = getClass().getResourceAsStream("templates/templateEmailPlaceOrder.html");
         if (inputStream == null) throw new FileNotFoundException("Template not found");
         return new String(inputStream.readAllBytes());
     }
@@ -118,7 +119,8 @@ public class PDFServiceImpl implements PDFService {
                 .replace("%%DELIVERYMETHOD%%", "Standard Shipping") // Placeholder
                 .replace("%%PAYMENTMETHOD%%", detailResponse.getPayment())
                 .replace("%%ITEMSBOUGHT%%", generateItemsTable(detailResponse.getItems())
-                .replace("%%ORDERDETAILS%%", generateOrderDetailsHtml(orderDetailResponses)));
+                .replace("%%ORDERSTATUS%%", orderDetailResponses.get(0).getOrderStatus().toString()) // Thay thế trạng thái đơn hàng
+                .replace("%%PAYMENTSTATUS%%", orderDetailResponses.get(0).getTransactionStatus().toString()));// Thay thế trạng thái thanh toán);
     }
 
     private String generateItemsTable(List<OrderDetailItemResponse> items) {
@@ -142,24 +144,12 @@ public class PDFServiceImpl implements PDFService {
         return sb.toString();
     }
 
-    public String generateOrderDetailsHtml(List<AdminOrderDetailResponse> orderDetailResponses) {
-        StringBuilder htmlBuilder = new StringBuilder();
-
-        for (AdminOrderDetailResponse detail : orderDetailResponses) {
-            htmlBuilder.append("<tr>")
-                    .append("<td>").append(detail.getId()).append("</td>")
-                    .append("<td>").append(detail.getDateOrder().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("</td>")
-                    .append("<td>").append(detail.getFullName()).append("</td>")
-                    .append("<td>").append(detail.getEmail()).append("</td>")
-                    .append("<td>").append(detail.getPhone()).append("</td>")
-                    .append("<td>").append(detail.getTransactionStatus()).append("</td>")
-                    .append("<td>").append(detail.getOrderStatus()).append("</td>")
-                    .append("<td>").append(String.format("%.2f", detail.getFee())).append("</td>")
-                    .append("<td>").append(detail.getLeadTime() != null ? detail.getLeadTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : "N/A").append("</td>")
-                    .append("</tr>");
-        }
-
-        return htmlBuilder.toString();
+    public String replaceOrderStatuses(String htmlTemplate, AdminOrderDetailResponse detail) {
+        // Thay thế các giá trị placeholder trong HTML
+        return htmlTemplate
+                .replace("%%ORDERSTATUS%%", detail.getOrderStatus().toString()) // Thay thế trạng thái đơn hàng
+                .replace("%%PAYMENTSTATUS%%", detail.getTransactionStatus().toString()) // Thay thế trạng thái thanh toán
+                .replace("%%SHIPPINGFEE%%", String.format("%.2f", detail.getFee())); // Thay thế phí vận chuyển
     }
 
     private byte[] generatePdfFromHtml(String html) throws DocumentException {
