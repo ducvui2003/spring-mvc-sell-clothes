@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.services.key;
 
+import com.spring.websellspringmvc.dto.response.KeyResponse;
 import com.spring.websellspringmvc.models.Key;
 
 import java.util.List;
@@ -8,7 +9,7 @@ public interface KeyServices {
 
     boolean isBlockKey(int userId, String orderId);
 
-    List<Key> getKeys(int userId);
+    List<KeyResponse> getKeys(int userId);
 
     void setInvalidKey(int userID, String otp);
 
