@@ -5,6 +5,8 @@ import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface PDFService {
@@ -12,7 +14,7 @@ public interface PDFService {
 
     File createFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse);
 
-    File createSignedFile(File orderFile, String signature);
+    File createSignedFile(File orderFile, String signature) throws IOException;
 
     String readSignature(File signedFile);
 

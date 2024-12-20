@@ -12,9 +12,14 @@ import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
+import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +36,7 @@ public class PDFServiceImpl implements PDFService {
             // Convert to PDF
             return generatePdfFromHtml(filledHtml);
         } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -56,19 +61,28 @@ public class PDFServiceImpl implements PDFService {
     }
 
     @Override
-    public File createSignedFile(File orderFile, String signature) {
+    public File createSignedFile(File orderFile, String signature) throws IOException {
         File signedPdf = new File("signed_" + orderFile.getName());
         try {
-            // Đọc file PDF input
+            // Đọc file PDF đầu vào
             PdfReader reader = new PdfReader(orderFile.getAbsolutePath());
 
-            // Ghi lại file PDF với metadata mới
+            // Tạo PdfStamper để ghi PDF mới với metadata
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(signedPdf));
-            stamper.getWriter().getInfo().put(PdfName.CREATOR, new PdfString("Signature: " + signature));
 
+            // Lấy thông tin metadata hiện tại
+            HashMap<String, String> info = (HashMap<String, String>) reader.getInfo();
+
+            // Thêm chữ ký vào metadata
+            info.put("Signature", signature);
+
+            // Cập nhật metadata vào file PDF
+            stamper.setMoreInfo(info);
+
+            // Đóng stamper và reader
             stamper.close();
             reader.close();
-        } catch (IOException e) {
+        } catch (IOException | DocumentException e) {
             throw new RuntimeException("Error adding signature metadata to PDF", e);
         }
         return signedPdf;
@@ -81,14 +95,17 @@ public class PDFServiceImpl implements PDFService {
             PdfReader reader = new PdfReader(signedFile.getAbsolutePath());
 
             // Lấy thông tin metadata
-            String creatorMetadata = reader.getInfo().get("Signature");
+            HashMap<String, String> metadata = (HashMap<String, String>) reader.getInfo();
 
             // Đóng file sau khi đọc
             reader.close();
 
-            // Trả về chữ ký (nếu tồn tại)
-            if (creatorMetadata != null && creatorMetadata.toString().startsWith("Signature: ")) {
-                return creatorMetadata.toString().replace("Signature: ", "");
+            // Lấy giá trị chữ ký từ metadata
+            String signature = metadata.get("Signature");
+
+            // Kiểm tra và trả về chữ ký (nếu có)
+            if (signature != null && signature.startsWith("Signature: ")) {
+                return signature.replace("Signature: ", "");
             } else {
                 return "No signature found in the PDF metadata.";
             }
@@ -97,9 +114,13 @@ public class PDFServiceImpl implements PDFService {
         }
     }
 
+
     private String loadHtmlTemplate() throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream("templates/templateEmailPlaceOrder.html");
-        if (inputStream == null) throw new FileNotFoundException("Template not found");
+        URL resourceUrl = getClass().getClassLoader().getResource("templates/templateEmailPlaceOrder.html");
+        if (resourceUrl == null) {
+            throw new FileNotFoundException("Template not found");
+        }
+        InputStream inputStream = resourceUrl.openStream();
         return new String(inputStream.readAllBytes());
     }
 
