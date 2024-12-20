@@ -1,8 +1,13 @@
 package com.spring.websellspringmvc.passkey.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.passkey.dto.RegistrationFinishRequest;
 import com.spring.websellspringmvc.passkey.dto.RegistrationStartRequest;
+import com.spring.websellspringmvc.passkey.model.Credential;
 import com.spring.websellspringmvc.passkey.service.RegistrationFidoService;
+import com.spring.websellspringmvc.session.SessionManager;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
@@ -24,19 +29,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterFidoController {
     String START_REG_REQUEST = "start_login_request";
     RegistrationFidoService registrationFidoService;
+    SessionManager sessionManager;
 
     @PostMapping("/webauthn/register/start")
-    ResponseEntity<PublicKeyCredentialCreationOptions> startRegistration(
-            @RequestBody RegistrationStartRequest request, HttpSession session)
+    ResponseEntity<PublicKeyCredentialCreationOptions> startRegistration(HttpSession session)
             throws JsonProcessingException, Base64UrlException {
+        User user = sessionManager.getUser();
+        if (user == null) throw new RuntimeException("User not found");
+        RegistrationStartRequest request = RegistrationStartRequest.builder()
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .build();
         PublicKeyCredentialCreationOptions response = this.registrationFidoService.startRegistration(request);
         session.setAttribute(START_REG_REQUEST, response.toJson());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/webauthn/register/finish")
-    ResponseEntity<Boolean> finishRegistration(
-            @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> request, HttpSession session)
+    ResponseEntity<ApiResponse<Credential>> finishRegistration(
+            @RequestBody RegistrationFinishRequest request, HttpSession session)
             throws RegistrationFailedException, JsonProcessingException {
         PublicKeyCredentialCreationOptions response = PublicKeyCredentialCreationOptions.fromJson(session.getAttribute(START_REG_REQUEST).toString());
         if (response == null) {
@@ -45,6 +56,8 @@ public class RegisterFidoController {
         var result =
                 this.registrationFidoService.finishRegistration(
                         request, response);
-        return ResponseEntity.ok(result);
+        if (result != null)
+            return ResponseEntity.ok(new ApiResponse<>(200, "Registration success", result));
+        return ResponseEntity.ok(new ApiResponse<>(400, "Registration failed", null));
     }
 }

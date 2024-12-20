@@ -66,10 +66,6 @@ public class UserServicesImpl implements UserServices {
         return userDAO.getSizeWithCondition(searchValue);
     }
 
-    @Override
-    public void addCredential(Credential credential) {
-        userDAO.addCredential(credential);
-    }
 
     @Override
     public Optional<User> findByEmail(String email, boolean verify) {

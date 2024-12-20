@@ -60,12 +60,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card mb-4">
-                    <div class="card-header">Quản lý passkeys</div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between border border-1">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h3>Quản lý passkeys</h3>
+                        <button id="btn-add-passkey" class="btn btn-primary">Thêm passkey</button>
+                    </div>
+                    <div class="card-body" id="passkey-list">
+                        <div class="d-flex justify-content-between border border-1 p-2">
                             <div class="">
                                 <div class="d-flex gap-2">
-                                    <img src="/assets/img/icon_passkey.png">
+                                    <img src="/assets/img/icon_passkey.png" width="35px" , height="35px">
                                     <span>Name</span>
                                 </div>
                                 <div>Them vao ngay</div>

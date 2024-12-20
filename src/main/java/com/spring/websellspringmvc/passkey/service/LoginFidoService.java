@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.passkey.service;
 
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
+import com.spring.websellspringmvc.dao.CartDAO;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.passkey.dto.LoginStartRequest;
 import com.spring.websellspringmvc.services.user.UserServices;
@@ -25,6 +26,7 @@ public class LoginFidoService {
     UserServices userServices;
     RelyingParty relyingParty;
     SessionManager sessionManager;
+    CartDAO cartDAO;
 
     public AssertionRequest startLogin(LoginStartRequest loginStartRequest) throws Base64UrlException {
 
@@ -61,6 +63,8 @@ public class LoginFidoService {
         String email = assertionRequest.getUsername().get();
         Optional<User> userOptional = userServices.findByEmail(email, true);
         User user = userOptional.get();
+        int quantityCart = cartDAO.getQuantityCart(user.getId());
         sessionManager.addUser(user);
+        sessionManager.setQuantityCart(quantityCart);
     }
 }

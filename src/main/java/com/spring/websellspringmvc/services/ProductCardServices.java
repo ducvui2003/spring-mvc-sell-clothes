@@ -21,7 +21,6 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductCardServices {
     ProductCardDAO productCardDAO;
-    ReviewDAO reviewDAO;
     SizeDAO sizeDAO;
     ColorDAO colorDAO;
     CategoryDAO categoryDAO;
