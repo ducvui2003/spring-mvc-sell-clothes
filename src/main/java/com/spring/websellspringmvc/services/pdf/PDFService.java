@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PDFService {
+    byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash);
 
     File createFile(File inputFile, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash);
 

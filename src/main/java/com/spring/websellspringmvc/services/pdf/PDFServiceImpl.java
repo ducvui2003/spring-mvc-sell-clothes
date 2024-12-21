@@ -25,6 +25,21 @@ import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 @RequiredArgsConstructor
 public class PDFServiceImpl implements PDFService {
     @Override
+    public byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
+        try {
+            // Load the HTML template
+            String htmlTemplate = loadHtmlTemplate();
+
+            // Fill the placeholders with data
+            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
+
+            // Convert to PDF
+            return generatePdfFromHtml(filledHtml);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+    @Override
     public File createFile(File inputFile, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
             // Load the HTML template
