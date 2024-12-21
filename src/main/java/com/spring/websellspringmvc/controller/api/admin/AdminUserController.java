@@ -3,9 +3,13 @@ package com.spring.websellspringmvc.controller.api.admin;
 import com.spring.websellspringmvc.dto.request.CreateUserRequest;
 import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateUserRequest;
+import com.spring.websellspringmvc.dto.request.datatable.UserDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
+import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.services.admin.AdminUserServices;
 import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.utils.Encoding;
 import lombok.AccessLevel;
@@ -27,22 +31,12 @@ import java.util.List;
 public class AdminUserController {
     UserMapper userMapper = UserMapper.INSTANCE;
     UserServicesImpl userServicesImpl;
+    AdminUserServices adminUserServices;
 
     @PostMapping("/datatable")
-    public ResponseEntity<DatatableResponse<User>> getDatatable(@RequestBody DatatableRequest request) {
-        // Mapping order column index to database column name
-        String[] columnNames = {"id", "username", "email", "fullName", "gender"};
-        String orderBy = request.getOrderColumn() < columnNames.length ? columnNames[request.getOrderColumn()] : columnNames[0];
-        // Fetch filtered and sorted logs
-        List<User> users = userServicesImpl.getUser(request.getStart(), request.getLength(), request.getSearchValue(), orderBy, request.getOrderDir());
-        long size = userServicesImpl.getTotalWithCondition(request.getSearchValue());
-
-        return ResponseEntity.ok(DatatableResponse.<User>builder()
-                .draw(request.getDraw())
-                .recordsTotal(size)
-                .recordsFiltered(size)
-                .data(users)
-                .build());
+    public ResponseEntity<DatatableResponse<UserDatatable>> getDatatable(@RequestBody UserDatatableRequest request) {
+        DatatableResponse<UserDatatable> response = adminUserServices.datatable(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/create")

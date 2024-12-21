@@ -1,7 +1,9 @@
 package com.spring.websellspringmvc.models;
 
+import com.spring.websellspringmvc.utils.constraint.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jdbi.v3.core.enums.EnumByName;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,7 +28,8 @@ public class User implements Serializable {
     String phone;
     LocalDate birthDay;
     boolean verify;
-    String role;
+    @EnumByName
+    Role role;
     String avatar;
     String tokenVerify;
     Timestamp tokenVerifyTime;

@@ -6,13 +6,21 @@ $(document).ready(() => {
     $.validator.addMethod("strongPassword", function (value, element) {
         return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|;':"\\<>?,./-]).{8,}$/.test(value);
     }, "Mật khẩu phải chứa ít nhất 1 chữ cái viết thường, 1 chữ cái viết hoa, 1 số và 1 ký tự đặc biệt, tối thiểu 8 ký tự");
+
     const configDatatable = {
         paging: true,
         processing: true,
         serverSide: true,
+        page: 1,
+        pageLength: 8,
+        scrollCollapse: true,
         ajax: {
             url: "/api/admin/user/datatable",
-            dataSrc: "data",
+            type: "POST",
+            contentType: "application/json",
+            data: function (d) {
+                return JSON.stringify(d);
+            },
         }, columns: [
             {
                 data: "id"
@@ -25,11 +33,11 @@ $(document).ready(() => {
                 defaultContent: "Chưa cập nhật",
             }, {
                 data: "gender", render: (data, type, row, meta) => {
-                    if (data == "2") {
+                    if (data === 'MALE')
                         return `<span class="p-1 text-center"  ><i class="fa-solid fa-venus" style="color:deeppink;"></i></span>`
-                    } else {
+                    else
                         return `<span class="p-1 text-center" ><i class="fa-solid fa-mars" style="color:  #0d6efd;"></i></span>`
-                    }
+
                 }
             },
             {

@@ -149,6 +149,25 @@ export const http = ({
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
+                const statusCode = jqXHR.status;
+                if (statusCode === 401) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Hết phiên làm việc",
+                        text: "Vui lòng đăng nhập lại",
+                        timer: 5000, // 5 seconds timer
+                        timerProgressBar: true,
+                        showConfirmButton: true, // Shows the button
+                        confirmButtonText: 'Đăng nhập', // Text for the button
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            window.location.href = "/login";
+                        } else {
+                            window.location.href = "/login";
+                        }
+                    });
+                    return;
+                }
                 reject(new Error(`Error: ${textStatus}, ${errorThrown}`));
             },
             complete: function (xhr, status) {
@@ -158,7 +177,8 @@ export const http = ({
                 }
             }
         });
-    });
+    })
+        ;
 };
 
 

@@ -57,7 +57,6 @@ public class UserServicesImpl implements UserServices {
         return userDAO.getQuantity();
     }
 
-
     public List<User> getUser(Integer start, Integer length, String searchValue, String orderBy, String orderDir) {
         return userDAO.selectWithCondition(start, length, searchValue, orderBy, orderDir);
     }
