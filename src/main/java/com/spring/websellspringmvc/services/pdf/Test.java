@@ -7,12 +7,14 @@ import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class Test {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         // Create mock OrderDetailResponse
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.setOrderId("ORD123");
@@ -47,32 +49,28 @@ public class Test {
         // Create an instance of PDFServiceImpl
         PDFServiceImpl pdfService = new PDFServiceImpl();
 
-//        // Test createDataFile method (returns PDF byte array)
-//        try {
-//            byte[] pdfData = pdfService.createDataFile(orderDetailResponse, Arrays.asList(adminOrderDetailResponse));
-//            System.out.println("PDF Data generated: " + pdfData.length + " bytes");
-//        } catch (Exception e) {
-//            System.err.println("Error generating PDF: " + e.getMessage());
-//        }
-//
-//        // Test createFile method (returns PDF file)
-//        try {
-//            File pdfFile = pdfService.createFile(orderDetailResponse, Arrays.asList(adminOrderDetailResponse));
-//            System.out.println("PDF File generated: " + pdfFile.getAbsolutePath());
-//        } catch (Exception e) {
-//            System.err.println("Error generating PDF file: " + e.getMessage());
-//        }
-//
-        // Test createSignedFile method (sign PDF)
+        File inputFile = new File("src/main/java/com/spring/websellspringmvc/services/pdf/Test.java");
+
+
+
+        // Test createFile method (returns PDF file)
+        try {
+            File pdfFile = pdfService.createFile(inputFile, orderDetailResponse, Arrays.asList(adminOrderDetailResponse), "ma hash");
+            System.out.println("PDF File generated: " + pdfFile.getAbsolutePath());
+        } catch (Exception e) {
+            System.err.println("Error generating PDF file: " + e.getMessage());
+        }
+
+//         Test createSignedFile method (sign PDF)
 //        try {
 //            File signedFile = pdfService.createSignedFile(new File("Invoice_ORD123.pdf"), "John Doe");
 //            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
 //        } catch (Exception e) {
 //            System.err.println("Error adding signature: " + e.getMessage());
 //        }
-//
-//        String signature = pdfService.readSignature(new File("signed_Invoice_ORD123.pdf"));
-//        System.out.println("Signature: " + signature);
+
+        String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"));
+        System.out.println("Hash: " + hash);
 
         // Ghi dữ liệu vào metadata của file signed_Invoice_ORD123.pdf
 

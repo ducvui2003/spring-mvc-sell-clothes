@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.services.pdf;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.exceptions.InvalidPdfException;
 import com.lowagie.text.pdf.*;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
@@ -13,11 +14,10 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
@@ -25,23 +25,7 @@ import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 @RequiredArgsConstructor
 public class PDFServiceImpl implements PDFService {
     @Override
-    public byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse) {
-        try {
-            // Load the HTML template
-            String htmlTemplate = loadHtmlTemplate();
-
-            // Fill the placeholders with data
-            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
-
-            // Convert to PDF
-            return generatePdfFromHtml(filledHtml);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    @Override
-    public File createFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse) {
+    public File createFile(File inputFile, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
             // Load the HTML template
             String htmlTemplate = loadHtmlTemplate();
@@ -51,18 +35,39 @@ public class PDFServiceImpl implements PDFService {
 
 
             // Convert to PDF
-            File pdfFile = new File("Invoice_" + detailResponse.getOrderId() + ".pdf");
+            File pdfFile = new File(inputFile.getParent()+ "/Invoice_" + detailResponse.getOrderId() + ".pdf");
             writePdfToFile(filledHtml, pdfFile);
 
+            // Add hash to metadata
+            File tempFile = new File(pdfFile.getParent(), "Temp_" + pdfFile.getName());
+            PdfReader reader = new PdfReader(pdfFile.getAbsolutePath());
+            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
+
+            HashMap<String, String> info = (HashMap<String, String>) reader.getInfo();
+            info.put("Hash", hash);
+            stamper.setMoreInfo(info);
+
+            stamper.close();
+            reader.close();
+
+            // Replace the original file with the updated file
+            if (!pdfFile.delete() || !tempFile.renameTo(pdfFile)) {
+                throw new IOException("Failed to replace the original PDF file with updated file");
+            }
+
             return pdfFile;
-        } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF", e);
+        } catch (DocumentException e) {
+            throw new DocumentException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public File createSignedFile(File orderFile, String signature) throws IOException {
-        File signedPdf = new File("signed_" + orderFile.getName());
+        File signedPdf = new File(orderFile.getParent()+"/signed_" + orderFile.getName());
         try {
             // Đọc file PDF đầu vào
             PdfReader reader = new PdfReader(orderFile.getAbsolutePath());
@@ -77,7 +82,7 @@ public class PDFServiceImpl implements PDFService {
             info.put("Signature", signature);
 
             // Cập nhật metadata vào file PDF
-            stamper.setMoreInfo(info);
+            stamper.setInfoDictionary(info);
 
             // Đóng stamper và reader
             stamper.close();
@@ -104,24 +109,56 @@ public class PDFServiceImpl implements PDFService {
             String signature = metadata.get("Signature");
 
             // Kiểm tra và trả về chữ ký (nếu có)
-            if (signature != null && signature.startsWith("Signature: ")) {
-                return signature.replace("Signature: ", "");
+            if (signature != null) {
+                return signature.trim();
             } else {
-                return "No signature found in the PDF metadata.";
+                return null;
             }
         } catch (IOException e) {
             throw new RuntimeException("Error reading signature from PDF", e);
         }
     }
 
+    @Override
+    public String readHash(File signedFile) throws IOException {
+        try {
+            // Đọc file PDF
+            PdfReader reader = new PdfReader(signedFile.getAbsolutePath());
+
+            // Lấy thông tin metadata
+            HashMap<String, String> metadata = (HashMap<String, String>) reader.getInfo();
+
+            // Đóng file sau khi đọc
+            reader.close();
+
+            // Lấy giá trị chữ ký từ metadata
+            String signature = metadata.get("Hash");
+
+            // Kiểm tra và trả về chữ ký (nếu có)
+            if (signature != null) {
+                return signature.trim();
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            throw new IOException("Error reading hash from PDF", e);
+        }
+    }
+
 
     private String loadHtmlTemplate() throws IOException {
-        URL resourceUrl = getClass().getClassLoader().getResource("templates/templateEmailPlaceOrder.html");
-        if (resourceUrl == null) {
-            throw new FileNotFoundException("Template not found");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/templateEmailPlaceOrder.html");
+        if (inputStream == null) {
+            throw new FileNotFoundException("Template not found: ");
         }
-        InputStream inputStream = resourceUrl.openStream();
-        return new String(inputStream.readAllBytes());
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+            return content.toString().trim(); // Remove trailing new lines
+        }
     }
 
     private String populateHtmlTemplate(String template, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponses) {
@@ -135,8 +172,8 @@ public class PDFServiceImpl implements PDFService {
                 .replace("%%TOTALITEM%%", String.valueOf(detailResponse.getItems().size()))
                 .replace("%%TEMPPRICE%%", String.format("%.2f", detailResponse.getFee()))
                 .replace("%%DISCOUNTPRICE%%", "0.00") // Placeholder
-                .replace("%%SHIPPINGFEE%%", "50.00") // Placeholder
-                .replace("%%TOTALPRICE%%", String.format("%.2f", detailResponse.getFee() + 50.00)) // Fee + shipping
+                .replace("%%SHIPPINGFEE%%", formatVND(detailResponse.getFee())) // Placeholder
+                .replace("%%TOTALPRICE%%", String.format("%.2f", detailResponse.getFee() +detailResponse.getFee())) // Fee + shipping
                 .replace("%%DELIVERYMETHOD%%", "Standard Shipping") // Placeholder
                 .replace("%%PAYMENTMETHOD%%", detailResponse.getPayment())
                 .replace("%%ITEMSBOUGHT%%", generateItemsTable(detailResponse.getItems())
@@ -165,13 +202,6 @@ public class PDFServiceImpl implements PDFService {
         return sb.toString();
     }
 
-    public String replaceOrderStatuses(String htmlTemplate, AdminOrderDetailResponse detail) {
-        // Thay thế các giá trị placeholder trong HTML
-        return htmlTemplate
-                .replace("%%ORDERSTATUS%%", detail.getOrderStatus().toString()) // Thay thế trạng thái đơn hàng
-                .replace("%%PAYMENTSTATUS%%", detail.getTransactionStatus().toString()) // Thay thế trạng thái thanh toán
-                .replace("%%SHIPPINGFEE%%", String.format("%.2f", detail.getFee())); // Thay thế phí vận chuyển
-    }
 
     private byte[] generatePdfFromHtml(String html) throws DocumentException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -194,5 +224,32 @@ public class PDFServiceImpl implements PDFService {
             renderer.createPDF(outputStream);
         }
     }
+
+    private String formatVND(double amount) {
+        // Định dạng tiền tệ cho Việt Nam
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
+        // Định dạng lại để loại bỏ ký hiệu đồng tiền quốc tế (ví dụ: VND)
+        String formatted = currencyFormat.format(amount);
+
+        // Thay "VND" bằng "đ" để phù hợp với yêu cầu
+        formatted = formatted.replace("VND", "đ");
+
+        return formatted;
+    }
+
+
+    // Read HTML file with UTF-8 encoding
+    private static String readHtmlAsUtf8(String filePath) throws IOException {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                contentBuilder.append(line).append("\n");
+            }
+        }
+        return contentBuilder.toString();
+    }
+
 }
 
