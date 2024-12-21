@@ -20,7 +20,7 @@ public interface KeyDAO {
     Long insert(@BindBean Key key);
 
 
-    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC")
+    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId ORDER BY createAt DESC")
     List<Key> getKeys(@Bind("userId") int userId);
 
     @SqlQuery("""
