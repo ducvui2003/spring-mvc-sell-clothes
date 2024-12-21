@@ -1,18 +1,26 @@
 package com.spring.websellspringmvc.services.pdf;
 
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.jsoup.nodes.Document;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+@Slf4j
 public class Test {
     public static void main(String[] args) throws IOException {
         // Create mock OrderDetailResponse
@@ -55,27 +63,44 @@ public class Test {
 
         // Test createFile method (returns PDF file)
         try {
-            File pdfFile = pdfService.createFile(inputFile, orderDetailResponse, Arrays.asList(adminOrderDetailResponse), "MIIBuDCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH");
+            File pdfFile = pdfService.createFile(inputFile, orderDetailResponse, Arrays.asList(adminOrderDetailResponse), "ma hash");
             System.out.println("PDF File generated: " + pdfFile.getAbsolutePath());
         } catch (Exception e) {
             System.err.println("Error generating PDF file: " + e.getMessage());
         }
 
 //         Test createSignedFile method (sign PDF)
-        try {
-            File signedFile = pdfService.createSignedFile(new File("Invoice_ORD123.pdf"), "John Doe");
-            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
-        } catch (Exception e) {
-            System.err.println("Error adding signature: " + e.getMessage());
-        }
-
+//        try {
+//            File signedFile = pdfService.createSignedFile(new File("Invoice_ORD123.pdf"), "John Doe");
+//            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
+//        } catch (Exception e) {
+//            System.err.println("Error adding signature: " + e.getMessage());
+//        }
+//
 //        String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"));
 //        System.out.println("Hash: " + hash);
 
-        String sign = pdfService.readSignature(new File("C:\\Users\\PC\\Documents\\Zalo Received Files\\signed_Invoice_ORD123 (1).pdf"));
-        System.out.println("sign: " + sign);
-
         // Ghi dữ liệu vào metadata của file signed_Invoice_ORD123.pdf
+//        createPdf();
+    }
 
+
+    public static void createPdf() throws IOException {
+        String inputHTML="D:\\university\\ATTT\\web-sell-spring-mvc\\src\\main\\resources\\templates\\templateEmailPlaceOrder.html";
+        String outputPdf="D:\\university\\ATTT\\web-sell-spring-mvc\\src\\main\\resources\\templates\\templateEmailPlaceOrder.pdf";
+        Document document = Jsoup.parse(new File(inputHTML), "UTF-8");
+        try (OutputStream os = new FileOutputStream(outputPdf)) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.withUri(outputPdf);
+            builder.toStream(os);
+            System.out.println(document.html());
+            // If you need the file path, use getResource()
+            URL fontUrl = Test.class.getResource("/templates/roboto.ttf");
+            builder.useFont(new File(fontUrl.toURI()), "roboto");
+            builder.withW3cDocument(new W3CDom().fromJsoup(document), "/");
+            builder.run();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

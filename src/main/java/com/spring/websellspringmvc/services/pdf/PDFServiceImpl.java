@@ -235,6 +235,8 @@ public class PDFServiceImpl implements PDFService {
             Document document = Jsoup.parse(html, "UTF-8");
             document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
             renderer.setDocumentFromString(document.html());
+            URL fontUrl = Test.class.getResource("/templates/roboto.ttf");
+            renderer.getFontResolver().addFont(fontUrl.toString(), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
             renderer.layout();
             renderer.createPDF(outputStream);
         }
