@@ -3,6 +3,7 @@ package com.spring.websellspringmvc.utils;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.models.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -16,7 +17,6 @@ import java.util.Map;
 public class SignedOrderFile {
     public byte[] writeDateFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
         try {
             bos.write((detailResponse.getOrderId() + "\n").getBytes());
             bos.write((detailResponse.getStatus() + "\n").getBytes());
@@ -136,4 +136,57 @@ public class SignedOrderFile {
         }
         return false;
     }
+
+    public String hashData(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            bos.write((detailResponse.getOrderId() + "\n").getBytes());
+            bos.write((detailResponse.getStatus() + "\n").getBytes());
+            bos.write((detailResponse.getFullName() + "\n").getBytes());
+            bos.write((detailResponse.getPhone() + "\n").getBytes());
+            bos.write((detailResponse.getEmail() + "\n").getBytes());
+            bos.write((detailResponse.getProvince() + "\n").getBytes());
+            bos.write((detailResponse.getDistrict() + "\n").getBytes());
+            bos.write((detailResponse.getWard() + "\n").getBytes());
+            bos.write((detailResponse.getDetail() + "\n").getBytes());
+            bos.write((detailResponse.getPayment() + "\n").getBytes());
+            //delimeter between order and items
+            bos.write(("\n").getBytes());
+            for (OrderDetailItemResponse item : detailResponse.getItems()) {
+                bos.write((item.getName() + "\n").getBytes());
+                bos.write((item.getSize() + "\n").getBytes());
+                bos.write((item.getColor() + "\n").getBytes());
+                bos.write((item.getQuantity() + "\n").getBytes());
+                bos.write((item.getPrice() + "\n").getBytes());
+                bos.write((item.getThumbnail() + "\n").getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (AdminOrderDetailResponse order : orderDetailResponse) {
+            try {
+                bos.write((order.getId() + "\n").getBytes());
+                bos.write((order.getFullName() + "\n").getBytes());
+                bos.write((order.getPhone() + "\n").getBytes());
+                bos.write((order.getEmail() + "\n").getBytes());
+                bos.write((order.getProvince() + "\n").getBytes());
+                bos.write((order.getDistrict() + "\n").getBytes());
+                bos.write((order.getWard() + "\n").getBytes());
+                bos.write((order.getDetail() + "\n").getBytes());
+                bos.write((order.getPaymentMethod() + "\n").getBytes());
+                bos.write(("\n").getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(bos.toByteArray());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
