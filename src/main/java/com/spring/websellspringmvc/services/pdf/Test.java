@@ -55,22 +55,25 @@ public class Test {
 
         // Test createFile method (returns PDF file)
         try {
-            File pdfFile = pdfService.createFile(inputFile, orderDetailResponse, Arrays.asList(adminOrderDetailResponse), "ma hash");
+            File pdfFile = pdfService.createFile(inputFile, orderDetailResponse, Arrays.asList(adminOrderDetailResponse), "MIIBuDCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH");
             System.out.println("PDF File generated: " + pdfFile.getAbsolutePath());
         } catch (Exception e) {
             System.err.println("Error generating PDF file: " + e.getMessage());
         }
 
 //         Test createSignedFile method (sign PDF)
-//        try {
-//            File signedFile = pdfService.createSignedFile(new File("Invoice_ORD123.pdf"), "John Doe");
-//            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
-//        } catch (Exception e) {
-//            System.err.println("Error adding signature: " + e.getMessage());
-//        }
+        try {
+            File signedFile = pdfService.createSignedFile(new File("Invoice_ORD123.pdf"), "John Doe");
+            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
+        } catch (Exception e) {
+            System.err.println("Error adding signature: " + e.getMessage());
+        }
 
-        String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"));
-        System.out.println("Hash: " + hash);
+//        String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"));
+//        System.out.println("Hash: " + hash);
+
+        String sign = pdfService.readSignature(new File("C:\\Users\\PC\\Documents\\Zalo Received Files\\signed_Invoice_ORD123 (1).pdf"));
+        System.out.println("sign: " + sign);
 
         // Ghi dữ liệu vào metadata của file signed_Invoice_ORD123.pdf
 

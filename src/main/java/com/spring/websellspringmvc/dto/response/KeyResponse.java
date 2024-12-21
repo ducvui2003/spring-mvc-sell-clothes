@@ -23,5 +23,5 @@ public class KeyResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     LocalDateTime updateAt;
     @JsonProperty("isDelete")
-    boolean isDelete;
+    boolean deleted;
 }
