@@ -1,5 +1,3 @@
-import {alert} from "../notify.js";
-import {addSpinner, cancelSpinner} from "../spinner.js";
 import {formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
@@ -101,6 +99,7 @@ $(document).ready(function () {
                     });
                     if (response && response.data) {
                         updateCurrentKey(response.data);
+                        loadDataToTable();
                     }
                     form.reset();
                     addKeyModal.modal('hide');
@@ -119,58 +118,68 @@ $(document).ready(function () {
         }
     });
 
-// Change review new key
-    $("#inputUploadKey").change(function () {
-        const file = uploadKey.prop('files')[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const lines = e.target.result.split('\n');
-                inputNewKey.text(lines[0]);
-            }
-            reader.readAsText(file);
-        }
-    });
-
-    $('#currentKey').on('input', function () {
-        const minRows = 3;
-        const maxRows = 6;
-        const lineHeight = parseFloat($(this).css('line-height')); // Line height
-        this.style.height = 'auto'; // Reset height
-        const newHeight = this.scrollHeight;
-
-        // Calculate height limits
-        if (newHeight > lineHeight * maxRows) {
-            this.style.height = lineHeight * maxRows + 'px'; // Max rows
-            this.style.overflowY = 'auto'; // Show scrollbar
+    // Hàm cập nhật Khóa hiện tại
+    function updateCurrentKey(newKey) {
+        if (newKey) {
+            $("#alertWarning").hide();
+            $("#hasKey").val(newKey)
+            $("#currentKey").val(newKey); // Cập nhật textarea Khóa hiện tại
         } else {
-            this.style.height = newHeight + 'px';
-            this.style.overflowY = 'hidden'; // Hide scrollbar
+            $("#alertWarning").show();
+            $("#currentKey").val(""); // Xóa nếu không có khóa
         }
-    }).trigger('input'); // Initialize on page load
-
-
-    document.getElementById('currentKey').addEventListener('dblclick', function () {
-        // Select the content of the textarea
-        this.select();
-        // Copy the selected content to the clipboard
-        document.execCommand('copy');
-        // Optionally, you can show an alert or notification to the user
-        alert('Content copied to clipboard!');
+    }
+    // Lấy danh sách key
+    let keyListCustomer = []
+    http({
+        url: "/api/key",
+        type: 'GET',
+    }).then((response) => {
+        const keyList = response.data;
+        console.log(keyList);
+        if(keyList && keyList.length > 0){
+            keyListCustomer = keyList
+            loadDataToTable();
+        }
     });
+
+    // Load danh sách key vào UI
+    function loadDataToTable() {
+        console.log("Hello");
+        // Cập nhật currentKeyId
+        currentKeyId.val(keyListCustomer[0].id);
+        const table = $('#keyList tbody');
+        table.empty();
+        const htmls = keyListCustomer.map(function (key) {
+            if (key) {
+                return `<tr>
+                        <td>${key.id}</td>
+                        <td>${key.publicKey}</td>
+                        <td>${key.createAt}</td>
+                        <td>${key.updateAt}</td>
+                        <td>${key.isDelete ? "Đã ngừng hoạt động" : "Đang hoạt động"}</td>
+                        <td>
+                            <button class="btn btn-primary btn__address-update" data-id="${key.id}" data-bs-toggle="modal" data-bs-target="#modal">
+                                 <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                           <button class="btn btn-danger btn__address-delete" data-id="${key.id}" >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`
+            }
+            return '';
+        })
+        table.html(htmls.join(''));
+        viewModal();
+    }
 // Khởi tạo tất cả tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 })
 ;
 
-// Hàm cập nhật Khóa hiện tại
-function updateCurrentKey(newKey) {
-    if (newKey) {
-        $("#alertWarning").hide();
-        $("#hasKey").val(newKey)
-        $("#currentKey").val(newKey); // Cập nhật textarea Khóa hiện tại
-    } else {
-        $("#alertWarning").show();
-        $("#currentKey").val(""); // Xóa nếu không có khóa
-    }
-}
+
+
+
+
+

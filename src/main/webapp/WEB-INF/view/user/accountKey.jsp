@@ -1,5 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <meta charset="utf-8">
@@ -18,7 +19,7 @@
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-9">
                 <div class="card mb-4">
                     <div class="card-header">Thông tin khóa</div>
                     <div class="card-body">
@@ -46,7 +47,7 @@
                             <div class="col-md-6">
                                 <label class="small mb-1" for="createdDate">Ngày tạo</label>
                                 <input class="form-control" name="createdDate" id="createdDate" type="text"
-                                       value="" disabled>
+                                       value="${requestScope.currentKey.createAt}" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label class="small mb-1" for="expiredTime">Ngày hết hạn</label>
@@ -58,11 +59,31 @@
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
                                     data-bs-target="#addKeyModal">Thêm khóa mới
                             </button>
-                            <%--                            <c:if test="${requestScope.hasKey == true}">--%>
-                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#reportKeyModal">Báo mất khóa
-                            </button>
-                            <%--                            </c:if>--%>
+                            <c:if test="${requestScope.hasKey == true}">
+                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#reportKeyModal">Báo mất khóa
+                                </button>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">Công cụ ký tên</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="small mb-0 d-inline-flex align-items-center" for="currentKey">Tải công cụ<span
+                                    class="ms-1 button--hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="Tải công cụ chữ ký điện tử phục vụ mua sắm."><i
+                                    class="fa-regular fa-circle-question"></i></span></label>
+
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="/static/signTool.exe" class="btn btn-primary me-3" download>
+                                <i class="fa-solid fa-download"></i> Tải phần mềm
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -76,11 +97,12 @@
                         <table id="keyList" class="table table-bordered table-hover table-striped text-center">
                             <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Khóa</th>
-                                <th>Ngày tạo</th>
-                                <th>Ngày hết hạn</th>
-                                <th>Trạng thái</th>
+                                <th style="width: 25%">#</th>
+                                <th style="width: 25%">Khóa</th>
+                                <th style="width: 15%">Ngày tạo</th>
+                                <th style="width: 15%">Ngày hết hạn</th>
+                                <th style="width: 10%">Trạng thái</th>
+                                <th style="width: 10%"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -104,24 +126,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                    <div class="row gx-3 mb-3 mt-2">
-                        <div class="mb-3">
-                            <label class="small mb-1" for="inputPassword">Mã xác thực</label>
-                            <input class="form-control" name="inputPassword" id="inputPassword" type="text"
-                                   value="" placeholder="Nhập mã xác thực">
-                        </div>
+                <div class="row gx-3 mb-3 mt-2">
+                    <div class="mb-3">
+                        <label class="small mb-1" for="inputPassword">Mã xác thực</label>
+                        <input class="form-control" name="inputPassword" id="inputPassword" type="text"
+                               value="" placeholder="Nhập mã xác thực">
                     </div>
-                    <div class="row gx-3 mb-3 mt-2">
-                        <div class="mb-3">
-                            <label class="small mb-1" for="reason">Lý do</label>
-                            <textarea class="form-control" name="reason" id="reason" rows="3"
-                                      placeholder="Nhập lý do báo mất khóa"></textarea>
-                        </div>
+                </div>
+                <div class="row gx-3 mb-3 mt-2">
+                    <div class="mb-3">
+                        <label class="small mb-1" for="reason">Lý do</label>
+                        <textarea class="form-control" name="reason" id="reason" rows="3"
+                                  placeholder="Nhập lý do báo mất khóa"></textarea>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Báo cáo</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Báo cáo</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
             </div>
         </form>
     </div>
@@ -164,16 +186,6 @@
                         </div>
                     </div>
                 </div>
-
-                <%--                <div class="row gx-3 mb-3 mt-2">--%>
-                <%--                    <div class="mb-3">--%>
-                <%--                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>--%>
-                <%--                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"--%>
-                <%--                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>--%>
-                <%--                        <div class="valid-feedback">--%>
-                <%--                        </div>--%>
-                <%--                    </div>--%>
-                <%--                </div>--%>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

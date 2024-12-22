@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.response.KeyResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.key.KeyServices;
 import com.spring.websellspringmvc.services.mail.IMailServices;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -125,5 +127,12 @@ public class KeyController {
                 .message("Key is blocking")
                 .data(isBlock)
                 .build());
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<KeyResponse>>> getAll() {
+        int userId = sessionManager.getUser().getId();
+        List<KeyResponse> keyList = keyService.getKeys(userId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Get keys", keyList));
     }
 }
