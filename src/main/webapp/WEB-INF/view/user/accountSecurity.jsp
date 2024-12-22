@@ -68,7 +68,7 @@
                         <div class="d-flex justify-content-between border border-1 p-2">
                             <div class="">
                                 <div class="d-flex gap-2">
-                                    <img src="/assets/img/icon_passkey.png" width="35px" , height="35px">
+                                    <img src="/assets/img/icon_passkey.png" width="35px" height="35px">
                                     <span>Name</span>
                                 </div>
                                 <div>Them vao ngay</div>

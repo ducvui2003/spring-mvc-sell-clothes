@@ -33,7 +33,7 @@ $(document).ready(() => {
                 defaultContent: "Chưa cập nhật",
             }, {
                 data: "gender", render: (data, type, row, meta) => {
-                    if (data === 'MALE')
+                    if (data === 'FEMALE')
                         return `<span class="p-1 text-center"  ><i class="fa-solid fa-venus" style="color:deeppink;"></i></span>`
                     else
                         return `<span class="p-1 text-center" ><i class="fa-solid fa-mars" style="color:  #0d6efd;"></i></span>`
@@ -257,7 +257,17 @@ $(document).ready(() => {
             // Khi ngừoi dùng đẫ chọn dòng để update
             if (row.rowDataSelected) {
                 $("#staticBackdropLabel").text("Cập nhập thông tin khách hàng");
-                fieldDataVoucher(row.rowDataSelected);
+                const id = row.rowDataSelected.id;
+                http({
+                    url: `/api/admin/user/:id`,
+                    method: "GET",
+                    pathVariables: {
+                        id: id
+                    }
+                }).then((response) => {
+                    fieldDataVoucher(response.data);
+                })
+
             } else {
                 $("#staticBackdropLabel").text("Thêm khách hàng");
                 // Khi người dùng thêm mới -> Bật các input cho phép chỉnh sửa
@@ -288,15 +298,10 @@ $(document).ready(() => {
         })
     }
 
+    const tableKey = $("#table-key tbody");
+
     function fieldDataVoucher(data) {
         const user = data;
-        console.log(data.id)
-        http({
-            url: `/api/admin/user/${data.id}`,
-            method: "GET",
-        }).then((response) => {
-            console.log(response.data)
-        })
         form.find("#email").val(user.email);
         form.find("#username").val(user.username);
         form.find("#fullName").val(user.fullName);
@@ -305,6 +310,43 @@ $(document).ready(() => {
         form.find("#gender").val(user.gender);
         form.find("#birthday").val(user.birthDay);
         form.find("#role").val(user.role);
+        console.log(user)
+        console.log(user.keys)
+        fieldTableKey(user.keys);
+    }
+
+    function fieldTableKey(keys) {
+        tableKey.empty();
+        const html = keys.map((key) => {
+            return `<tr class="table-active ${key.inUse ? 'table-success' : 'table-danger'}">
+                        <th >
+                        <p data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            data-bs-title="${key.id}" class="text-truncate" style="width: 100px">${key.id}</p>
+                        </th>
+                        <th >
+                            <p data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            data-bs-title="${key.publicKey}" data-public-key="${key.publicKey}" class="text-truncate icon-link icon-link-hover" style="width: 100px">${key.publicKey}</p></th>
+                        <th>${key.createdAt}</th>
+                        <th>${key.inUse ? "Đang sử dụng" : "Đã vô hiệu"}</th>
+                    </tr>`
+        });
+        tableKey.append(html);
+        showPublicKey();
+    }
+
+    function showPublicKey() {
+        $.each($('[data-public-key]'), function (index, element) {
+            const publicKey = $(element).data("public-key");
+            $(element).on("click", function () {
+                Swal.fire({
+                    title: "Thông tin khóa công khai",
+                    text: publicKey,
+                    icon: "info"
+                });
+            })
+        })
     }
 
     function disableInputs() {
@@ -330,4 +372,5 @@ $(document).ready(() => {
     const formValidate = form.validate(configValidator);
     const modal = $("#modal");
     configModal();
+    $('[data-bs-toggle="tooltip"]').tooltip();
 });

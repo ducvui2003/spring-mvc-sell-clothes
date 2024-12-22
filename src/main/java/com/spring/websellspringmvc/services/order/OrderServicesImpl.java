@@ -73,6 +73,8 @@ public class OrderServicesImpl implements OrderServices {
             if (address == null) throw new AppException(ErrorCode.NOT_VALID);
             double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
             LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+
+            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
             int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
             log.info("row effect: {}", rowEffect);
             if (rowEffect == 0) {

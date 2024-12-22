@@ -20,11 +20,11 @@ public interface KeyDAO {
     Long insert(@BindBean Key key);
 
 
-    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC")
+    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId AND deleted = 0 ORDER BY createAt DESC")
     List<Key> getKeys(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC LIMIT 1;
+            SELECT * FROM `keys` WHERE userId = :userId AND deleted = 0 ORDER BY createAt DESC LIMIT 1;
             """)
     Key getCurrentKey(@Bind("userId") int userId);
 
@@ -34,7 +34,7 @@ public interface KeyDAO {
     void blockKey(@Bind("userId") int userId, @Bind("otp") String otp);
 
     @SqlUpdate("""
-                      UPDATE `keys` SET isDelete = 1 WHERE userId = :userId;
+                      UPDATE `keys` SET deleted = 1 WHERE userId = :userId;
             """)
     void deleteKey(@Bind("userId") int userId);
 
@@ -73,4 +73,14 @@ public interface KeyDAO {
                       UPDATE `users` SET isBlockKey = 0 , keyOTP = NULL, blockKeyAt = '2022-12-31 23:59:59' WHERE id = :userId AND keyOTP = :otp;
             """)
     boolean unblockKey(int userId, String otp);
+
+
+    @SqlQuery("""
+            SELECT id, publicKey, previousId, userId, createAt, updateAt, deleted 
+            FROM `keys`
+            WHERE userId = :userId
+            ORDER BY deleted ASC, createAt DESC
+            """)
+
+    public List<Key> getAllKeys(@Bind("userId") int userId);
 }

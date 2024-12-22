@@ -8,6 +8,7 @@ import com.spring.websellspringmvc.dto.response.AdminUserDetailResponse;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 import com.spring.websellspringmvc.mapper.UserMapper;
+import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,7 +46,14 @@ public class AdminUserServicesImpl implements AdminUserServices {
             return null;
         }
         AdminUserDetailResponse response = userMapper.toAdminUserDetailResponse(user);
-        List
+        List<Key> keys = keyDAO.getAllKeys(userId);
+        response.setKeys(keys.stream().map(key -> new AdminUserDetailResponse.AdminUserKey(
+                key.getId(),
+                key.getPublicKey(),
+                key.getCreateAt(),
+                key.getCreateAt(),
+                !key.isDeleted()
+        )).toList());
         return response;
     }
 }
