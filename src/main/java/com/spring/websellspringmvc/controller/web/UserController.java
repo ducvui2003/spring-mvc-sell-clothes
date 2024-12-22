@@ -56,7 +56,7 @@ public class UserController {
     public ModelAndView getKeyPage() {
         User user = sessionManager.getUser();
         List<KeyResponse> keys = keyServices.getKeys(user.getId());
-        boolean hasKey = keys.isEmpty() ? false : true;
+        boolean hasKey = !keys.isEmpty() ;
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.USER_KEY.getPage());
         mov.addObject("hasKey", hasKey);

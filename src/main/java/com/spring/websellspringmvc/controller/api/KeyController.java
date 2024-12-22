@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -134,5 +137,20 @@ public class KeyController {
         int userId = sessionManager.getUser().getId();
         List<KeyResponse> keyList = keyService.getKeys(userId);
         return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Get keys", keyList));
+    }
+
+    @GetMapping("/download-exe")
+    public ResponseEntity<Resource> downloadExeFile() {
+        try {
+            // Load the .exe file from resources
+            Resource resource = new ClassPathResource("static/mysetup.exe");
+
+            // Set headers to force download
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mysetup.exe\"")
+                    .body(resource);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error while downloading file: " + ex.getMessage());
+        }
     }
 }

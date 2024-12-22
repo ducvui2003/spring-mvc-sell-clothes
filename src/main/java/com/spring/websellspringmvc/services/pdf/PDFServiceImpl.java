@@ -1,25 +1,27 @@
 package com.spring.websellspringmvc.services.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.exceptions.InvalidPdfException;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
+import java.time.format.DateTimeFormatter;
+import java.util.IllegalFormatConversionException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,173 +29,132 @@ public class PDFServiceImpl implements PDFService {
     @Override
     public byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
-            // Load the HTML template
             String htmlTemplate = loadHtmlTemplate();
-
-            // Fill the placeholders with data
             String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
-
-            // Convert to PDF
             return generatePdfFromHtml(filledHtml);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Error creating data file: " + e.getMessage(), e);
         }
     }
     @Override
     public File createFile(File inputFile, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
-            // Load the HTML template
             String htmlTemplate = loadHtmlTemplate();
-
-            // Fill the placeholders with data
             String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
 
-
-            // Convert to PDF
-            File pdfFile = new File(inputFile.getParent()+ "/Invoice_" + detailResponse.getOrderId() + ".pdf");
+            File pdfFile = new File(inputFile.getParent(), "Invoice_" + detailResponse.getOrderId() + ".pdf");
             writePdfToFile(filledHtml, pdfFile);
 
-            // Add hash to metadata
-            File tempFile = new File(pdfFile.getParent(), "Temp_" + pdfFile.getName());
-            PdfReader reader = new PdfReader(pdfFile.getAbsolutePath());
-            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
-
-            HashMap<String, String> info = (HashMap<String, String>) reader.getInfo();
-            info.put("Hash", hash);
-            stamper.setMoreInfo(info);
-
-            stamper.close();
-            reader.close();
-
-            // Replace the original file with the updated file
-            if (!pdfFile.delete() || !tempFile.renameTo(pdfFile)) {
-                throw new IOException("Failed to replace the original PDF file with updated file");
-            }
-
+            addMetadataToPdf(pdfFile, Map.of("Hash", hash));
             return pdfFile;
-        } catch (DocumentException e) {
-            throw new DocumentException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        }catch (IllegalFormatConversionException e) {
+            throw new RuntimeException("Error creating file: " + e.getMessage(), e);
+
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error creating PDF file: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public File createSignedFile(File orderFile, String signature) throws IOException {
-        File signedPdf = new File(orderFile.getParent()+"/signed_" + orderFile.getName());
+    public File createSignedFile(File orderFile, String signature) {
         try {
-            // Đọc file PDF đầu vào
-            PdfReader reader = new PdfReader(orderFile.getAbsolutePath());
-
-            // Tạo PdfStamper để ghi PDF mới với metadata
-            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(signedPdf));
-
-            // Lấy thông tin metadata hiện tại
-            HashMap<String, String> info = (HashMap<String, String>) reader.getInfo();
-
-            // Thêm chữ ký vào metadata
-            info.put("Signature", signature);
-
-            // Cập nhật metadata vào file PDF
-            stamper.setInfoDictionary(info);
-
-            // Đóng stamper và reader
-            stamper.close();
-            reader.close();
-        } catch (IOException | DocumentException e) {
-            throw new RuntimeException("Error adding signature metadata to PDF", e);
+            File signedPdf = new File(orderFile.getParent(), "Signed_" + orderFile.getName());
+            addMetadataToPdf(orderFile, Map.of("Signature", signature), signedPdf);
+            return signedPdf;
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating signed file: " + e.getMessage(), e);
         }
-        return signedPdf;
     }
 
     @Override
     public String readSignature(File signedFile) {
-        try {
-            // Đọc file PDF
-            PdfReader reader = new PdfReader(signedFile.getAbsolutePath());
-
-            // Lấy thông tin metadata
-            HashMap<String, String> metadata = (HashMap<String, String>) reader.getInfo();
-
-            // Đóng file sau khi đọc
-            reader.close();
-
-            // Lấy giá trị chữ ký từ metadata
-            String signature = metadata.get("Signature");
-
-            // Kiểm tra và trả về chữ ký (nếu có)
-            if (signature != null) {
-                return signature.trim();
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading signature from PDF", e);
-        }
+        return readMetadataFromPdf(signedFile, "Signature");
     }
 
     @Override
-    public String readHash(File signedFile) throws IOException {
-        try {
-            // Đọc file PDF
-            PdfReader reader = new PdfReader(signedFile.getAbsolutePath());
+    public String readHash(File signedFile){
+        return readMetadataFromPdf(signedFile, "Hash");
+    }
 
-            // Lấy thông tin metadata
-            HashMap<String, String> metadata = (HashMap<String, String>) reader.getInfo();
+    private void addMetadataToPdf(File inputPdf, Map<String, String> metadata, File outputPdf) throws IOException, DocumentException {
+        PdfReader reader = new PdfReader(inputPdf.getAbsolutePath());
+        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(outputPdf));
+        Map<String, String> existingMetadata = reader.getInfo();
+        existingMetadata.putAll(metadata);
+        stamper.setInfoDictionary(existingMetadata);
+        stamper.close();
+        reader.close();
+    }
 
-            // Đóng file sau khi đọc
-            reader.close();
+    // Overloaded method for inline metadata addition
+    private void addMetadataToPdf(File pdfFile, Map<String, String> metadata) throws IOException, DocumentException {
+        File tempFile = new File(pdfFile.getParent(), "Temp_" + pdfFile.getName());
+        addMetadataToPdf(pdfFile, metadata, tempFile);
 
-            // Lấy giá trị chữ ký từ metadata
-            String signature = metadata.get("Hash");
-
-            // Kiểm tra và trả về chữ ký (nếu có)
-            if (signature != null) {
-                return signature.trim();
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
-            throw new IOException("Error reading hash from PDF", e);
+        if (!pdfFile.delete() || !tempFile.renameTo(pdfFile)) {
+            throw new IOException("Failed to replace original PDF file with updated metadata.");
         }
     }
 
-
-    private String loadHtmlTemplate() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/templateEmailPlaceOrder.html");
-        if (inputStream == null) {
-            throw new FileNotFoundException("Template not found: ");
-        }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            StringBuilder content = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append(System.lineSeparator());
-            }
-            return content.toString().trim(); // Remove trailing new lines
+    // Utility for reading metadata
+    private String readMetadataFromPdf(File pdfFile, String key) {
+        try (PdfReader reader = new PdfReader(pdfFile.getAbsolutePath())) {
+            Map<String, String> metadata = reader.getInfo();
+            return metadata.getOrDefault(key, "").trim();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading metadata from PDF: " + e.getMessage(), e);
         }
     }
 
     private String populateHtmlTemplate(String template, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponses) {
+        List<OrderDetailItemResponse> items = detailResponse.getItems();
+        double tempPrice = 0;
+        for (OrderDetailItemResponse item : items) {
+            tempPrice += item.getPrice() * item.getQuantity();
+            System.out.println(item.getPrice());
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+
+        // Kiểm tra các giá trị không phải String và chuyển đổi chúng
+        String invoiceDate = detailResponse.getDateOrder() != null ?  detailResponse.getDateOrder().format(formatter): "";
+        String totalItem = String.valueOf(items.size());
+        String tempPriceFormatted = formatVND(tempPrice);
+        String discountPriceFormatted = formatVND(0);
+        String shippingFeeFormatted = formatVND(detailResponse.getFee());
+        String totalPriceFormatted = formatVND(detailResponse.getFee() + tempPrice);
+        String orderStatus = orderDetailResponses.getFirst().getOrderStatus() == null
+                ? ""
+                : orderDetailResponses.getFirst().getOrderStatus().getDisplayName();
+
+        String paymentStatus = orderDetailResponses.isEmpty() || orderDetailResponses.getFirst().getTransactionStatus() == null
+                ? ""
+                : switch (orderDetailResponses.getFirst().getTransactionStatus()) {
+            case UN_PAID -> "Chưa thanh toán";
+            case PROCESSING -> "Đang xử lý";
+            case PAID -> "Đã thanh toán";
+            case ERROR -> "Lỗi giao dịch";
+        };
+
+        // Thay thế các giá trị trong template
         return template
                 .replace("%%INVOICENO%%", detailResponse.getOrderId())
-                .replace("%%INVOICEDATE%%", detailResponse.getDateOrder().toString())
+                .replace("%%INVOICEDATE%%", invoiceDate)
                 .replace("%%FULLNAME%%", detailResponse.getFullName())
                 .replace("%%EMAIL%%", detailResponse.getEmail())
                 .replace("%%PHONE%%", detailResponse.getPhone())
                 .replace("%%ADDRESS%%", detailResponse.getProvince() + ", " + detailResponse.getDistrict() + ", " + detailResponse.getWard() + ", " + detailResponse.getDetail())
-                .replace("%%TOTALITEM%%", String.valueOf(detailResponse.getItems().size()))
-                .replace("%%TEMPPRICE%%", String.format("%.2f", detailResponse.getFee()))
-                .replace("%%DISCOUNTPRICE%%", "0.00") // Placeholder
-                .replace("%%SHIPPINGFEE%%", formatVND(detailResponse.getFee())) // Placeholder
-                .replace("%%TOTALPRICE%%", String.format("%.2f", detailResponse.getFee() +detailResponse.getFee())) // Fee + shipping
-                .replace("%%DELIVERYMETHOD%%", "Standard Shipping") // Placeholder
+                .replace("%%TOTALITEM%%", totalItem)
+                .replace("%%TEMPPRICE%%", tempPriceFormatted)
+                .replace("%%DISCOUNTPRICE%%", discountPriceFormatted)
+                .replace("%%SHIPPINGFEE%%", shippingFeeFormatted)
+                .replace("%%TOTALPRICE%%", totalPriceFormatted)
+                .replace("%%DELIVERYMETHOD%%", "Giao hàng nhanh") // Placeholder
                 .replace("%%PAYMENTMETHOD%%", detailResponse.getPayment())
-                .replace("%%ITEMSBOUGHT%%", generateItemsTable(detailResponse.getItems())
-                .replace("%%ORDERSTATUS%%", orderDetailResponses.get(0).getOrderStatus().toString()) // Thay thế trạng thái đơn hàng
-                .replace("%%PAYMENTSTATUS%%", orderDetailResponses.get(0).getTransactionStatus().toString()));// Thay thế trạng thái thanh toán);
+                .replace("%%ITEMSBOUGHT%%", generateItemsTable(detailResponse.getItems()))
+                .replace("%%ORDERSTATUS%%", orderStatus)
+                .replace("%%PAYMENTSTATUS%%", paymentStatus);
     }
 
     private String generateItemsTable(List<OrderDetailItemResponse> items) {
@@ -204,41 +165,81 @@ public class PDFServiceImpl implements PDFService {
                     .append(item.getName())
                     .append("</td>")
                     .append("<td style=\"border: 1px solid #d9d9d9; text-align: center; padding: 8px;\">")
-                    .append(String.format("%.2f", item.getPrice()))
+                    .append(formatVND(item.getPrice()))
                     .append("</td>")
                     .append("<td style=\"border: 1px solid #d9d9d9; text-align: center; padding: 8px;\">")
                     .append(item.getQuantity())
                     .append("</td>")
                     .append("<td style=\"border: 1px solid #d9d9d9; text-align: right; padding: 8px;\">")
-                    .append(String.format("%.2f", item.getPrice() * item.getQuantity()))
+                    .append(formatVND(item.getPrice() * item.getQuantity()))
                     .append("</td>")
                     .append("</tr>");
         }
         return sb.toString();
     }
 
+    private String loadHtmlTemplate() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/templateEmailPlaceOrder.html");
+        if (inputStream == null) {
+            throw new FileNotFoundException("Template not found: templates/templateEmailPlaceOrder.html");
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+            return content.toString().trim();
+        }
+    }
 
-    private byte[] generatePdfFromHtml(String html) throws DocumentException {
+    private byte[] generatePdfFromHtml(String html) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ITextRenderer renderer = new ITextRenderer();
-        Document document = Jsoup.parse(html, "UTF-8");
-        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        renderer.setDocumentFromString(document.html());
-        renderer.layout();
-        renderer.createPDF(outputStream);
+        try {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.toStream(outputStream);
+
+            // Load font
+            URL fontUrl = getClass().getClassLoader().getResource("templates/roboto.ttf");
+            if (fontUrl == null) {
+                throw new FileNotFoundException("Font file not found: templates/roboto.ttf");
+            }
+            builder.useFont(new File(fontUrl.toURI()), "roboto");
+
+            // Parse HTML and set to builder
+            Document document = Jsoup.parse(html, "UTF-8");
+            builder.withW3cDocument(new W3CDom().fromJsoup(document), "/");
+
+            // Render PDF
+            builder.run();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating PDF: " + e.getMessage(), e);
+        }
         return outputStream.toByteArray();
     }
 
-    private void writePdfToFile(String html, File outputFile) throws DocumentException, IOException {
+    private void writePdfToFile(String html, File outputFile) {
         try (OutputStream outputStream = new FileOutputStream(outputFile)) {
-            ITextRenderer renderer = new ITextRenderer();
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.toStream(outputStream);
+
+            // Load font
+            URL fontUrl = getClass().getClassLoader().getResource("templates/roboto.ttf");
+            if (fontUrl == null) {
+                throw new FileNotFoundException("Font file not found: templates/roboto.ttf");
+            }
+            builder.useFont(new File(fontUrl.toURI()), "roboto");
+
+            // Parse HTML and set to builder
             Document document = Jsoup.parse(html, "UTF-8");
-            document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-            renderer.setDocumentFromString(document.html());
-            URL fontUrl = Test.class.getResource("/templates/roboto.ttf");
-            renderer.getFontResolver().addFont(fontUrl.toString(), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-            renderer.layout();
-            renderer.createPDF(outputStream);
+            builder.withW3cDocument(new W3CDom().fromJsoup(document), "/");
+
+            // Render PDF
+            builder.run();
+        } catch (Exception e) {
+            throw new RuntimeException("Error writing PDF file: " + e.getMessage(), e);
         }
     }
 
