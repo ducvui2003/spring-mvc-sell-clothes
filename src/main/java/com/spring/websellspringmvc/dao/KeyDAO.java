@@ -25,7 +25,7 @@ public interface KeyDAO {
     List<Key> getKeys(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC LIMIT 1;
+            SELECT * FROM `keys` WHERE userId = :userId AND deleted = 0 ORDER BY createAt DESC LIMIT 1;
             """)
     Key getCurrentKey(@Bind("userId") int userId);
 

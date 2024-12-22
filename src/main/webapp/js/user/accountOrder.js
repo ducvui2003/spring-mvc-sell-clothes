@@ -29,11 +29,12 @@ $(document).ready(function () {
     handleSubmitModelChangeOrder();
 
 });
+
 function handleUploadFile() {
     var order_id = $('span#order__id').html();
     var file = $('input#upload-sign-info').prop('files')[0];
     var formData = new FormData();
-    formData.append('file',file) ;
+    formData.append('file', file);
     formData.append('orderId', order_id);
     http({
         url: '/api/verify-order/upload',
@@ -61,6 +62,14 @@ function handleUploadFile() {
                 timer: 1500
             });
         }
+    }).catch((error) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Vui lon upload file đã ký',
+            showConfirmButton: false,
+            target: document.querySelector("#modal"),
+            timer: 1500
+        });
     });
 }
 
@@ -151,13 +160,11 @@ function loadDataModal(order, orderId) {
         const temporary = order.items.reduce(function (total, item) {
             return total + item.price * item.quantity;
         }, 0);
+        console.log(order)
         modal.find("#order__temporary").text(formatCurrency(temporary));
-
-        getFeeAndLeadTime(address).then(data => {
-            modal.find("#order__shipping-fee").text(formatCurrency(data.feeShipping));
-            modal.find("#order__lead-date").text(convertUnixToDate(data.leadDate));
-            modal.find("#order__total").text(formatCurrency(temporary + data.feeShipping));
-        })
+        modal.find("#order__shipping-fee").text(formatCurrency(order.fee));
+        modal.find("#order__lead-date").text(order.leadTime);
+        modal.find("#order__total").text(formatCurrency(temporary + order.fee));
     }
 
     function loadContact(order) {

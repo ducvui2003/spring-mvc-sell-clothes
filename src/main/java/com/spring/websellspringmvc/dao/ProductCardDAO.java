@@ -100,7 +100,7 @@ public interface ProductCardDAO {
     public List<ProductCardResponse> getListTrendProducts(@Bind("limit") int limit, @Bind("offset") long offset);
 
     @SqlQuery("""
-            SELECT DISTINCT\s
+            SELECT DISTINCT
                 p.id,
                 p.name,
                 p.description,
@@ -118,7 +118,7 @@ public interface ProductCardDAO {
                      JOIN products p ON c.id = p.categoryId
                      JOIN colors ON p.id = colors.productId
                      JOIN sizes ON p.id = sizes.productId
-                     JOIN order_details od ON p.id = od.productId
+                     LEFT JOIN order_details od ON p.id = od.productId
                      LEFT JOIN reviews r ON od.id = r.orderDetailId
             WHERE (:categoryId IS NULL OR c.id IN (:categoryId))
               AND (:codeColors IS NULL OR colors.codeColor IN (:codeColors))

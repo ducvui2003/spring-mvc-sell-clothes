@@ -126,15 +126,15 @@
                                     <c:choose>
                                         <c:when test="${product.salePrice == null}">
                                             <strong class="priority__price">
-                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.originalPrice}" type="number" pattern="#,##0"/>đ
                                             </strong>
                                         </c:when>
                                         <c:otherwise>
                                             <strong class="sale__price">
-                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.salePrice}" type="number" pattern="#,##0"/>đ
                                             </strong>
                                             <s class="original__price">
-                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.originalPrice}" type="number" pattern="#,##0"/>đ
                                             </s>
                                         </c:otherwise>
                                     </c:choose>
@@ -211,15 +211,16 @@
                                     <c:choose>
                                         <c:when test="${product.salePrice == null}">
                                             <strong class="priority__price">
-                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.originalPrice}" type="number" pattern="#,##0"
+                                                />đ
                                             </strong>
                                         </c:when>
                                         <c:otherwise>
                                             <strong class="sale__price">
-                                                <fmt:formatNumber value="${product.salePrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.salePrice}" type="number" pattern="#,##0"/>đ
                                             </strong>
                                             <s class="original__price">
-                                                <fmt:formatNumber value="${product.originalPrice}" type="currency"/>
+                                                <fmt:formatNumber value="${product.originalPrice}"  type="number" pattern="#,##0"/>đ
                                             </s>
                                         </c:otherwise>
                                     </c:choose>

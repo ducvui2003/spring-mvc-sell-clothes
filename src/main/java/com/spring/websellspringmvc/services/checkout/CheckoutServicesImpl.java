@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
     @NonFinal
     Integer serviceTypeId;
     VnPayServices vnPayServices;
+    Jdbi jdbi;
 
     OrderStatus statusBegin = OrderStatus.VERIFYING;
 
@@ -77,38 +79,44 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
 
     @Override
-    public void createOrder(CheckoutRequest request, Integer userId) {
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setPaymentMethod(request.getPaymentMethod());
-        order.setFullName(request.getFullName());
-        order.setEmail(request.getEmail());
-        order.setPhone(request.getPhone());
-        order.setOrderStatusId(statusBegin.getValue());
-        order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
-
-        Address address = addressDAO.getAddressById(request.getAddressId());
-        order.setProvince(address.getProvinceName());
-        order.setDistrict(address.getDistrictName());
-        order.setWard(address.getWardName());
-        order.setDetail(address.getDetail());
-
-        double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
-        order.setFee(fee);
-
-        order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
-
+    public String createOrder(CheckoutRequest request, Integer userId) {
         String orderId = UUID.randomUUID().toString();
-        order.setId(orderId);
-        order.setPreviousId(orderId);
-        orderDAO.createOrder(order, address.getId());
-        createOrderDetail(request.getCartItemId(), orderId, userId);
+        jdbi.useTransaction(handle -> {
+            Order order = new Order();
+            order.setUserId(userId);
+            order.setPaymentMethod(request.getPaymentMethod());
+            order.setFullName(request.getFullName());
+            order.setEmail(request.getEmail());
+            order.setPhone(request.getPhone());
+            order.setOrderStatusId(statusBegin.getValue());
+            order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
 
-        cartDAO.deleteCartItemIn(request.getCartItemId());
+            Address address = addressDAO.getAddressById(request.getAddressId());
+            order.setProvince(address.getProvinceName());
+            order.setDistrict(address.getDistrictName());
+            order.setWard(address.getWardName());
+            order.setDetail(address.getDetail());
+
+            double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+            order.setFee(fee);
+
+            order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
+
+            order.setId(orderId);
+            order.setPreviousId(orderId);
+            orderDAO.createOrder(order, address.getId());
+            createOrderDetail(request.getCartItemId(), orderId, userId);
+
+            cartDAO.deleteCartItemIn(request.getCartItemId());
+
+        });
+
+        return orderId;
     }
 
     @Override
     public String createOrderByVnPay(CheckoutRequest request, Integer userId, String ip) throws UnsupportedEncodingException {
+
         Order order = new Order();
         order.setUserId(userId);
         order.setPaymentMethod(request.getPaymentMethod());
@@ -134,10 +142,9 @@ public class CheckoutServicesImpl implements CheckoutServices {
         order.setPaymentRef(orderId);
         orderDAO.createOrder(order, address.getId());
 
-        cartDAO.deleteCartItemIn(request.getCartItemId());
-
         double totalPrice = createOrderDetail(request.getCartItemId(), orderId, userId);
 
+        cartDAO.deleteCartItemIn(request.getCartItemId());
         String urlPayment = vnPayServices.generateUrl(totalPrice, orderId, ip);
         return urlPayment;
     }

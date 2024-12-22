@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -35,6 +36,7 @@ public class AuthenticateServicesImpl implements AuthenticationService {
     UserMapper userMapper = UserMapper.INSTANCE;
     CartDAO cartDAO;
     SessionManager sessionManager;
+    Jdbi jdbi;
 
     @Override
     public void signIn(SignInRequest dto) {
@@ -62,21 +64,24 @@ public class AuthenticateServicesImpl implements AuthenticationService {
     }
 
     public void createUser(User user) {
-        String tokenVerify = Token.generateToken();
+        jdbi.useTransaction(handle -> {
+            String tokenVerify = Token.generateToken();
 
-        Timestamp timestampExpiredToken = Token.addTime(LocalDateTime.now(), MailProperties.getDurationTokenVerify());
+            Timestamp timestampExpiredToken = Token.addTime(LocalDateTime.now(), MailProperties.getDurationTokenVerify());
 
-        user.setTokenVerify(tokenVerify);
-        user.setTokenVerifyTime(timestampExpiredToken);
-        user.setVerify(false);
-        userDAO.insert(user);
-        try {
-            IMailServices mailServices = new MailVerifyServices(user.getEmail(), user.getUsername(), tokenVerify, timestampExpiredToken);
-            mailServices.send();
-            log.info("Send mail success");
-        } catch (MessagingException ignored) {
-            ignored.printStackTrace();
-        }
+            user.setTokenVerify(tokenVerify);
+            user.setTokenVerifyTime(timestampExpiredToken);
+            user.setVerify(false);
+            userDAO.insert(user);
+            try {
+                IMailServices mailServices = new MailVerifyServices(user.getEmail(), user.getUsername(), tokenVerify, timestampExpiredToken);
+                mailServices.send();
+                log.info("Send mail success");
+            } catch (MessagingException ignored) {
+                ignored.printStackTrace();
+            }
+        });
+
     }
 
     @Override

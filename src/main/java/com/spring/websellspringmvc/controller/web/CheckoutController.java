@@ -36,9 +36,11 @@ public class CheckoutController {
         int userId = sessionManager.getUser().getId();
         List<AddressResponse> addresses = addressService.getAddress(userId);
         List<CartItemResponse> cartItems = checkoutServices.getCarts(request.getCartItemId(), userId);
+        double total = cartItems.stream().reduce(0.0, (subtotal, item) -> subtotal + item.getPrice() * item.getQuantity(), Double::sum);
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.CHECKOUT.getPage());
         mov.addObject("cartItems", cartItems);
+        mov.addObject("total", total);
         mov.addObject("addresses", addresses);
         return mov;
     }

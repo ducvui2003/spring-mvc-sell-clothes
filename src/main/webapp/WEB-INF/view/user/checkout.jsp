@@ -157,7 +157,7 @@
                                         </div>
                                     </td>
                                     <td class="td__item">${item.quantity}</td>
-                                    <td class="td__item">${item.salePrice !=0 ? item.salePrice : item.price}</td>
+                                    <td class="td__item"><fmt:formatNumber value="${item.salePrice !=0 ? item.salePrice : item.price}" type="number" pattern="#,##0"/> đ</td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -167,12 +167,14 @@
                         <div class="invoice__content">
                             <div class="price__item--detail">
                                 <div class="temporary__container">
-                                    <span>Tạm tính ( <span class="count__product"></span> sản phẩm)</span>
+                                    <span>Tạm tính ( <span
+                                            class="count__product">${requestScope.cartItems.size()}</span> sản phẩm)</span>
                                 </div>
                             </div>
                             <div class="total__price--final">
                                 <span class="total__label">Tổng tiền</span>
-                                <span class="total__value"></span>
+                                <fmt:setLocale value="vi_VN"/>
+                                <span class="total__value">  <fmt:formatNumber value=" ${requestScope.total}" type="number" pattern="#,##0"/> đ</span>
                             </div>
                         </div>
                         <div class="ground__button--forward">
