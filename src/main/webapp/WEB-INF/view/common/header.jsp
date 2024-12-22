@@ -1,5 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.spring.websellspringmvc.utils.constraint.Role" %>
+
 <!--Header-->
 <header id="header">
     <nav class="nav">
@@ -74,7 +76,7 @@
                                        class="setting__item">
                                         <div class="setting__link">Tài khoản của tôi</div>
                                     </a>
-                                    <c:if test="${auth.role == 'ADMIN'}">
+                                    <c:if test="${auth.role eq Role.ADMIN}">
                                         <a href="<c:url value="/admin/product" />"
                                            class="setting__item">
                                             <div class="setting__link">Quản lý</div>

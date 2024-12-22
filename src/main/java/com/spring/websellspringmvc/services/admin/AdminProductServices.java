@@ -22,12 +22,10 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminProductServices {
-    static int LIMIT = 15;
     ProductDAO productDAO;
     ColorDAO colorDAO;
     ImageDAO imageDAO;
     SizeDAO sizeDAO;
-    ProductCardDAO productCardDAO;
 
 
     public int addProduct(Product product) {

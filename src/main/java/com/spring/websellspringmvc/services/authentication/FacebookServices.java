@@ -58,7 +58,7 @@ public class FacebookServices implements OAuthServices {
             sessionManager.addUser(userOptional.get());
         else {
             com.spring.websellspringmvc.models.User user = com.spring.websellspringmvc.models.User.builder()
-                    .role(Role.USER.name())
+                    .role(Role.USER)
                     .email(email)
                     .fullName(userFacebook.getName())
                     .build();

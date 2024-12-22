@@ -33,5 +33,6 @@ public class OrderDetailResponse implements Serializable {
     LocalDateTime dateOrder;
     List<OrderDetailItemResponse> items;
     double fee;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     LocalDateTime leadTime;
 }

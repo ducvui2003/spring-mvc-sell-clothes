@@ -231,49 +231,8 @@
                             </table>
                         </div>
                     </div>
-                    <div
-                            class="invoice__promotion col">
-                        <c:set
-                                var="temporaryPrice"
-                                value="${sessionScope[userIdCart].getTemporaryPrice()}"/>
-                        <div class="apply__promotion">
-                            <h2>Khuyến mãi </h2>
-                            <div id="promotion__form">
-                                <!-- New update template -->
-                                <div class="promotion__all">
-                                     <span>
-                                         <i class="fa-solid fa-ticket-simple"></i>
-                                            Mã giảm giá
-                                     </span>
-                                    <span>
-                                        Xem tất cả
-                                       <i class="fa-solid fa-chevron-right"></i>
-                                    </span>
-                                </div>
-                                <!-- New update template -->
-                                <div>
-                                        <%--                                    <input--%>
-                                        <%--                                            type="hidden"--%>
-                                        <%--                                            name="temporaryPrice"--%>
-                                        <%--                                            value="">--%>
-                                    <form:input
-                                            path="voucher"
-                                            type="text"
-                                            name="promotionCode"
-                                            id="promotion__code"/>
-                                    <span
-                                            id="promotion_submit">
-                                        Áp dụng
-                                    </span>
-                                </div>
-                                <div class="mt-2 w-100 d-block">
-                                    <div id="apply__status">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                                class="summary__invoice">
+                    <div class="invoice__promotion col">
+                        <div class="summary__invoice">
                             <h2>Tổng đơn hàng
                             </h2>
                             <div class="invoice__detail--info">
@@ -281,23 +240,14 @@
                                     <li class="price__item">
                                         <p class="price__text">
                                             Tạm tính
-                                            (<span class="total__items" id="total__items">0</span>
+                                            (<span class="total__items"
+                                                   id="total__items"></span>
                                             sp)
                                         </p>
                                         <p class="price__value" id="price__total">
-                                            0 ₫
-                                        </p>
-                                    </li>
-                                    <li class="price__item ">
-                                        Của voucher
-                                        <p class="price__text">
-                                            Giảm giá
-                                        </p>
-                                        <p class="price__value " id="price__voucher">
 
                                         </p>
                                     </li>
-
                                 </ul>
                                 <div class="price__total">
                                     <p class="price__text">
@@ -320,7 +270,7 @@
                                     Tiến hành thanh toán
                                 </button>
                             </a>
-                            <a href="/product" id="continue--shopping">
+                            <a href="/product" id="continue--shopping" class="text-center">
                                 Tiến tục mua sắm
                             </a>
                         </div>

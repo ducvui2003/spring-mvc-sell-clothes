@@ -226,10 +226,10 @@ function finishRegistration(newCredentialInfo) {
                         icon: "success"
                     });
                     addNewCredentialToView({
-                        id: response.id,
-                        publicKey: response.publicKey,
-                        name: response.name,
-                        createdAt: response.createdAt
+                        id: response.data.id,
+                        publicKey: response.data.publicKey,
+                        name: response.data.name,
+                        createdAt: response.data.createdAt
                     });
                 } else
                     Swal.fire({

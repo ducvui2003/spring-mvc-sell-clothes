@@ -13,7 +13,7 @@ import java.util.List;
 public interface CheckoutServices {
     List<CartItemResponse> getCarts(List<Integer> listCartItemId, Integer userId);
 
-    void createOrder(CheckoutRequest request, Integer userId);
+    String createOrder(CheckoutRequest request, Integer userId);
 
     String createOrderByVnPay(CheckoutRequest request, Integer userId, String ip) throws UnsupportedEncodingException;
 

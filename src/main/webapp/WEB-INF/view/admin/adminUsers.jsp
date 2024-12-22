@@ -4,28 +4,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <jsp:include page="/adminLink"/>
+    <jsp:include page="/WEB-INF/view/common/adminLink.jsp"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/assets/css/admin/adminUsers.css" />">
     <title>Quản lí người dùng</title>
 </head>
 <body>
 <!--Header-->
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/common/adminNavigator"/>
+    <jsp:include page="/WEB-INF/view/common/adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
                 <div class="col-12">
                     <div class="d-flex justify-content-between">
                         <h1>Danh sách người dùng</h1>
-                        <form class="ms-auto me-2" action="<c:url value="/exportExcelUser"/>" method="GET">
-                            <button class="btn_export">
-                                <i class="fa-solid fa-file-export"></i>
-                                Xuất file excel
-                            </button>
-                        </form>
                         <div>
                             <button id="button" class="button button__delete" data-bs-toggle="modal"
                                     data-bs-target="#modal">
@@ -60,7 +54,7 @@
 <!-- Modal -->
 <div class="modal fade" id="modal" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog   modal-dialog-scrollable modal-xl">
         <form id="form" class="modal-content needs-validation">
             <div class="modal-header">
                 <h2 class="modal-title" id="staticBackdropLabel">Cập nhập thông tin ngừoi dùng</h2>
@@ -109,9 +103,9 @@
                     </div>
                     <div class="col-4 mt-2">
                         <label for="gender" class="form-label">Giới tính</label>
-                        <select class="form-select" id="gender" name="gender">
-                            <option name="gender" value="1">Nam</option>
-                            <option name="gender" value="2">Nữ</option>
+                        <select class="form-select" id="gender" name="gender" disabled>
+                            <option name="gender" value="MALE">Nam</option>
+                            <option name="gender" value="FEMALE">Nữ</option>
                         </select>
                         <div class="valid-feedback">
 
@@ -127,15 +121,37 @@
                     </div>
                     <div class="col-4 mt-2">
                         <label for="role" class="form-label text-nowrap">Vai trò</label>
-                        <select class="form-select" aria-label="" name="role" id="role">
-                            <option value="2">Quản trị</option>
-                            <option value="1">Người dùng</option>
-                            <option value="0">Khóa tài khoản</option>
+                        <select class="form-select" aria-label="" name="role" id="role" disabled>
+                            <option value="ADMIN">Quản trị</option>
+                            <option value="USER">Người dùng</option>
+                            <option value="BLOCK">Khóa tài khoản</option>
                         </select>
                         <div class="valid-feedback">
 
                         </div>
                     </div>
+                </div>
+                <hr>
+                <p class="h3 mt-3">Khóa xác thực</p>
+                <div class="row">
+                    <table id="table-key" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Khóa công khai</th>
+                            <th scope="col">Ngày tạo</th>
+                            <th scope="col">Tình trạng</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="table-active">
+                            <th>#</th>
+                            <th>Khóa công khai</th>
+                            <th>Ngày tạo</th>
+                            <th>Tình trạng</th>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-footer">

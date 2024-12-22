@@ -8,6 +8,7 @@ import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
 import com.spring.websellspringmvc.models.Voucher;
+import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -199,6 +200,7 @@ public interface OrderDAO {
                 o.detail = a.detail,
                 o.fee = :fee,
                 o.leadTime = :leadTime
+                o.orderStatusId = 6
             WHERE o.id = :orderId AND o.userId = :userId;
             """)
     int changeInfoOrder(
@@ -207,8 +209,7 @@ public interface OrderDAO {
             @BindBean("request") ChangeOrderRequest request,
             @Bind("leadTime") LocalDateTime leadTime,
             @Bind("fee") double fee
-
-    );
+            );
 
     @SqlUpdate("""
             INSERT INTO orders (

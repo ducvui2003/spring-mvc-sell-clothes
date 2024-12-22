@@ -74,4 +74,14 @@ public interface KeyDAO {
                       UPDATE `users` SET isBlockKey = 0 , keyOTP = NULL, blockKeyAt = '2022-12-31 23:59:59' WHERE id = :userId AND keyOTP = :otp;
             """)
     boolean unblockKey(int userId, String otp);
+
+
+    @SqlQuery("""
+            SELECT id, publicKey, previousId, userId, createAt, updateAt, deleted 
+            FROM `keys`
+            WHERE userId = :userId
+            ORDER BY deleted ASC, createAt DESC
+            """)
+
+    public List<Key> getAllKeys(@Bind("userId") int userId);
 }

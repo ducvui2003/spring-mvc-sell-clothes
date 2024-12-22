@@ -41,10 +41,6 @@ $(document).ready(function () {
     init();
 
     function init() {
-        // Thực thi việc lấy voucher
-        handleGetVouchers();
-
-        handleOpenSidebarVoucher();
         handleCheckBox();
         increaseQuantityCartProduct();
         decreaseQuantityCartProduct();
@@ -256,16 +252,6 @@ $(document).ready(function () {
         })
     }
 
-    // Xử lý giao diện nếu giỏ hàng rỗng
-    function emptyCart() {
-        const html = `<div class="cart__container--empty">
-                                <p>Không có sản phẩm nào trong giỏ hàng của bạn</p>
-                                <a href="/product"><button>Tiếp tục mua sắm</button></a>
-                                <img src="../../assets/img/continueShopping.svg">
-                            </div>`
-        $(document).find('.cart__container').html(html);
-    }
-
 
     function applyCodeVoucher() {
         const promotionForm = $("#promotion__form");
@@ -330,24 +316,6 @@ $(document).ready(function () {
     function updateTotalPrice() {
         const cartItemElements = document.querySelectorAll(".cart__item:has(input.check__pay:checked)");
         const totalItem = cartItemElements.length;
-
-        // Tổng  tiền áp dung mgg
-        const totalPriceCanApplyVoucher = [...cartItemElements].map((item) => {
-            const productId = $(item).data("product-id");
-            if (!voucherApply.listIdProduct?.includes(productId)) {
-                return 0;
-            }
-            const quantityProduct = $(item).find(".quality__required").val();
-            const priceUnit = $(item).find(".unit__price").data("price");
-            return quantityProduct * priceUnit;
-        }).reduce((acc, cur) => acc + cur, 0);
-        if (voucherApply.voucher) {
-            console.log(voucherApply.voucher)
-            if (totalPriceCanApplyVoucher < voucherApply.voucher.minimumPrice)
-                updateVoucherState(getVoucherState(6));
-            else
-                updateVoucherState(voucherApply.state);
-        }
         //Tổng tiền
         const totalPrice = [...cartItemElements].map((item) => {
             const quantityProduct = $(item).find(".quality__required").val();
@@ -362,117 +330,12 @@ $(document).ready(function () {
         $("#price__final").text(formatCurrency(finalPrice));
     }
 
-    // xử lý cho sidebar voucher
-    function handleOpenSidebarVoucher() {
-        const promotionSidebar = document.querySelector(".promotion__sidebar")
-        const promotionDisplayAll = document.querySelector(".promotion__all span:last-child");
-        const iconBackShoppingCart = document.querySelector(".promotion__header i");
-        const buttonBackShoppingCart = document.querySelector(".promotion__footer button")
-        const promotionContent = $(".promotion__content");
-
-        promotionDisplayAll.addEventListener("click", () => {
-            promotionSidebar.classList.add("visible");
-            const listIdProduct = getProductListId();
-        })
-
-        iconBackShoppingCart.addEventListener("click", () => {
-            promotionSidebar.classList.remove("visible")
-        })
-
-        buttonBackShoppingCart.addEventListener("click", () => {
-            promotionSidebar.classList.remove("visible")
-        })
-    }
 
     function getProductListId() {
         const selectorCartItems = "[data-product-id]:has(input.check__pay:checked)";
         return Array.from(document.querySelectorAll(selectorCartItems)).map(productItem => productItem.getAttribute("data-product-id"));
     }
 
-    // Lấy danh sách voucher
-    function handleGetVouchers() {
-        http({
-            url: "/api/voucher/get",
-            type: "GET",
-        }).then((data) => {
-            if (data && data.length > 0) {
-                const promotionContent = $(".promotion__content");
-                promotionContent.html(loadVoucher(data));
-                handleCopyDiscountCode();
-            } else {
-
-            }
-        });
-    }
-
-    function handleCopyDiscountCode() {
-        const copyButtonElements = document.querySelectorAll(".button__copy");
-        copyButtonElements.forEach(copyButtonElement => {
-            let originalContent = copyButtonElement.innerHTML;
-            copyButtonElement.addEventListener('click', () => {
-                    copyButtonElement.innerHTML = `Đã sao chép <i class= "fa-solid fa-copy"></i>`;
-                    setTimeout(() => {
-                        copyButtonElement.innerHTML = originalContent;
-                    }, 1000);
-
-                    const codeToCopy = copyButtonElement.getAttribute('data-code');
-                    copyToClipboard(codeToCopy)
-                        .then(() => {
-                            console.log(codeToCopy);
-                        })
-                        .catch(error => {
-                            console.error("Không thể sao chép: ", error);
-                        });
-                }
-            )
-        })
-
-        async function copyToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-            } catch (error) {
-                throw new Error("Không thể sao chép vào clipboard: ", error);
-            }
-        }
-    }
-
-    function loadVoucher(listVoucher) {
-        return listVoucher.map(voucher => {
-            return ` <div class="promotion__item">
-                        <div class="discount__percent">
-                            <i class="fa-solid fa-fire"></i>
-                            <span>
-                                ${voucher.discountPercent}
-                            </span>
-                        </div>
-                        <div class="item__content">
-                            <h1 class="promotion__text">
-                                NHẬP MÃ:
-                                    ${voucher.code}
-                            </h1>
-                            <p>HSD: ${formatDate(voucher.expiryDate)}
-                            </p>
-                            <p class="promotion__description">
-                                  ${voucher.description}
-                           ${formatCurrency(voucher.minimumPrice)}
-                            </p>
-                            <button class="button__copy"
-                                    data-code="${voucher.code}">Sao
-                                chép
-                                <i class="fa-solid fa-copy"></i></button>
-                        </div>
-                    </div>`
-        })
-    }
-
-    function getVoucherState(state) {
-        return voucherState.find(voucher => voucher.state == state);
-    }
-
-    function updateVoucherState(voucherState) {
-        if (!voucherState) return;
-        $("#apply__status").removeClass().text("").addClass("alert alert-" + voucherState.className).text(voucherState.message);
-    }
 
     function preFormatCurrency() {
         const cartItemElements = $(".cart__item");

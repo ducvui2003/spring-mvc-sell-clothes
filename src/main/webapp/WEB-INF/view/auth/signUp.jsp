@@ -50,9 +50,9 @@
                         <div class="form__block mb-3">
                             <label for="gender" class="form__label">Giới tính</label>
                             <form:select path="gender" id="gender" class="d-block w-100 p-2 rounded">
-                                <form:option name="gender" value="1">Nam</form:option>
-                                <form:option name="gender" value="2">Nữ</form:option>
-                                <form:option name="gender" value="3">Khác</form:option>
+                                <form:option name="gender" value="MALE">Nam</form:option>
+                                <form:option name="gender" value="FEMALE">Nữ</form:option>
+                                <form:option name="gender" value="OTHER">Khác</form:option>
                             </form:select>
                             <p class="form__error">
                             </p>
