@@ -202,20 +202,36 @@
                                 </div>
                             </div>
                             <!-- Vertical Divider -->
-
-                            <div class="col-6 flex-column  justify-content-center pe-auto">
-                                <div class="d-flex justify-content-center ">
-                                    <div class="text-center m-2 w-100">
-                                        <input id="upload-sign-info" type="text"
-                                               class="border rounded-pill p-3 m-2 container-fluid"
-                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">
-                                        <button id="btn-verify" type="button" class="btn btn-primary">
-                                            Xác thực
-                                        </button>
+                            <div class="col-6 border-end flex-column  justify-content-center pe-auto">
+                                <div class=" d-flex justify-content-center">
+                                    <div class="text-center m-2">
+                                          <div class="rounded-circle bg-primary p-3">
+                                            <label for="upload-sign-info" class="text-light"
+                                                   style="cursor: pointer; font-size: 32px;">
+                                                <i class="fas fa-upload"></i>
+                                            </label>
+                                            <input id="upload-sign-info" type="file" class="d-none"
+                                                   onchange="handleUploadFile()" accept=".sign"/>
+                                        </div>
                                     </div>
                                 </div>
-
+                                <div class="text-center">
+                                    <p>Vui lòng tải thông tin đơn hàng đã xác thực</p>
+                                </div>
                             </div>
+                            <%--                            <div class="col-6 flex-column  justify-content-center pe-auto">--%>
+                            <%--                                <div class="d-flex justify-content-center ">--%>
+                            <%--                                    <div class="text-center m-2 w-100">--%>
+                            <%--                                        <input id="upload-sign-info" type="text"--%>
+                            <%--                                               class="border rounded-pill p-3 m-2 container-fluid"--%>
+                            <%--                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">--%>
+                            <%--                                        <button id="btn-verify" type="button" class="btn btn-primary">--%>
+                            <%--                                            Xác thực--%>
+                            <%--                                        </button>--%>
+                            <%--                                    </div>--%>
+                            <%--                                </div>--%>
+
+                            <%--                            </div>--%>
                         </div>
 
                         <hr class="border border-1 opacity-75 my-4">
@@ -314,6 +330,41 @@
     function handleDownloadFile() {
         var order_id = $('span#order__id').html();
         window.open(`/api/verify-order/download?uuid=` + order_id, '_blank');
+    }
+
+    function handleUploadFile(event) {
+        var order_id = $('span#order__id').html();
+        var file = $('input#upload-sign-info').val();
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('orderId', order_id);
+        http({
+            url: '/api/verify-order/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+        }).then((response) => {
+            // Xóa dòng đơn hàng đã xác thực trong table tag
+            deleteRowTable(order_id);
+            if (response.data) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Xác thực thành công',
+                    showConfirmButton: false,
+                    target: document.querySelector("#modal"),
+                    timer: 1500
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
+                    showConfirmButton: false,
+                    target: document.querySelector("#modal"),
+                    timer: 1500
+                });
+            }
+        });
     }
 
     selected(3);

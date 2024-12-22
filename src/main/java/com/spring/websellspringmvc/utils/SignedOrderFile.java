@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.security.*;
@@ -184,6 +185,29 @@ public class SignedOrderFile {
         md.update(bos.toByteArray());
 
         return Base64.getEncoder().encodeToString(bos.toByteArray());
+    }
+    public  String generateSignature(OrderDetailResponse orderDetailResponse, List<AdminOrderDetailResponse> orderPrevious) {
+        try {
+            String hash = hashData(orderDetailResponse, orderPrevious);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(hash.getBytes());
+            return Base64.getEncoder().encodeToString(digest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error generating signature", e);
+        }
+    }
+
+    // Utility method to create a temporary file from MultipartFile
+    public  File createTempFile(MultipartFile multipartFile) {
+        try {
+            File tempFile = File.createTempFile("temp", multipartFile.getOriginalFilename());
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(multipartFile.getBytes());
+            }
+            return tempFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating temporary file", e);
+        }
     }
 }
 

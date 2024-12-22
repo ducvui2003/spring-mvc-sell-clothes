@@ -4,7 +4,7 @@ import {formatCurrency, http, ORDER_STATUS} from "../base.js";
 let status = "VERIFYING";
 const modal = $('#modal');
 const modalChangeOrder = $('#modal-change-order');
-const btnVerify = $('#btn-verify');
+// const btnVerify = $('#btn-verify');
 const btnAddress = $('#btn-change-address');
 const verifyBlock = $('#verify-block');
 const btnAddressSubmit = $('#btn-address-submit');
@@ -22,7 +22,7 @@ $(document).ready(function () {
     });
 
 
-    btnVerify.on("click", handleVerifyButton);
+    // btnVerify.on("click", handleVerifyButton);
 
     handleLoadAddress();
 
