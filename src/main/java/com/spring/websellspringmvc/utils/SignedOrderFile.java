@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.security.*;
@@ -120,10 +121,10 @@ public class SignedOrderFile {
         }
     }
 
-    public boolean verifyData(byte[] plaindata, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
+    public boolean verifyData(byte[] plainData, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
         Signature signature = Signature.getInstance("SHA1withDSA", "SUN");
         signature.initVerify(publicKey);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plaindata));
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plainData));
         byte[] buffer = new byte[1024];
         int len;
         try {
@@ -184,6 +185,19 @@ public class SignedOrderFile {
         md.update(bos.toByteArray());
 
         return Base64.getEncoder().encodeToString(bos.toByteArray());
+    }
+
+    // Utility method to create a temporary file from MultipartFile
+    public  File createTempFile(MultipartFile multipartFile) {
+        try {
+            File tempFile = File.createTempFile("temp", multipartFile.getOriginalFilename());
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(multipartFile.getBytes());
+            }
+            return tempFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating temporary file", e);
+        }
     }
 }
 
