@@ -1,6 +1,8 @@
 package com.spring.websellspringmvc.services.key;
 
 import com.spring.websellspringmvc.dao.KeyDAO;
+import com.spring.websellspringmvc.dto.response.KeyResponse;
+import com.spring.websellspringmvc.mapper.KeyMapper;
 import com.spring.websellspringmvc.models.Key;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class KeyServiceImpl implements KeyServices {
     KeyDAO keyDAO;
+    KeyMapper keyMapper = KeyMapper.INSTANCE;
 
     @Override
     public boolean isBlockKey(int userId, String orderId) {
@@ -21,8 +24,10 @@ public class KeyServiceImpl implements KeyServices {
     }
 
     @Override
-    public List<Key> getKeys(int userId) {
-        return keyDAO.getKeys(userId);
+    public List<KeyResponse> getKeys(int userId) {
+        List<Key> keys = keyDAO.getKeys(userId);
+
+        return keyMapper.toKeyResponseList(keys);
     }
 
     public void insertKey(String publicKey, int userId) {
@@ -32,8 +37,10 @@ public class KeyServiceImpl implements KeyServices {
         keyToInsert.setPublicKey(publicKey);
         keyToInsert.setUserId(userId);
         Key currentKeyId = keyDAO.getCurrentKey(userId);
-        if (currentKeyId != null)
+        if (currentKeyId != null) {
             keyToInsert.setPreviousId(currentKeyId.getId());
+            keyDAO.deleteKey(userId);
+        }
         keyDAO.insert(keyToInsert);
     }
 

@@ -1,5 +1,6 @@
 package com.spring.websellspringmvc.controller.web;
 
+import com.spring.websellspringmvc.dto.response.KeyResponse;
 import com.spring.websellspringmvc.dto.response.UserInfoResponse;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
@@ -54,18 +55,13 @@ public class UserController {
     @GetMapping("/key")
     public ModelAndView getKeyPage() {
         User user = sessionManager.getUser();
-        List<Key> keys = keyServices.getKeys(user.getId());
-        boolean hasKey;
-        if (keys.isEmpty()) {
-            hasKey = true;
-        } else {
-            hasKey = false;
-        }
-        System.out.println("Kiem tra hasKey: " + hasKey);
+        List<KeyResponse> keys = keyServices.getKeys(user.getId());
+        boolean hasKey = !keys.isEmpty() ;
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.USER_KEY.getPage());
         mov.addObject("hasKey", hasKey);
-        mov.addObject("currentKey", !keys.isEmpty() ? keys.getFirst() : new Key());
+        mov.addObject("currentKey", !keys.isEmpty() ? keys.getFirst() : new KeyResponse());
+        System.out.println("currentKey: " + keys.getFirst().getCreateAt());
         return mov;
     }
 }

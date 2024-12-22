@@ -1,6 +1,7 @@
 package com.spring.websellspringmvc.controller.api;
 
 import com.spring.websellspringmvc.dto.ApiResponse;
+import com.spring.websellspringmvc.dto.response.KeyResponse;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.key.KeyServices;
 import com.spring.websellspringmvc.services.mail.IMailServices;
@@ -12,6 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,7 +44,6 @@ public class KeyController {
                     .build());
         }
 
-
         String keyPairAlgorithm = null;
         String secureRandom = null;
         String provider = null;
@@ -49,11 +53,18 @@ public class KeyController {
 
         try (DataInputStream reader = new DataInputStream(new DataInputStream(request.getInputStream()))) {
             keyPairAlgorithm = reader.readUTF();
-            secureRandom = reader.readUTF();
-            provider = reader.readUTF();
-            signature = reader.readUTF();
-            keySize = Integer.parseInt(reader.readUTF());
-            publicKey = reader.readUTF();
+            try {
+                secureRandom = reader.readUTF();
+                provider = reader.readUTF();
+                signature = reader.readUTF();
+                keySize = Integer.parseInt(reader.readUTF());
+                publicKey = reader.readUTF();
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Private key file is invalid or corrupted!")
+                        .build());
+            }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
@@ -125,5 +136,27 @@ public class KeyController {
                 .message("Key is blocking")
                 .data(isBlock)
                 .build());
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<KeyResponse>>> getAll() {
+        int userId = sessionManager.getUser().getId();
+        List<KeyResponse> keyList = keyService.getKeys(userId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Get keys", keyList));
+    }
+
+    @GetMapping("/download-exe")
+    public ResponseEntity<Resource> downloadExeFile() {
+        try {
+            // Load the .exe file from resources
+            Resource resource = new ClassPathResource("static/mysetup.exe");
+
+            // Set headers to force download
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mysetup.exe\"")
+                    .body(resource);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error while downloading file: " + ex.getMessage());
+        }
     }
 }

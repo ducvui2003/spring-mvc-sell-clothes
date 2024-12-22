@@ -20,11 +20,12 @@ public interface KeyDAO {
     Long insert(@BindBean Key key);
 
 
-    @SqlQuery("SELECT * FROM `keys` WHERE userId = :userId AND deleted = 0 ORDER BY createAt DESC")
+    @SqlQuery("""
+            SELECT id as id, publicKey as publicKey, previousId as previousId, userId as userId, createAt as createAt, updateAt as updateAt, deleted as deleted FROM `keys` WHERE userId = :userId ORDER BY createAt DESC""")
     List<Key> getKeys(@Bind("userId") int userId);
 
     @SqlQuery("""
-            SELECT * FROM `keys` WHERE userId = :userId AND deleted = 0 ORDER BY createAt DESC LIMIT 1;
+            SELECT * FROM `keys` WHERE userId = :userId AND isDelete = 0 ORDER BY createAt DESC LIMIT 1;
             """)
     Key getCurrentKey(@Bind("userId") int userId);
 
