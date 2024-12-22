@@ -21,7 +21,4 @@ public class OrderDetailItemResponse implements Serializable {
     int quantity;
     double price;
     String thumbnail;
-
-    public OrderDetailItemResponse(int i, String s, String s1, String red, int i1, double v, String image) {
-    }
 }
