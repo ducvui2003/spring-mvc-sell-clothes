@@ -57,7 +57,6 @@ public class UserServicesImpl implements UserServices {
         return userDAO.getQuantity();
     }
 
-
     public List<User> getUser(Integer start, Integer length, String searchValue, String orderBy, String orderDir) {
         return userDAO.selectWithCondition(start, length, searchValue, orderBy, orderDir);
     }
@@ -66,10 +65,6 @@ public class UserServicesImpl implements UserServices {
         return userDAO.getSizeWithCondition(searchValue);
     }
 
-    @Override
-    public void addCredential(Credential credential) {
-        userDAO.addCredential(credential);
-    }
 
     @Override
     public Optional<User> findByEmail(String email, boolean verify) {

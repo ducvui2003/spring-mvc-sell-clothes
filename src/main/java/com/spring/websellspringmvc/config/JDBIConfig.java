@@ -117,4 +117,8 @@ public class JDBIConfig {
     @Bean
     public KeyDAO keyDAO(Jdbi jdbi) {return jdbi.onDemand(KeyDAO.class);}
 
+    @Bean
+    public CredentialDAO credentialDAO(Jdbi jdbi) {
+        return jdbi.onDemand(CredentialDAO.class);
+    }
 }

@@ -95,7 +95,4 @@ public interface UserDAO {
     @SqlUpdate("UPDATE users SET userHandle = :userHandle WHERE id = :id")
     void updateUserHandle(@Bind("id") Integer id, @Bind("userHandle") String userHandle);
 
-    @SqlUpdate("INSERT INTO users_credentials (id, public_key, sign_count, user_id, type) VALUES (:id, :publicKey, :signCount, :userId, :type)")
-    void addCredential(@BindBean Credential credential);
-
 }

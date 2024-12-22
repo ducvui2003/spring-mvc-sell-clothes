@@ -18,6 +18,11 @@ public class GlobalMvcHandler {
         return new ModelAndView(PageAddress.ERROR_404.getPage());
     }
 
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ModelAndView handleUnAuthorizedException(UnAuthorizedException e) {
+        return new ModelAndView("redirect:/signIn");
+    }
+
     @ExceptionHandler(ErrorForm.class)
     public ModelAndView handleMethodArgumentNotValidException(ErrorForm ex) {
         ModelAndView model = new ModelAndView(ex.getViewName());
@@ -37,4 +42,6 @@ public class GlobalMvcHandler {
         model.addAllObjects(ex.getErrorView().getAttributes());
         return model;
     }
+
+
 }

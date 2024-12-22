@@ -1,8 +1,9 @@
-import {alert} from "../notify.js";
-import {addSpinner, cancelSpinner} from "../spinner.js";
 import {formDataToJson, http} from "../base.js";
+import {fromByteArray, toByteArray} from "../base64/base64.js";
 
 $(document).ready(function () {
+
+    const btnAddKey = $("#btn-add-passkey");
     // Custom regex kiểm tra mật khẩu mạnh
     $.validator.addMethod("strongPassword", function (value, element) {
         return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|;':"\\<>?,./-]).{8,}$/.test(value);
@@ -105,4 +106,204 @@ $(document).ready(function () {
             });
         })
     }
+
+    getPasskey();
+    btnAddKey.on("click", () => {
+        handleAddPasskey();
+    })
+
+    $('[data-bs-toggle="tooltip"]').tooltip();
 });
+const passkeyListElement = $("#passkey-list");
+
+function getPasskey() {
+    http(
+        {
+            url: "/api/passkey",
+            type: 'GET',
+        }
+    ).then((response) => {
+        if (response.code === 200)
+            loadPasskey(response.data)
+    })
+}
+
+function loadPasskey(passkeyList) {
+    passkeyListElement.empty();
+    passkeyList.forEach((passkey) => addNewCredentialToView(passkey));
+}
+
+function handleAddPasskey() {
+    Swal.fire({
+        title: 'Thêm khóa mới',
+        text: "Sử dụng khóa này để đăng nhập với passkey",
+        showDenyButton: true,
+        confirmButtonText: "Tiến hành",
+        denyButtonText: 'Hủy',
+        focusConfirm: false,
+    }).then((result) => {
+            if (result.isConfirmed) {
+                startRegistration()
+            }
+        }
+    )
+}
+
+function startRegistration() {
+    http({
+        type: "POST",
+        url: "/webauthn/register/start",
+    }).then((response) => {
+        createCredential(response)
+    });
+}
+
+function createCredential(credentialCreationOptions) {
+    const publicKey = {
+        challenge: toByteArray(credentialCreationOptions.challenge),
+        rp: {
+            name: credentialCreationOptions.rp.name,
+            id: credentialCreationOptions.rp.id,
+        },
+        user: {
+            name: credentialCreationOptions.user.name,
+            displayName: credentialCreationOptions.user.displayName,
+            id: toByteArray(credentialCreationOptions.user.id)
+        },
+        pubKeyCredParams: credentialCreationOptions.pubKeyCredParams,
+        attestation: credentialCreationOptions.attestation
+    }
+    console.log(publicKey)
+    navigator.credentials.create({'publicKey': publicKey})
+        .then((newCredentialInfo) => {
+            console.log('SUCCESS', newCredentialInfo)
+            finishRegistration(newCredentialInfo)
+        })
+        .catch((error) => {
+            console.log('FAIL', error)
+        })
+}
+
+function finishRegistration(newCredentialInfo) {
+    const finishRequest = {
+        id: newCredentialInfo.id,
+        rawId: fromByteArray(newCredentialInfo.rawId),
+        type: newCredentialInfo.type,
+        response: {
+            clientDataJSON: fromByteArray(newCredentialInfo.response.clientDataJSON),
+            attestationObject: fromByteArray(newCredentialInfo.response.attestationObject)
+        },
+        clientExtensionResults: {}
+    }
+    Swal.fire({
+        title: "Đặt tên cho chứng chỉ này",
+        input: "text",
+        inputPlaceholder: "Tên chứng chỉ",
+        inputValidator: (value) => {
+            if (!value.trim()) {
+                return "Vui lòng nhập tên chứng chỉ!";
+            }
+            if (value.length < 3) {
+                return "Tên chứng chỉ phải dài ít nhất 3 ký tự!";
+            }
+            return null;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const data = {
+                name: result.value,
+                request: finishRequest
+            }
+            http({
+                type: "POST",
+                data: data,
+                url: "/webauthn/register/finish",
+            }).then((response) => {
+                if (response.code === 200) {
+                    Swal.fire({
+                        title: "Thành công!",
+                        text: "Đã thêm khóa mới",
+                        icon: "success"
+                    });
+                    addNewCredentialToView({
+                        id: response.data.id,
+                        publicKey: response.data.publicKey,
+                        name: response.data.name,
+                        createdAt: response.data.createdAt
+                    });
+                } else
+                    Swal.fire({
+                        title: "Lỗi!",
+                        text: "Không thêm được khóa mới",
+                        icon: "error"
+                    });
+            });
+        }
+    });
+}
+
+function addNewCredentialToView({id, publicKey, name, createdAt}) {
+    const html = `
+                 <div data-id="${id}" class="d-flex justify-content-between border border-1 p-2 bg-info bg-opacity-10 border border-info border-start-0 rounded mt-2">
+                    <div class="">
+                        <div class="d-flex gap-2 align-items-center py-2 ">
+                            <img src="/assets/img/icon_passkey.png" width="35px" height="35px">
+                            <span  data-bs-toggle="tooltip" 
+                                    data-bs-placement="top"
+                                    data-bs-title="${publicKey}" >${name}</span>
+                        </div>
+                        <span class="text-secondary fs-6">Khóa được thêm vào lúc ${createdAt}</span>
+                    </div>
+                    <button class="btn btn-danger" data-id="${id}">Xóa</button>
+                </div>
+    `;
+    const appendElement = $(html).appendTo(passkeyListElement);
+    appendElement.find(".btn.btn-danger").on("click", handleDeletePasskey);
+}
+
+
+function handleDeletePasskey() {
+    const credentialId = $(this).data("id");
+    const ref = this
+    Swal.fire({
+        title: 'Xóa khóa',
+        text: "Bạn có chắc chắn muốn xóa khóa này?",
+        showDenyButton: true,
+        confirmButtonText: "Xóa",
+        denyButtonText: 'Hủy',
+        focusConfirm: false,
+    }).then((result) => {
+            if (result.isConfirmed) {
+                http({
+                    url: "/api/passkey/:id",
+                    type: "DELETE",
+                    pathVariables: {
+                        id: credentialId
+                    }
+                }).then((response) => {
+                    if (response.code === 200) {
+                        {
+                            Swal.fire({
+                                title: "Thành công!",
+                                text: "Đã xóa khóa",
+                                icon: "success"
+                            });
+                            deleteCredentialToView(ref);
+                        }
+                    } else
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: "Không xóa được khóa",
+                            icon: "error"
+                        });
+                })
+            }
+        }
+    )
+}
+
+function deleteCredentialToView(element) {
+    const credentialId = $(element).data("id");
+    const credential = $(`[data-id="${credentialId}"]`);
+    credential.remove();
+}

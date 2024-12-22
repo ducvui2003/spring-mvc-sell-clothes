@@ -1,7 +1,9 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
+import com.spring.websellspringmvc.dto.request.datatable.UserDatatableRequest;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jdbi.v3.core.Jdbi;
@@ -22,8 +24,9 @@ public class DatatableImpl implements DatatableDAO {
     public List<OrderDatatable> datatable(OrderDatatableRequest request) {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT id, fullName, dateOrder, paymentMethod, orderStatusId ");
-        sql.append("FROM orders WHERE 1=1 ");
+        sql.append("SELECT orders.id, fullName, dateOrder, paymentMethod, order_statuses.alias AS orderStatus, transaction_statuses.alias AS transactionStatus ");
+        sql.append("FROM orders JOIN order_statuses ON orders.orderStatusId = order_statuses.id JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id ");
+        sql.append("WHERE 1=1 AND orders.previousId = orders.id ");
 
         Map<String, Object> params = new HashMap<>();
 
@@ -91,7 +94,7 @@ public class DatatableImpl implements DatatableDAO {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) ");
-        sql.append("FROM orders WHERE 1=1 ");
+        sql.append("FROM orders WHERE 1=1 AND orders.previousId = orders.id");
 
         Map<String, Object> params = new HashMap<>();
 
@@ -127,6 +130,73 @@ public class DatatableImpl implements DatatableDAO {
             params.put("startDate", request.getStartDate());
             params.put("endDate", request.getEndDate());
         }
+
+        // Execute the query and return results
+        return jdbi.withHandle(handle -> {
+            Query query = handle.createQuery(sql);
+
+            // Bind all single parameters
+            params.forEach((key, value) -> {
+                if (!(value instanceof List)) {
+                    query.bind(key, value);
+                }
+            });
+
+            // Bind lists (e.g., for IN clauses)
+            params.forEach((key, value) -> {
+                if (value instanceof List) {
+                    query.bindList(key, (List<?>) value);
+                }
+            });
+            return query.mapTo(Long.class).one();
+        });
+    }
+
+    @Override
+    public List<UserDatatable> datatable(UserDatatableRequest request) {
+        // Build the SQL query dynamically
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT id, username,email, fullName, gender, phone, birthday, role ");
+        sql.append("FROM users ");
+        sql.append("WHERE 1=1 ");
+
+        Map<String, Object> params = new HashMap<>();
+
+
+        sql.append("LIMIT :limit OFFSET :offset ");
+        params.put("limit", request.getLength());
+        params.put("offset", request.getStart());
+
+        // Execute the query and return results
+        return jdbi.withHandle(handle -> {
+            Query query = handle.createQuery(sql);
+
+            // Bind all single parameters
+            params.forEach((key, value) -> {
+                if (!(value instanceof List)) {
+                    query.bind(key, value);
+                }
+            });
+
+            // Bind lists (e.g., for IN clauses)
+            params.forEach((key, value) -> {
+                if (value instanceof List) {
+                    query.bindList(key, (List<?>) value);
+                }
+            });
+            return query.mapToBean(UserDatatable.class).list();
+        });
+    }
+
+    @Override
+    public long count(UserDatatableRequest request) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) ");
+        sql.append("FROM users ");
+        sql.append("WHERE 1=1 ");
+
+        Map<String, Object> params = new HashMap<>();
+
 
         // Execute the query and return results
         return jdbi.withHandle(handle -> {

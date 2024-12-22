@@ -63,7 +63,7 @@ public class GoogleServices implements OAuthServices {
         }
         else {
             User user = User.builder()
-                    .role(Role.USER.name())
+                    .role(Role.USER)
                     .email(googleUserAccount.getEmail())
                     .build();
             userDAO.insert(user);

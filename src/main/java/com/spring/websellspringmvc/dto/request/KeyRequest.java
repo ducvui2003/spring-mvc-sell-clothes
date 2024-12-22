@@ -1,6 +1,5 @@
 package com.spring.websellspringmvc.dto.request;
 
-import jakarta.mail.Multipart;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

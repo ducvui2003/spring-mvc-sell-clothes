@@ -11,4 +11,5 @@ public interface AddressMapper {
     AddressResponse toAddressResponse(Address address);
 
     Address toAddress(AddressRequest request);
+
 }

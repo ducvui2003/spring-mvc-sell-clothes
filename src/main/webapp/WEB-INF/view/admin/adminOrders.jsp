@@ -8,8 +8,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">--%>
-    <%--    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">--%>
+        <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
+        <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
     <title>Quản lý đơn hàng</title>
 </head>
 <body>
@@ -36,9 +36,10 @@
                             <thead>
                             <tr class="table__row">
                                 <th class="table__head">#</th>
-                                <th class="table__head">Ngày tạo</th>
+                                <th class="table__head">Ngày đặt hàng</th>
                                 <th class="table__head">Khách hàng</th>
                                 <th class="table__head">Phương thức thanh toán</th>
+                                <th class="table__head">Tình trạng thanh toán</th>
                                 <th class="table__head">Tình trạng đơn hàng</th>
                                 <th class="table__head">Xem</th>
                                 <th class="table__head">Cập nhật</th>
@@ -141,7 +142,7 @@
             <div class="modal-body" style="max-height: 80vh">
                 <div class="section__dialog">
                     <div class="section__heading">
-                        <h1 class="h3">1. Thông tin giao hàng của khách hàng</h1>
+                        <h1 class="h3">1. Thông tin giao hàng</h1>
                     </div>
                     <table class="section__content">
                         <tbody>
@@ -166,7 +167,7 @@
                 </div>
                 <div class="section__dialog">
                     <div class="section__heading">
-                        <h1 class="h3">2. Thông tin đơn hàng của khách hàng</h1>
+                        <h1 class="h3">2. Thông tin đơn hàng</h1>
                     </div>
                     <table class="section__content">
                         <tbody>
@@ -242,7 +243,7 @@
                 <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
                 <select id="orderStatus" class="orderStatus" name="orderStatus">
                     <c:forEach var="item" items="${requestScope.orderStatus}">
-                        <option value="${item.id}">${item.typeStatus}</option>
+                        <option value="${item.alias}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -251,7 +252,7 @@
                 <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
                     <c:forEach var="item"
                                items="${requestScope.transactionStatus}">
-                        <option value="${item.id}">${item.typeStatus}</option>
+                        <option value="${item.alias}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
             </div>

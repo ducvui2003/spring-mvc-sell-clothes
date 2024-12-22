@@ -1,5 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <meta charset="utf-8">
@@ -18,7 +19,7 @@
     <%@include file="accountNavigator.jsp" %>
     <div class="px-4 mt-4 w-100">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-9">
                 <div class="card mb-4">
                     <div class="card-header">Thông tin khóa</div>
                     <div class="card-body">
@@ -42,17 +43,10 @@
                                       disabled>${requestScope.currentKey.publicKey}</textarea>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="small mb-1" for="createdDate">Ngày tạo</label>
-                                <input class="form-control" name="createdDate" id="createdDate" type="text"
-                                       value="" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small mb-1" for="expiredTime">Ngày hết hạn</label>
-                                <input class="form-control" name="expiredTime" id="expiredTime" type="text"
-                                       value="" disabled>
-                            </div>
+                        <div class="mb-3">
+                            <label class="small mb-1" for="createdDate">Ngày tạo</label>
+                            <input class="form-control" name="createdDate" id="createdDate" type="text"
+                                   value="${requestScope.currentKey.createAt}" disabled>
                         </div>
                         <div class="d-flex justify-content-start">
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
@@ -67,6 +61,26 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">Công cụ ký tên</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="small mb-0 d-inline-flex align-items-center" for="currentKey">Tải công cụ<span
+                                    class="ms-1 button--hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="Tải công cụ chữ ký điện tử phục vụ mua sắm."><i
+                                    class="fa-regular fa-circle-question"></i></span></label>
+
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="/api/key/download-exe" class="btn btn-primary me-3" download>
+                                <i class="fa-solid fa-download"></i> Tải phần mềm
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row mt-4">
             <div class="col-12">
@@ -76,11 +90,11 @@
                         <table id="keyList" class="table table-bordered table-hover table-striped text-center">
                             <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Khóa</th>
-                                <th>Ngày tạo</th>
-                                <th>Ngày hết hạn</th>
-                                <th>Trạng thái</th>
+                                <th style="width: 25%">#</th>
+                                <th style="width: 35%">Khóa</th>
+                                <th style="width: 15%">Ngày tạo</th>
+                                <th style="width: 10%">Trạng thái</th>
+                                <th style="width: 10%"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -106,9 +120,9 @@
             <div class="modal-body">
                 <div class="row gx-3 mb-3 mt-2">
                     <div class="mb-3">
-                        <label class="small mb-1" for="inputPassword">Mật khẩu</label>
+                        <label class="small mb-1" for="inputPassword">Mã xác thực</label>
                         <input class="form-control" name="inputPassword" id="inputPassword" type="text"
-                               value="" placeholder="Nhập mật khẩu xác thực">
+                               value="" placeholder="Nhập mã xác thực">
                     </div>
                 </div>
                 <div class="row gx-3 mb-3 mt-2">
@@ -150,36 +164,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="row gx-3 mb-3 mt-2">
-                    <div class="mb-3">
-                        <label class="small mb-1" for="inputExpireTime">Thời hạn khóa <span class="ms-1 button--hover"
-                                                                                            data-bs-toggle="tooltip"
-                                                                                            data-bs-placement="bottom"
-                                                                                            data-bs-custom-class="custom-tooltip"
-                                                                                            data-bs-title="Thời hạn sử dụng khóa của bạn."><i
-                                class="fa-regular fa-circle-question"></i></span></label>
-                        <input class="form-control" name="inputExpireTime" id="inputExpireTime" type="text"
-                               value="Thời hạn sử dụng 7 ngày" disabled>
-                        <div class="valid-feedback">
-                        </div>
-                    </div>
-                </div>
-
-                <%--                <div class="row gx-3 mb-3 mt-2">--%>
-                <%--                    <div class="mb-3">--%>
-                <%--                        <label class="small mb-1" for="inputNewKey">Khóa mới</label>--%>
-                <%--                        <textarea class="form-control" name="inputNewKey" id="inputNewKey" rows="3"--%>
-                <%--                                  placeholder="Dán khóa công khai của bạn tại đây!"></textarea>--%>
-                <%--                        <div class="valid-feedback">--%>
-                <%--                        </div>--%>
-                <%--                    </div>--%>
-                <%--                </div>--%>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<%--Key detail modal--%>
+<div class="modal fade" id="detailKeyModal" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+<%--                <h5 class="modal-title">Thông tin chi tiết khóa</h5>--%>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 

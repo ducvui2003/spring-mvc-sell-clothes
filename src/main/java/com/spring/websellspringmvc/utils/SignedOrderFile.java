@@ -3,7 +3,9 @@ package com.spring.websellspringmvc.utils;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.security.*;
@@ -110,7 +112,7 @@ public class SignedOrderFile {
                 adminOrderDetailResponse.setDistrict(reader.readLine());
                 adminOrderDetailResponse.setWard(reader.readLine());
                 adminOrderDetailResponse.setDetail(reader.readLine());
-                adminOrderDetailResponse.setPaymentMethod(reader.readLine());
+                adminOrderDetailResponse.setPaymentMethod(PaymentMethod.valueOf(reader.readLine()));
                 adminOrderDetailResponses.add(adminOrderDetailResponse);
             }
             return Map.of(orderDetailResponse, adminOrderDetailResponses);
@@ -119,10 +121,10 @@ public class SignedOrderFile {
         }
     }
 
-    public boolean verifyData(byte[] plaindata, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
+    public boolean verifyData(byte[] plainData, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
         Signature signature = Signature.getInstance("SHA1withDSA", "SUN");
         signature.initVerify(publicKey);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plaindata));
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plainData));
         byte[] buffer = new byte[1024];
         int len;
         try {
@@ -136,4 +138,66 @@ public class SignedOrderFile {
         }
         return false;
     }
+    public String  hashData(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse) throws NoSuchAlgorithmException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            bos.write((detailResponse.getOrderId() + "\n").getBytes());
+            bos.write((detailResponse.getStatus() + "\n").getBytes());
+            bos.write((detailResponse.getFullName() + "\n").getBytes());
+            bos.write((detailResponse.getPhone() + "\n").getBytes());
+            bos.write((detailResponse.getEmail() + "\n").getBytes());
+            bos.write((detailResponse.getProvince() + "\n").getBytes());
+            bos.write((detailResponse.getDistrict() + "\n").getBytes());
+            bos.write((detailResponse.getWard() + "\n").getBytes());
+            bos.write((detailResponse.getDetail() + "\n").getBytes());
+            bos.write((detailResponse.getPayment() + "\n").getBytes());
+            //delimeter between order and items
+            bos.write(("\n").getBytes());
+            for (OrderDetailItemResponse item : detailResponse.getItems()) {
+                bos.write((item.getName() + "\n").getBytes());
+                bos.write((item.getSize() + "\n").getBytes());
+                bos.write((item.getColor() + "\n").getBytes());
+                bos.write((item.getQuantity() + "\n").getBytes());
+                bos.write((item.getPrice() + "\n").getBytes());
+                bos.write((item.getThumbnail() + "\n").getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (AdminOrderDetailResponse order : orderDetailResponse) {
+            try {
+                bos.write((order.getId() + "\n").getBytes());
+                bos.write((order.getFullName() + "\n").getBytes());
+                bos.write((order.getPhone() + "\n").getBytes());
+                bos.write((order.getEmail() + "\n").getBytes());
+                bos.write((order.getProvince() + "\n").getBytes());
+                bos.write((order.getDistrict() + "\n").getBytes());
+                bos.write((order.getWard() + "\n").getBytes());
+                bos.write((order.getDetail() + "\n").getBytes());
+                bos.write((order.getPaymentMethod() + "\n").getBytes());
+                bos.write(("\n").getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(bos.toByteArray());
+
+        return Base64.getEncoder().encodeToString(bos.toByteArray());
+    }
+
+    // Utility method to create a temporary file from MultipartFile
+    public  File createTempFile(MultipartFile multipartFile) {
+        try {
+            File tempFile = File.createTempFile("temp", multipartFile.getOriginalFilename());
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(multipartFile.getBytes());
+            }
+            return tempFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating temporary file", e);
+        }
+    }
 }
+

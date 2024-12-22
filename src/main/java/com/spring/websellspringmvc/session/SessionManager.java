@@ -1,20 +1,31 @@
 package com.spring.websellspringmvc.session;
 
+import com.spring.websellspringmvc.controller.exception.AppException;
+import com.spring.websellspringmvc.controller.exception.ErrorCode;
+import com.spring.websellspringmvc.controller.exception.UnAuthorizedException;
 import com.spring.websellspringmvc.models.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SessionManager {
     HttpSession session;
+    HttpServletRequest request;
 
     public User getUser() {
-        return session.getAttribute("user") == null ? null : (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
+//        if (user == null) {
+//            throw new UnAuthorizedException();
+//        }
+        return user;
     }
 
     public void addUser(User user) {

@@ -88,3 +88,23 @@ textarea{
     -moz-border-radius: 0;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 }
+
+/* Giữ chiều rộng mặc định của bảng */
+table#keyList {
+    table-layout: fixed; /* Khóa chiều rộng bảng */
+    width: 100%; /* Chiếm toàn bộ chiều rộng của container */
+}
+
+/* Điều chỉnh cột */
+table#keyList td,
+table#keyList th {
+    white-space: nowrap; /* Không cho phép xuống dòng */
+    overflow: hidden; /* Ẩn nội dung tràn */
+    text-overflow: ellipsis; /* Hiển thị dấu "..." */
+}
+
+/* Tùy chỉnh riêng cho cột "Khóa" */
+table#keyList td:nth-child(2),
+table#keyList th:nth-child(2) {
+    max-width: 40%; /* Giới hạn chiều rộng của cột */
+}

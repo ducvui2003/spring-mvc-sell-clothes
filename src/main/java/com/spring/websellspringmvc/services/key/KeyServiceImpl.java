@@ -1,6 +1,8 @@
 package com.spring.websellspringmvc.services.key;
 
 import com.spring.websellspringmvc.dao.KeyDAO;
+import com.spring.websellspringmvc.dto.response.KeyResponse;
+import com.spring.websellspringmvc.mapper.KeyMapper;
 import com.spring.websellspringmvc.models.Key;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,21 +14,44 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class KeyServiceImpl implements KeyServices{
+public class KeyServiceImpl implements KeyServices {
     KeyDAO keyDAO;
+    KeyMapper keyMapper = KeyMapper.INSTANCE;
+
     @Override
-    public List<Key> getKeys(int userId) {
-        return keyDAO.getKeys(userId);
+    public boolean isBlockKey(int userId, String orderId) {
+        return keyDAO.isBlockKey(userId, orderId) != 0;
     }
 
-    public void insertKey(String currentKeyId,String publicKey, int userId){
+    @Override
+    public List<KeyResponse> getKeys(int userId) {
+        List<Key> keys = keyDAO.getKeys(userId);
+
+        return keyMapper.toKeyResponseList(keys);
+    }
+
+    public void insertKey(String publicKey, int userId) {
         //TODO get current key
         Key keyToInsert = new Key();
         keyToInsert.setId(UUID.randomUUID().toString());
         keyToInsert.setPublicKey(publicKey);
         keyToInsert.setUserId(userId);
-        if (currentKeyId!=null) keyToInsert.setKeyId(currentKeyId);
+        Key currentKeyId = keyDAO.getCurrentKey(userId);
+        if (currentKeyId != null) {
+            keyToInsert.setPreviousId(currentKeyId.getId());
+            keyDAO.deleteKey(userId);
+        }
         keyDAO.insert(keyToInsert);
     }
 
+    @Override
+    public boolean setValidKey(int id, String otp) {
+        return keyDAO.unblockKey(id, otp);
+    }
+
+    @Override
+    public void setInvalidKey(int userID, String otp) {
+        keyDAO.blockKey(userID, otp);
+        keyDAO.deleteKey(userID);
+    }
 }

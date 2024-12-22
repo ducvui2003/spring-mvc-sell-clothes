@@ -23,11 +23,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -62,6 +67,9 @@ public class CheckoutServicesImpl implements CheckoutServices {
     @NonFinal
     Integer serviceTypeId;
     VnPayServices vnPayServices;
+    Jdbi jdbi;
+
+    OrderStatus statusBegin = OrderStatus.VERIFYING;
 
     //    Trả về danh sách các sản phẩm được ngưởi dùng chọn mua
     @Override
@@ -71,40 +79,51 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
 
     @Override
-    public void createOrder(CheckoutRequest request, Integer userId) {
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setPaymentMethod(request.getPaymentMethod());
-        order.setFullName(request.getFullName());
-        order.setEmail(request.getEmail());
-        order.setPhone(request.getPhone());
-        order.setOrderStatusId(OrderStatus.PENDING.getValue());
-        order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
-
-        Address address = addressDAO.getAddressById(request.getAddressId());
-        order.setProvince(address.getProvinceName());
-        order.setDistrict(address.getDistrictName());
-        order.setWard(address.getWardName());
-        order.setDetail(address.getDetail());
-
-        double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
-        order.setFee(fee);
-
+    public String createOrder(CheckoutRequest request, Integer userId) {
         String orderId = UUID.randomUUID().toString();
-        order.setId(orderId);
-        orderDAO.createOrder(order, address.getId());
-        createOrderDetail(request.getCartItemId(), orderId, userId);
+        jdbi.useTransaction(handle -> {
+            Order order = new Order();
+            order.setUserId(userId);
+            order.setPaymentMethod(request.getPaymentMethod());
+            order.setFullName(request.getFullName());
+            order.setEmail(request.getEmail());
+            order.setPhone(request.getPhone());
+            order.setOrderStatusId(statusBegin.getValue());
+            order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
+
+            Address address = addressDAO.getAddressById(request.getAddressId());
+            order.setProvince(address.getProvinceName());
+            order.setDistrict(address.getDistrictName());
+            order.setWard(address.getWardName());
+            order.setDetail(address.getDetail());
+
+            double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
+            order.setFee(fee);
+
+            order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
+
+            order.setId(orderId);
+            order.setPreviousId(orderId);
+            orderDAO.createOrder(order, address.getId());
+            createOrderDetail(request.getCartItemId(), orderId, userId);
+
+            cartDAO.deleteCartItemIn(request.getCartItemId());
+
+        });
+
+        return orderId;
     }
 
     @Override
     public String createOrderByVnPay(CheckoutRequest request, Integer userId, String ip) throws UnsupportedEncodingException {
+
         Order order = new Order();
         order.setUserId(userId);
         order.setPaymentMethod(request.getPaymentMethod());
         order.setFullName(request.getFullName());
         order.setEmail(request.getEmail());
         order.setPhone(request.getPhone());
-        order.setOrderStatusId(OrderStatus.PENDING.getValue());
+        order.setOrderStatusId(statusBegin.getValue());
         order.setTransactionStatusId(TransactionStatus.UN_PAID.getValue());
 
         Address address = addressDAO.getAddressById(request.getAddressId());
@@ -115,14 +134,17 @@ public class CheckoutServicesImpl implements CheckoutServices {
 
         double fee = getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
         order.setFee(fee);
+        order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
 
 // Tạo order id và payment ref
         String orderId = UUID.randomUUID().toString();
         order.setId(orderId);
         order.setPaymentRef(orderId);
         orderDAO.createOrder(order, address.getId());
+
         double totalPrice = createOrderDetail(request.getCartItemId(), orderId, userId);
 
+        cartDAO.deleteCartItemIn(request.getCartItemId());
         String urlPayment = vnPayServices.generateUrl(totalPrice, orderId, ip);
         return urlPayment;
     }
@@ -136,15 +158,17 @@ public class CheckoutServicesImpl implements CheckoutServices {
         return orderDetails.stream().map(orderDetail -> orderDetail.getPrice() * orderDetail.getQuantityRequired()).reduce(Double::sum).orElse(0.0);
     }
 
-
-    private double getFeeShipping(String provinceId, String districtId, String wardCode) {
+    @Override
+    public double getFeeShipping(String provinceId, String districtId, String wardCode) {
         ApiResponse<GiaoHangNhanhFeeResponse> response = giaoHangNhanhHttp.getFee(token, shopId, provinceIdShop, districtIdShop, wardCodeShop, provinceId, districtId, wardCode, weight, serviceTypeId);
         return response.getData().getTotal();
     }
 
-    private int getLeadTime(String provinceId, String districtId, String wardCode) {
+    @Override
+    public LocalDateTime getLeadTime(String provinceId, String districtId, String wardCode) {
         ApiResponse<GiaoHangNhanhLeadDayResponse> response = giaoHangNhanhHttp.getLeadTime(token, shopId, provinceIdShop, districtIdShop, wardCodeShop, provinceId, districtId, wardCode, weight, serviceTypeId);
-        return response.getData().getLeadTime();
+        Optional<LocalDateTime> optionalLocalDateTime = Optional.of(LocalDateTime.ofEpochSecond(response.getData().getLeadTime(), 0, ZoneOffset.UTC));
+        return optionalLocalDateTime.orElse(null);
     }
 
     @Override
@@ -162,6 +186,4 @@ public class CheckoutServicesImpl implements CheckoutServices {
         System.out.println("exsistHistory: " + exsistHistory);
         return false;
     }
-
-
 }

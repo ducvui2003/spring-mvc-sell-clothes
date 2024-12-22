@@ -47,8 +47,7 @@ public interface CartDAO {
 
     @SqlQuery("""
             SELECT 
-                   cart_items.id  
-                   as id,
+                   cart_items.id  as id, 
                    products.id as productId,
                    products.name          as name,
                    images.nameImage       AS thumbnail,
@@ -140,4 +139,9 @@ public interface CartDAO {
             """)
     @RegisterBeanMapper(OrderDetail.class)
     public List<OrderDetail> getOrderDetailPreparedAdded(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
+
+    @SqlUpdate("""
+            DELETE FROM cart_items WHERE id IN (<cartItems>)
+            """)
+    public void deleteCartItemIn(@BindList("cartItems") List<Integer> cartItems);
 }

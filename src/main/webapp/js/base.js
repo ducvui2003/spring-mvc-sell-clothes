@@ -1,4 +1,3 @@
-
 export const addParam = (form, {key, value}) => {
     let formDataArray = $(form).serializeArray();
     formDataArray.push({name: key, value: value}); // Add your custom parameter
@@ -150,6 +149,25 @@ export const http = ({
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
+                const statusCode = jqXHR.status;
+                if (statusCode === 401) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Hết phiên làm việc",
+                        text: "Vui lòng đăng nhập lại",
+                        timer: 5000, // 5 seconds timer
+                        timerProgressBar: true,
+                        showConfirmButton: true, // Shows the button
+                        confirmButtonText: 'Đăng nhập', // Text for the button
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            window.location.href = "/login";
+                        } else {
+                            window.location.href = "/login";
+                        }
+                    });
+                    return;
+                }
                 reject(new Error(`Error: ${textStatus}, ${errorThrown}`));
             },
             complete: function (xhr, status) {
@@ -159,7 +177,8 @@ export const http = ({
                 }
             }
         });
-    });
+    })
+        ;
 };
 
 
@@ -170,6 +189,22 @@ export const formatDate = (dateString) => {
     const year = d.getFullYear();
     return `${day} / ${month} / ${year}`;
 }
+
+export const formatDatetime = (dateString) => {
+    const date = new Date(dateString);
+
+    // Extract the components
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const year = date.getFullYear();
+
+    // Format the date
+    const formattedDate = `${hours}:${minutes} ${day}-${month}-${year}`;
+    return formattedDate;
+}
+
 
 export const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(value);
@@ -229,5 +264,21 @@ export const formDataToJson = function (formElement, additionalFields = {}) {
         }
     }
 
-    return { ...json, ...additionalFields };
+    return {...json, ...additionalFields};
 };
+
+export const ORDER_STATUS = {
+    PENDING: "Chờ xác nhận",
+    PACKAGE: "Chờ đóng gói",
+    DELIVERY: "Đang vận chuyển",
+    COMPLETED: "Giao hàng thành công ",
+    CANCELLED: "Giao hàng thất bại ",
+    VERIFYING: "Đang xác nhận",
+}
+
+export const TRANSACTION_STATUS = {
+    UN_PAID: "Chưa thanh toán",
+    PROCESSING: "Đang xử lý",
+    PAID: "Đã thanh toán",
+    CANCELLED: "Đã hủy",
+}

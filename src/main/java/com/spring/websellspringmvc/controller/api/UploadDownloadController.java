@@ -5,14 +5,11 @@ import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.models.Key;
-import com.spring.websellspringmvc.services.HistoryService;
 import com.spring.websellspringmvc.services.admin.AdminOrderServices;
-import com.spring.websellspringmvc.services.cart.CartService;
-import com.spring.websellspringmvc.services.cart.CartServiceImpl;
-import com.spring.websellspringmvc.services.checkout.CheckoutServices;
+import com.spring.websellspringmvc.services.order.OrderServices;
+import com.spring.websellspringmvc.services.pdf.PDFService;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.SignedOrderFile;
-import jakarta.mail.Multipart;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -20,84 +17,117 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/verify-order")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UploadDownloadController {
-    CheckoutServices checkoutServices;
     SessionManager sessionManager;
-    HistoryService historyService;
+    OrderServices orderServices;
     SignedOrderFile signedOrderFile;
     AdminOrderServices adminOrderServices;
     KeyDAO keyDAO;
+    PDFService pdfService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<Boolean>> uploadFile(@RequestParam("uuid") String uuid, @RequestParam("signed") String signed) {
-        try {
-            int userId = sessionManager.getUser().getId();
-            OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
-            List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
-            byte[] fileData = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
-            if (fileData == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.<Boolean>builder()
-                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .message("Error verifying signed order")
-                        .data(false)
-                        .build());
-            }
-            List<Key> keys = keyDAO.getKeys(userId);
-            PublicKey k = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(keys.get(0).getPublicKey())));
+    public ResponseEntity<ApiResponse<?>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int userId = sessionManager.getUser().getId();
+        // Retrieve order details and previous orders
+        OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(orderId, userId);
+        List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(orderId);
 
-            boolean b = signedOrderFile.verifyData(fileData, signed, k);
-            return ResponseEntity.ok(ApiResponse.<Boolean>builder()
-                    .code(HttpStatus.OK.value())
-                    .message(b ? "Success verifying signed order" : "Error verifying signed order")
-                    .data(b)
-                    .build());
-        } catch (InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
+        if (orderPrevious == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid key size format")
+                            .data(false)
+                            .build());
+        }
+
+        // Generate signature from order details
+        String signature = signedOrderFile.hashData(orderDetailResponse, orderPrevious);
+
+        // Create temporary file from uploaded multipart file
+        File tempFile = signedOrderFile.createTempFile(multipartFile);
+
+        try {
+            // Read signature from the uploaded PDF
+            String uploadSignature = pdfService.readSignature(tempFile);
+            // Verify signature and update order status if valid
+            String strPublicKey = keyDAO.getCurrentKey(userId).getPublicKey();
+            PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
+            boolean verified = signedOrderFile.verifyData(signature.getBytes(), uploadSignature, publicKey);
+            tempFile.delete();
+            if (verified) {
+                orderServices.updateOrderStatusVerify(orderId, userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.<Boolean>builder()
+                                .code(HttpStatus.OK.value())
+                                .message("Valid signature")
+                                .data(true)
+                                .build());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid signature")
+                            .data(false)
+                            .build());
+        } catch (NoSuchProviderException | InvalidKeyException e) {
+            tempFile.delete();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid signature")
+                            .data(false)
+                            .build());
+
         }
     }
+
 
     @GetMapping("/download")
     public void downloadFile(@RequestParam("uuid") String uuid, HttpServletResponse res) {
         int userId = sessionManager.getUser().getId();
-        OrderDetailResponse orderDetailResponse = historyService.getOrderByOrderId(uuid, userId);
+        OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
         List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
         if (orderPrevious == null) {
             return;
         }
-        byte[] file = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
+        String hash;
+        try {
+            hash = signedOrderFile.hashData(orderDetailResponse, orderPrevious);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        File dataFile = pdfService.createFile(orderDetailResponse, orderPrevious, hash);
+        byte[] file = null;
+        try {
+            file = (new FileInputStream(dataFile)).readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        byte[] file = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
         String LOCATION = "Downloads";
-        String fileName = uuid + ".data";
+        String fileName = uuid + ".pdf";
         try {
             FileOutputStream stream = new FileOutputStream(System.getenv("USERPROFILE") + File.separator + LOCATION + File.separator + fileName);
             ServletOutputStream out = res.getOutputStream();
-            res.setContentType("application/data");
+            res.setContentType("application/pdf");
             res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             res.setContentLength(file.length);
             for (byte b : file) {

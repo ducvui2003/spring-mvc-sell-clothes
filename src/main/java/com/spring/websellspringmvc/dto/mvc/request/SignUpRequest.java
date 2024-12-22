@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.dto.mvc.request;
 
 import com.spring.websellspringmvc.utils.anotation.FieldMatch;
 import com.spring.websellspringmvc.utils.anotation.PasswordValid;
+import com.spring.websellspringmvc.utils.constraint.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class SignUpRequest {
     @NotBlank(message = "Họ và tên không được để trống")
     String fullName;
     @NotNull(message = "Giới tính không được để trống")
-    Integer gender;
+    Gender gender;
     @NotNull(message = "Ngày sinh không đúng định dạng")
     @Past(message = "Ngày sinh không hợp lệ")
     LocalDate dob;

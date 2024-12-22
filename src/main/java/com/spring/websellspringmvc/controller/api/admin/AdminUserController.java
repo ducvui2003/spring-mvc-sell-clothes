@@ -1,22 +1,26 @@
 package com.spring.websellspringmvc.controller.api.admin;
 
+import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.request.CreateUserRequest;
 import com.spring.websellspringmvc.dto.request.datatable.DatatableRequest;
 import com.spring.websellspringmvc.dto.request.UpdateUserRequest;
+import com.spring.websellspringmvc.dto.request.datatable.UserDatatableRequest;
+import com.spring.websellspringmvc.dto.response.AdminUserDetailResponse;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
+import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.User;
+import com.spring.websellspringmvc.services.admin.AdminUserServices;
 import com.spring.websellspringmvc.services.user.UserServicesImpl;
 import com.spring.websellspringmvc.utils.Encoding;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,21 +31,27 @@ import java.util.List;
 public class AdminUserController {
     UserMapper userMapper = UserMapper.INSTANCE;
     UserServicesImpl userServicesImpl;
+    AdminUserServices adminUserServices;
 
     @PostMapping("/datatable")
-    public ResponseEntity<DatatableResponse<User>> getDatatable(@RequestBody DatatableRequest request) {
-        // Mapping order column index to database column name
-        String[] columnNames = {"id", "username", "email", "fullName", "gender"};
-        String orderBy = request.getOrderColumn() < columnNames.length ? columnNames[request.getOrderColumn()] : columnNames[0];
-        // Fetch filtered and sorted logs
-        List<User> users = userServicesImpl.getUser(request.getStart(), request.getLength(), request.getSearchValue(), orderBy, request.getOrderDir());
-        long size = userServicesImpl.getTotalWithCondition(request.getSearchValue());
+    public ResponseEntity<DatatableResponse<UserDatatable>> getDatatable(@RequestBody UserDatatableRequest request) {
+        DatatableResponse<UserDatatable> response = adminUserServices.datatable(request);
+        return ResponseEntity.ok(response);
+    }
 
-        return ResponseEntity.ok(DatatableResponse.<User>builder()
-                .draw(request.getDraw())
-                .recordsTotal(size)
-                .recordsFiltered(size)
-                .data(users)
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AdminUserDetailResponse>> getUser(@PathVariable("id") int id) {
+        AdminUserDetailResponse response = adminUserServices.getDetail(id);
+        if (response == null) {
+            return ResponseEntity.ok(ApiResponse.<AdminUserDetailResponse>builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Failed")
+                    .build());
+        }
+        return ResponseEntity.ok(ApiResponse.<AdminUserDetailResponse>builder()
+                .code(200)
+                .message("Success")
+                .data(response)
                 .build());
     }
 

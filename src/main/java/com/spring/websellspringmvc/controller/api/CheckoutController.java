@@ -24,8 +24,11 @@ public class CheckoutController {
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createCheckout(@RequestBody CheckoutRequest request) {
         int userId = sessionManager.getUser().getId();
-        checkoutServices.createOrder(request, userId);
-        return ResponseEntity.ok(ApiResponse.<String>builder().build());
+        String orderId = checkoutServices.createOrder(request, userId);
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .code(200)
+                .data(orderId)
+                .build());
     }
 
     @PostMapping("/vn-pay")

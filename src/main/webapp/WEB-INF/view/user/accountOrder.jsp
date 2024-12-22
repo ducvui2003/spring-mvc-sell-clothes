@@ -20,16 +20,23 @@
             <div class="col-3">
                 <div class="list-group">
                     <div class=" py-3 list-group-item list-group-item-action active" aria-current="true"
-                         data-status="1">
+                         data-status="VERIFYING">
+                        <i class="fa-solid fa-signature me-4"></i>Chờ xác thực
+                    </div>
+                    <div class=" py-3 list-group-item list-group-item-action " aria-current="true"
+                         data-status="PENDING">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="3">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="PACKAGE">
+                        <i class="fa-solid fa-spinner me-3"></i> Chờ đóng gói
+                    </div>
+                    <div class="py-3 list-group-item list-group-item-action" data-status="DELIVERY">
                         <i class="fa-solid fa-truck me-3"></i>Đang vận chuyển
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="4">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="COMPLETED">
                         <i class="fa-regular fa-circle-check me-3"></i> Hoàn thành
                     </div>
-                    <div class="py-3 list-group-item list-group-item-action" data-status="5">
+                    <div class="py-3 list-group-item list-group-item-action" data-status="CANCELLED">
                         <i class="fa-regular fa-circle-xmark me-3"></i> Hủy
                     </div>
                 </div>
@@ -40,7 +47,6 @@
                     <tr>
                         <th>#</th>
                         <th>Ngày đặt</th>
-                        <th>Số lượng</th>
                         <th>Xem chi tiết</th>
                     </tr>
                     </thead>
@@ -55,7 +61,7 @@
 <c:import url="/footer"/>
 <!--Modal-->
 <div class="modal fade text-black" id="modal" tabindex="-1" aria-labelledby="staticBackdropLabel">
-    <div id="model" class="modal-dialog modal-dialog-scrollable" style="max-width: 80%">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 80%">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Thông tin đơn hàng</h1>
@@ -63,8 +69,8 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-6">
-                        <h1 class="h2" id="">Mã đơn hàng: <span id="order__id">...</span></h1>
+                    <div class="col-12">
+                        <h1 class="h2">Mã đơn hàng: <span id="order__id">...</span></h1>
                     </div>
                     <div class="col-12 mt-3">
                         <div class="d-flex">
@@ -134,7 +140,17 @@
                         <hr class="border border-1 opacity-75 my-4">
                         <div class="row">
                             <div class="col-6 border-end border-1">
-                                <p class="fs-5 text-bold">Địa chỉ</p>
+                                <div class="row mt-3">
+                                    <div class="col-6">
+                                        <p class="fs-5 text-bold">Địa chỉ</p>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <div id="btn-change-address" data-bs-target="#modal-change-order"
+                                             data-bs-toggle="modal" class="btn btn-primary">Thay đổi địa chỉ
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row mt-3">
                                     <div class="col-6">Tỉnh/Thành phố</div>
                                     <div class="col-6 text-end" id="order__province"></div>
@@ -168,8 +184,8 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="border border-1 opacity-75 my-4">
-                        <div class="row align-items-center">
+                        <div class="row align-items-center" id="verify-block">
+                            <hr class="border border-1 opacity-75 my-4">
                             <div class="col-6 border-end flex-column  justify-content-center pe-auto">
                                 <div class=" d-flex justify-content-center">
                                     <div class="text-center m-2">
@@ -186,20 +202,36 @@
                                 </div>
                             </div>
                             <!-- Vertical Divider -->
-
-                            <div class="col-6 flex-column  justify-content-center pe-auto">
-                                <div class="d-flex justify-content-center ">
-                                    <div class="text-center m-2 w-100">
-                                        <input id="upload-sign-info" type="text"
-                                               class="border rounded-pill p-3 m-2 container-fluid"
-                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">
-                                        <button id="btn-verify" type="button" class="btn btn-primary">
-                                            Xác thực
-                                        </button>
+                            <div class="col-6 border-end flex-column  justify-content-center pe-auto">
+                                <div class=" d-flex justify-content-center">
+                                    <div class="text-center m-2">
+                                          <div class="rounded-circle bg-primary p-3">
+                                            <label for="upload-sign-info" class="text-light"
+                                                   style="cursor: pointer; font-size: 32px;">
+                                                <i class="fas fa-upload"></i>
+                                            </label>
+                                            <input id="upload-sign-info" type="file" class="d-none"
+                                                 />
+                                        </div>
                                     </div>
                                 </div>
-
+                                <div class="text-center">
+                                    <p>Vui lòng tải thông tin đơn hàng đã xác thực</p>
+                                </div>
                             </div>
+                            <%--                            <div class="col-6 flex-column  justify-content-center pe-auto">--%>
+                            <%--                                <div class="d-flex justify-content-center ">--%>
+                            <%--                                    <div class="text-center m-2 w-100">--%>
+                            <%--                                        <input id="upload-sign-info" type="text"--%>
+                            <%--                                               class="border rounded-pill p-3 m-2 container-fluid"--%>
+                            <%--                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">--%>
+                            <%--                                        <button id="btn-verify" type="button" class="btn btn-primary">--%>
+                            <%--                                            Xác thực--%>
+                            <%--                                        </button>--%>
+                            <%--                                    </div>--%>
+                            <%--                                </div>--%>
+
+                            <%--                            </div>--%>
                         </div>
 
                         <hr class="border border-1 opacity-75 my-4">
@@ -216,7 +248,60 @@
         </div>
     </div>
 </div>
+
+
+<!--Modal change order-->
+<div class="modal fade text-black" id="modal-change-order" tabindex="-1" aria-labelledby="back-drop-modal-change-order">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="back-drop-modal-change-order">Thay đổi thông tin đơn hàng</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="h2">Mã đơn hàng: <span id="">...</span></h1>
+                    </div>
+                </div>
+                <hr class="border border-success border-1 opacity-75">
+                <div class="row">
+                    <div class="col12">
+                        <table id="addressList" class="table table-bordered table-hover table-striped text-center">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tỉnh/Thành phố</th>
+                                <th>Quận/Huyện</th>
+                                <th>Xã/Phường</th>
+                                <th>Địa chỉ chi tiết</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-primary"
+                        data-bs-target="#modal"
+                        data-noreload="true"
+                        data-bs-toggle="modal">Quay lại
+                </button>
+                <button type="button"
+                        class="btn btn-warning"
+                        id="btn-address-submit">Thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
+
+
 <!--Select 2 jquery-->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -235,7 +320,6 @@
 
 <script>
 
-
     function selected(ind) {
         document.querySelectorAll('.navbar__link').forEach(tab => {
             if (tab.dataset.index == ind) {
@@ -248,6 +332,7 @@
         var order_id = $('span#order__id').html();
         window.open(`/api/verify-order/download?uuid=` + order_id, '_blank');
     }
+
 
     selected(3);
 </script>

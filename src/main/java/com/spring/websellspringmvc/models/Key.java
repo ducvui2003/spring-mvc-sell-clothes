@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,9 +14,9 @@ import java.util.UUID;
 public class Key {
     String id;
     String publicKey;
-    String keyId;
+    String previousId;
     int userId;
     LocalDateTime createAt;
     LocalDateTime updateAt;
-    boolean isDelete;
+    boolean deleted;
 }

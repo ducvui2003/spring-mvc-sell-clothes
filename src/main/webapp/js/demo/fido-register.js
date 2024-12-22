@@ -26,9 +26,7 @@ $(document).ready(function () {
  *
  * @param formData an object containing the form values to send to the server.
  */
-function startRegistration(formData) {
-    logTitle("Step 0: Start the registration process with the server")
-    logRequest(formData)
+export function startRegistration(formData) {
     $.ajax({
         type: "POST",
         url: "/webauthn/register/start",
@@ -38,7 +36,6 @@ function startRegistration(formData) {
         beforeSend: function (xhr) {
         },
         success: function (data, textStatus, jqXHR) {
-            logResponse(data)
             createCredential(data)
         }
     });
@@ -50,7 +47,6 @@ function startRegistration(formData) {
  * @param settings
  */
 function createCredential(credentialCreationOptions) {
-    logTitle("Step 1: Use options from server to create credential in authenticator")
     const publicKey = {
         challenge: toByteArray(credentialCreationOptions.challenge),
         rp: {
@@ -89,7 +85,6 @@ function finishRegistration(newCredentialInfo) {
     }
 
     console.log(finishRequest)
-    logRequest(finishRequest)
 
     $.ajax({
         type: "POST",
@@ -98,33 +93,6 @@ function finishRegistration(newCredentialInfo) {
         dataType: "json",
         contentType: "application/json",
         success: function (data, textStatus, jqXHR) {
-            logResponse(data)
         }
     });
-}
-
-function logTitle(title) {
-    const h2 = $('<h2></h2>').text(title)
-    $("body").append(h2)
-}
-
-function logJson(title, data) {
-    const response = JSON.stringify(data, null, 2);
-    const p = $('<p>' + title + '</p>')
-    const pre = $('<pre></pre>').text(response)
-    $("body").append(p, pre)
-}
-
-function logRequest(data) {
-    const response = JSON.stringify(data, null, 2);
-    const p = $('<p>Request:</p>')
-    const pre = $('<pre></pre>').text(response)
-    $("body").append(p, pre)
-}
-
-function logResponse(data) {
-    const response = JSON.stringify(data, null, 2);
-    const p = $('<p>Response:</p>')
-    const pre = $('<pre></pre>').text(response)
-    $("body").append(p, pre)
 }
