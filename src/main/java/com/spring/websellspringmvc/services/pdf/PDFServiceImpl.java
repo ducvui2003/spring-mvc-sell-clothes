@@ -37,12 +37,11 @@ public class PDFServiceImpl implements PDFService {
         }
     }
     @Override
-    public File createFile(File inputFile, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
+    public File createFile( OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
             String htmlTemplate = loadHtmlTemplate();
             String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
-
-            File pdfFile = new File(inputFile.getParent(), "Invoice_" + detailResponse.getOrderId() + ".pdf");
+            File pdfFile = new File( detailResponse.getOrderId() + ".pdf");
             writePdfToFile(filledHtml, pdfFile);
 
             addMetadataToPdf(pdfFile, Map.of("Hash", hash));

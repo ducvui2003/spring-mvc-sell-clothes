@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.*;
@@ -42,19 +43,23 @@ public class UploadDownloadController {
     PDFService pdfService;
 
     @PostMapping("/upload")
-    public void upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) {
+    public ResponseEntity<ApiResponse<?>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
         int userId = sessionManager.getUser().getId();
-
         // Retrieve order details and previous orders
         OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(orderId, userId);
         List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(orderId);
 
         if (orderPrevious == null) {
-            return;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid key size format")
+                            .data(false)
+                            .build());
         }
 
         // Generate signature from order details
-        String signature = signedOrderFile.generateSignature(orderDetailResponse, orderPrevious);
+        String signature = signedOrderFile.hashData(orderDetailResponse, orderPrevious);
 
         // Create temporary file from uploaded multipart file
         File tempFile = signedOrderFile.createTempFile(multipartFile);
@@ -62,14 +67,35 @@ public class UploadDownloadController {
         try {
             // Read signature from the uploaded PDF
             String uploadSignature = pdfService.readSignature(tempFile);
-
             // Verify signature and update order status if valid
-            if (uploadSignature.equals(signature)) {
-                orderServices.updateOrderStatusVerify(orderId, userId);
-            }
-        } finally {
-            // Ensure temporary file is deleted
+            String strPublicKey = keyDAO.getCurrentKey(userId).getPublicKey();
+            PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
+            boolean verified = signedOrderFile.verifyData(signature.getBytes(), uploadSignature, publicKey);
             tempFile.delete();
+            if (verified) {
+                orderServices.updateOrderStatusVerify(orderId, userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.<Boolean>builder()
+                                .code(HttpStatus.OK.value())
+                                .message("Valid signature")
+                                .data(true)
+                                .build());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid signature")
+                            .data(false)
+                            .build());
+        } catch (NoSuchProviderException | InvalidKeyException e) {
+            tempFile.delete();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.<Boolean>builder()
+                            .code(HttpStatus.BAD_REQUEST.value())
+                            .message("Invalid signature")
+                            .data(false)
+                            .build());
+
         }
     }
 
@@ -88,7 +114,13 @@ public class UploadDownloadController {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        byte[] file = pdfService.createDataFile(orderDetailResponse, orderPrevious, hash);
+        File dataFile = pdfService.createFile(orderDetailResponse, orderPrevious, hash);
+        byte[] file = null;
+        try {
+            file = (new FileInputStream(dataFile)).readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 //        byte[] file = signedOrderFile.writeDateFile(orderDetailResponse, orderPrevious);
         String LOCATION = "Downloads";
         String fileName = uuid + ".pdf";

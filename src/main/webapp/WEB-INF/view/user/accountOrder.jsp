@@ -211,7 +211,7 @@
                                                 <i class="fas fa-upload"></i>
                                             </label>
                                             <input id="upload-sign-info" type="file" class="d-none"
-                                                   onchange="handleUploadFile()" accept=".sign"/>
+                                                 />
                                         </div>
                                     </div>
                                 </div>
@@ -319,6 +319,7 @@
 <script type="module" src="<c:url value="/js/user/accountOrder.js"/>"></script>
 
 <script>
+
     function selected(ind) {
         document.querySelectorAll('.navbar__link').forEach(tab => {
             if (tab.dataset.index == ind) {
@@ -332,40 +333,6 @@
         window.open(`/api/verify-order/download?uuid=` + order_id, '_blank');
     }
 
-    function handleUploadFile(event) {
-        var order_id = $('span#order__id').html();
-        var file = $('input#upload-sign-info').val();
-        var formData = new FormData();
-        formData.append('file', file);
-        formData.append('orderId', order_id);
-        http({
-            url: '/api/verify-order/upload',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-        }).then((response) => {
-            // Xóa dòng đơn hàng đã xác thực trong table tag
-            deleteRowTable(order_id);
-            if (response.data) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Xác thực thành công',
-                    showConfirmButton: false,
-                    target: document.querySelector("#modal"),
-                    timer: 1500
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
-                    showConfirmButton: false,
-                    target: document.querySelector("#modal"),
-                    timer: 1500
-                });
-            }
-        });
-    }
 
     selected(3);
 </script>

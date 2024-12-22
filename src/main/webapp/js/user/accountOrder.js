@@ -9,7 +9,7 @@ const btnAddress = $('#btn-change-address');
 const verifyBlock = $('#verify-block');
 const btnAddressSubmit = $('#btn-address-submit');
 const tableAddress = $('#addressList tbody');
-
+const btnUploadFile = $('#upload-sign-info');
 $(document).ready(function () {
 
     getOrders(status);
@@ -20,7 +20,7 @@ $(document).ready(function () {
         status = $(this).data('status');
         getOrders(status);
     });
-
+    btnUploadFile.on('change', handleUploadFile);
 
     // btnVerify.on("click", handleVerifyButton);
 
@@ -29,12 +29,11 @@ $(document).ready(function () {
     handleSubmitModelChangeOrder();
 
 });
-
-function handleVerifyButton(event) {
+function handleUploadFile() {
     var order_id = $('span#order__id').html();
-    var file = $('input#upload-sign-info').val();
+    var file = $('input#upload-sign-info').prop('files')[0];
     var formData = new FormData();
-    formData.append('signature', file);
+    formData.append('file',file) ;
     formData.append('orderId', order_id);
     http({
         url: '/api/verify-order/upload',
@@ -64,6 +63,41 @@ function handleVerifyButton(event) {
         }
     });
 }
+
+// function handleVerifyButton(event) {
+//     var order_id = $('span#order__id').html();
+//     var file = $('input#upload-sign-info').val();
+//     var formData = new FormData();
+//     formData.append('signature', file);
+//     formData.append('orderId', order_id);
+//     http({
+//         url: '/api/verify-order/upload',
+//         type: 'POST',
+//         data: formData,
+//         contentType: false,
+//         processData: false,
+//     }).then((response) => {
+//         // Xóa dòng đơn hàng đã xác thực trong table tag
+//         deleteRowTable(order_id);
+//         if (response.data) {
+//             Swal.fire({
+//                 icon: 'success',
+//                 title: 'Xác thực thành công',
+//                 showConfirmButton: false,
+//                 target: document.querySelector("#modal"),
+//                 timer: 1500
+//             });
+//         } else {
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Thông tin đơn hàng không đúng vui lòng kiểm tra lại',
+//                 showConfirmButton: false,
+//                 target: document.querySelector("#modal"),
+//                 timer: 1500
+//             });
+//         }
+//     });
+// }
 
 function deleteRowTable(orderId) {
     tableAddress.find('tr').each(function () {

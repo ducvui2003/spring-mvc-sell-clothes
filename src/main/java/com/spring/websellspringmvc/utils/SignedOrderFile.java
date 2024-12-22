@@ -121,10 +121,10 @@ public class SignedOrderFile {
         }
     }
 
-    public boolean verifyData(byte[] plaindata, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
+    public boolean verifyData(byte[] plainData, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
         Signature signature = Signature.getInstance("SHA1withDSA", "SUN");
         signature.initVerify(publicKey);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plaindata));
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(plainData));
         byte[] buffer = new byte[1024];
         int len;
         try {
@@ -185,16 +185,6 @@ public class SignedOrderFile {
         md.update(bos.toByteArray());
 
         return Base64.getEncoder().encodeToString(bos.toByteArray());
-    }
-    public  String generateSignature(OrderDetailResponse orderDetailResponse, List<AdminOrderDetailResponse> orderPrevious) {
-        try {
-            String hash = hashData(orderDetailResponse, orderPrevious);
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(hash.getBytes());
-            return Base64.getEncoder().encodeToString(digest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error generating signature", e);
-        }
     }
 
     // Utility method to create a temporary file from MultipartFile
