@@ -1,4 +1,4 @@
-import {addParam} from "../base.js";
+import {addParam, http} from "../base.js";
 
 $(document).ready(() => {
     $.fn.select2.defaults.set("width", "resolve");
@@ -290,6 +290,13 @@ $(document).ready(() => {
 
     function fieldDataVoucher(data) {
         const user = data;
+        console.log(data.id)
+        http({
+            url: `/api/admin/user/${data.id}`,
+            method: "GET",
+        }).then((response) => {
+            console.log(response.data)
+        })
         form.find("#email").val(user.email);
         form.find("#username").val(user.username);
         form.find("#fullName").val(user.fullName);

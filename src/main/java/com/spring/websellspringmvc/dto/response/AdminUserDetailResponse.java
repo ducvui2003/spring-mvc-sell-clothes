@@ -24,7 +24,14 @@ public class AdminUserDetailResponse {
     Date birthday;
     Role role;
     String phone;
+    AdminUserKey key;
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class AdminUserKey {
+
     }
 }
