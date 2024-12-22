@@ -1,4 +1,4 @@
-import {BASE_URL, http} from "./base.js";
+import {http} from "./base.js";
 
 $(document).ready(() => {
     // Animation for head title
@@ -112,7 +112,7 @@ $(document).ready(() => {
         let colorId = $(form).find('input[name=color]:checked').val();
         let quantity = $(form).find('input[name=quantity]').val();
         http({
-            url: `${BASE_URL}/api/cart/add`,
+            url: `/api/cart/add`,
             type: "POST",
             data: {
                 productId: productId,

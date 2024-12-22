@@ -320,8 +320,8 @@
                                     Tiến hành thanh toán
                                 </button>
                             </a>
-                            <a href="/product" id="continue--shopping">
-                                Tiến tục mua sắm
+                            <a href="/product">
+                                <button id="continue--shopping">Tiếp tục mua sắm</button>
                             </a>
                         </div>
                     </div>

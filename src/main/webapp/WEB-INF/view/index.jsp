@@ -22,7 +22,7 @@
         <div class="hero__slogan">
             <h1>Change Your Styles Now</h1>
             <p>Cùng chúng tôi tạo nên thiết kế khác biệt cho quần áo của bạn</p>
-            <a href="<c:url value="/product/productBuying" />"
+            <a href="<c:url value="/product" />"
                class="hero__button button button--hover hvr-radial-out">
                 Bắt đầu mua hàng
             </a>
@@ -122,7 +122,7 @@
                                     </a>
                                 </div>
                                 <span class="product__price">
-                                    <fmt:setLocale value="vi_VN"/>
+                                    <fmt:setLocale value="vi_VN" scope="session"/>
                                     <c:choose>
                                         <c:when test="${product.salePrice == null}">
                                             <strong class="priority__price">
@@ -153,7 +153,7 @@
     <div class="new__section container-xl">
         <div class="new__title">
             <h2 class="section__title">Sản phẩm mới</h2>
-            <a class="see__more hvr-forward" href="<c:url value="/newProducts" />">Xem thêm
+            <a class="see__more hvr-forward" href="<c:url value="/product" />">Xem thêm
             </a>
         </div>
         <div class="product__wrapper">
@@ -234,66 +234,66 @@
             </button>
         </div>
     </div>
-    <div id="discovery__us--section" class="container-xl">
-        <div class="discovery__container">
-            <h2 class="section__title">Bạn có thể khám phá được điều gì ở chúng tôi?</h2>
-            <div class="discovery__content">
-                <div class="disco_thing hvr-underline-from-left">
-                    <p>50+</p>
-                    <p>Mẫu đồ bạn có thể đặt may</p>
-                </div>
-                <div class="disco_thing hvr-underline-from-left">
-                    <p>1,000+</p>
-                    <p>Khách hàng yêu cầu đặt may mỗi tháng</p>
-                </div>
-                <div class="disco_thing hvr-underline-from-left">
-                    <p>50+</p>
-                    <p>Mẫu đồ được gia công liên tục</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="step__guide--section container-xl">
-        <h2 class="section__title">Cách bước để bạn có thể đặt may một mẫu đồ</h2>
-        <div class="guide__content row">
-            <div class="col hvr-grow-shadow">
-                <div class="step__item">
-                    <img src="${stepGuide['1']}"/>
-                    <div class="description_step">
-                        <span>Bước 1</span>
-                        <p>Chọn một mẫu đồ mà bạn ưng ý</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col hvr-grow-shadow">
-                <div class="step__item">
-                    <img src="${stepGuide['2']}"/>
-                    <div class="description_step">
-                        <span>Bước 2</span>
-                        <p>Tùy chọn size và kiểu dáng phù hợp với nhu cầu của bạn</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col hvr-grow-shadow">
-                <div class="step__item">
-                    <img src="${stepGuide['3']}"/>
-                    <div class="description_step">
-                        <span>Bước 3</span>
-                        <p>Tiến hành đặt may và thanh toán</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col hvr-grow-shadow">
-                <div class="step__item">
-                    <img src="${stepGuide['4']}"/>
-                    <div class="description_step">
-                        <span>Bước 4</span>
-                        <p>Chờ nhận hàng sau khi bạn đã thanh toán thành công</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<%--    <div id="discovery__us--section" class="container-xl">--%>
+<%--        <div class="discovery__container">--%>
+<%--            <h2 class="section__title">Bạn có thể khám phá được điều gì ở chúng tôi?</h2>--%>
+<%--            <div class="discovery__content">--%>
+<%--                <div class="disco_thing hvr-underline-from-left">--%>
+<%--                    <p>50+</p>--%>
+<%--                    <p>Mẫu đồ bạn có thể đặt may</p>--%>
+<%--                </div>--%>
+<%--                <div class="disco_thing hvr-underline-from-left">--%>
+<%--                    <p>1,000+</p>--%>
+<%--                    <p>Khách hàng yêu cầu đặt may mỗi tháng</p>--%>
+<%--                </div>--%>
+<%--                <div class="disco_thing hvr-underline-from-left">--%>
+<%--                    <p>50+</p>--%>
+<%--                    <p>Mẫu đồ được gia công liên tục</p>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--    <div class="step__guide--section container-xl">--%>
+<%--        <h2 class="section__title">Cách bước để bạn có thể đặt may một mẫu đồ</h2>--%>
+<%--        <div class="guide__content row">--%>
+<%--            <div class="col hvr-grow-shadow">--%>
+<%--                <div class="step__item">--%>
+<%--                    <img src="${stepGuide['1']}"/>--%>
+<%--                    <div class="description_step">--%>
+<%--                        <span>Bước 1</span>--%>
+<%--                        <p>Chọn một mẫu đồ mà bạn ưng ý</p>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--            <div class="col hvr-grow-shadow">--%>
+<%--                <div class="step__item">--%>
+<%--                    <img src="${stepGuide['2']}"/>--%>
+<%--                    <div class="description_step">--%>
+<%--                        <span>Bước 2</span>--%>
+<%--                        <p>Tùy chọn size và kiểu dáng phù hợp với nhu cầu của bạn</p>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--            <div class="col hvr-grow-shadow">--%>
+<%--                <div class="step__item">--%>
+<%--                    <img src="${stepGuide['3']}"/>--%>
+<%--                    <div class="description_step">--%>
+<%--                        <span>Bước 3</span>--%>
+<%--                        <p>Tiến hành đặt may và thanh toán</p>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--            <div class="col hvr-grow-shadow">--%>
+<%--                <div class="step__item">--%>
+<%--                    <img src="${stepGuide['4']}"/>--%>
+<%--                    <div class="description_step">--%>
+<%--                        <span>Bước 4</span>--%>
+<%--                        <p>Chờ nhận hàng sau khi bạn đã thanh toán thành công</p>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
     <div class="modal_hidden_search__box"></div>
 </main>
 <!--Footer-->

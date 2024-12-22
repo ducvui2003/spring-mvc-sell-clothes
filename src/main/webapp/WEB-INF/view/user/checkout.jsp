@@ -177,9 +177,9 @@
                         </div>
                         <div class="ground__button--forward">
                             <button type="submit" class="place__order">Đặt hàng</button>
-                            <a href="<c:url value="/cart" />" class="back--shopping__cart">
-                                Quay lại giỏ hàng
-                            </a>
+                            <button class="back--shopping__cart"
+                                    onclick="window.location.href='<c:url value="/cart"/>'">Quay lại giỏ hàng
+                            </button>
                         </div>
                     </div>
                 </div>

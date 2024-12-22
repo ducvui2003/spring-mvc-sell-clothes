@@ -23,14 +23,12 @@
                 <div class="card mb-4">
                     <div class="card-header">Thông tin khóa</div>
                     <div class="card-body">
-                        <c:if test="${requestScope.hasKey == false}">
-                            <div class="mb-3" id="alertWarning">
-                                <div class="alert alert-warning" role="alert">
-                                    <strong>Thông báo:</strong> Hãy cập nhật thông tin khóa của bạn để tiếp tục sử dụng
-                                    dịch vụ!
-                                </div>
+                        <div class="mb-3" id="alertWarning">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Thông báo:</strong> Hãy cập nhật thông tin khóa của bạn để tiếp tục sử dụng
+                                dịch vụ!
                             </div>
-                        </c:if>
+                        </div>
                         <div class="mb-3">
                             <label class="small mb-0 d-inline-flex align-items-center" for="currentKey">Khóa hiện
                                 tại <span class="ms-1 button--hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -43,27 +41,18 @@
                                       disabled>${requestScope.currentKey.publicKey}</textarea>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="small mb-1" for="createdDate">Ngày tạo</label>
-                                <input class="form-control" name="createdDate" id="createdDate" type="text"
-                                       value="${requestScope.currentKey.createAt}" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small mb-1" for="expiredTime">Ngày hết hạn</label>
-                                <input class="form-control" name="expiredTime" id="expiredTime" type="text"
-                                       value="" disabled>
-                            </div>
+                        <div class="mb-3">
+                            <label class="small mb-1" for="createdDate">Ngày tạo</label>
+                            <input class="form-control" name="createdDate" id="createdDate" type="text"
+                                   value="${requestScope.currentKey.createAt}" disabled>
                         </div>
                         <div class="d-flex justify-content-start">
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
                                     data-bs-target="#addKeyModal">Thêm khóa mới
                             </button>
-                            <c:if test="${requestScope.hasKey == true}">
-                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#reportKeyModal">Báo mất khóa
-                                </button>
-                            </c:if>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" id="reportKeyBtn"
+                                    data-bs-target="#reportKeyModal">Báo mất khóa
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -81,7 +70,7 @@
 
                         </div>
                         <div class="d-flex justify-content-center">
-                            <a href="/static/signTool.exe" class="btn btn-primary me-3" download>
+                            <a href="/api/key/download-exe" class="btn btn-primary me-3" download>
                                 <i class="fa-solid fa-download"></i> Tải phần mềm
                             </a>
                         </div>
@@ -98,9 +87,8 @@
                             <thead>
                             <tr>
                                 <th style="width: 25%">#</th>
-                                <th style="width: 25%">Khóa</th>
+                                <th style="width: 35%">Khóa</th>
                                 <th style="width: 15%">Ngày tạo</th>
-                                <th style="width: 15%">Ngày hết hạn</th>
                                 <th style="width: 10%">Trạng thái</th>
                                 <th style="width: 10%"></th>
                             </tr>
@@ -172,26 +160,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="row gx-3 mb-3 mt-2">
-                    <div class="mb-3">
-                        <label class="small mb-1" for="inputExpireTime">Thời hạn khóa <span class="ms-1 button--hover"
-                                                                                            data-bs-toggle="tooltip"
-                                                                                            data-bs-placement="bottom"
-                                                                                            data-bs-custom-class="custom-tooltip"
-                                                                                            data-bs-title="Thời hạn sử dụng khóa của bạn."><i
-                                class="fa-regular fa-circle-question"></i></span></label>
-                        <input class="form-control" name="inputExpireTime" id="inputExpireTime" type="text"
-                               value="Thời hạn sử dụng 7 ngày" disabled>
-                        <div class="valid-feedback">
-                        </div>
-                    </div>
-                </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<%--Key detail modal--%>
+<div class="modal fade" id="detailKeyModal" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <%--                <h5 class="modal-title">Thông tin chi tiết khóa</h5>--%>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
