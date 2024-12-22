@@ -21,7 +21,6 @@ public interface KeyDAO {
 
 
     @SqlQuery("""
-
             SELECT id as id, publicKey as publicKey, previousId as previousId, userId as userId, createAt as createAt, updateAt as updateAt, deleted as deleted FROM `keys` WHERE userId = :userId ORDER BY createAt DESC""")
     List<Key> getKeys(@Bind("userId") int userId);
 

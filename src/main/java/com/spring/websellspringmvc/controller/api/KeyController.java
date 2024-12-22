@@ -44,7 +44,6 @@ public class KeyController {
                     .build());
         }
 
-
         String keyPairAlgorithm = null;
         String secureRandom = null;
         String provider = null;
@@ -54,11 +53,18 @@ public class KeyController {
 
         try (DataInputStream reader = new DataInputStream(new DataInputStream(request.getInputStream()))) {
             keyPairAlgorithm = reader.readUTF();
-            secureRandom = reader.readUTF();
-            provider = reader.readUTF();
-            signature = reader.readUTF();
-            keySize = Integer.parseInt(reader.readUTF());
-            publicKey = reader.readUTF();
+            try {
+                secureRandom = reader.readUTF();
+                provider = reader.readUTF();
+                signature = reader.readUTF();
+                keySize = Integer.parseInt(reader.readUTF());
+                publicKey = reader.readUTF();
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Private key file is invalid or corrupted!")
+                        .build());
+            }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
                     .code(HttpStatus.BAD_REQUEST.value())

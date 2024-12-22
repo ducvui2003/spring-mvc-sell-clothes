@@ -53,79 +53,82 @@ $(document).ready(function () {
     const addKeyModal = $("#addKeyModal");
 
 // Form validation for Update Key
-    formAddKey.validate({
-        rules: {
-            inputUploadKey: {
-                required: true,
-                singleFile: true,
-                extension: "key",
-                fileExtensionCheck: true  // Custom rule to check the extension more precisely
-            }
-        },
-        messages: {
-            // inputNewKey: {
-            //     required: "Vui lòng nhập khóa."
-            // },
-            inputUploadKey: {
-                required: "Vui lòng chọn file khóa.",
-                singleFile: "Vui lòng chọn 1 file duy nhất.",
-                extension: "File phải có định dạng .key."
+        formAddKey.validate({
+            rules: {
+                inputUploadKey: {
+                    required: true,
+                    singleFile: true,
+                    extension: "key",
+                }
             },
-        },
-        validClass: 'is-valid',
-        errorClass: 'is-invalid',
-        errorPlacement: function (error, element) {
-            $(element).next().text(error.text());
-        },
-        highlight: function (element, errorClass, validClass) {
-            $(element).addClass(errorClass).removeClass(validClass).attr('required', 'required');
-            $(element).next().addClass("invalid-feedback");
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).removeClass(errorClass).addClass(validClass).removeAttr('required');
-            $(element).next().text("");
-        },
-        submitHandler: function (form) {
-            var formData = new FormData(form);
-            $.ajax({
-                url: "/api/key/add-key",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    Swal.fire({
-                        title: "Chúc mừng!",
-                        text: "Khóa đã được cập nhập",
-                        icon: "success"
-                    });
-                    if (response && response.data) {
-                        updateCurrentKey(response.data);
-                        loadDataToTable();
-                    }
-                    form.reset();
-                    addKeyModal.modal('hide');
-                    return true;
+            messages: {
+                inputUploadKey: {
+                    required: "Vui lòng chọn file khóa.",
+                    singleFile: "Vui lòng chọn 1 file duy nhất.",
+                    extension: "File phải có định dạng .key.",
+                    invalidPrivateKey: "File khóa không hợp lệ hoặc bị hỏng, vui lòng thử lại."
                 },
-                error: function (xhr, status, error) {
-                    console.log("Hien thi input:    ", formData.get("newKey"));
-                    Swal.fire({
-                        title: "Lỗi!",
-                        text: "Khóa không cập nhập thành công " + status,
-                        icon: "error"
-                    });
-                },
-            });
-            return false;
-        }
-    });
+            },
+            validClass: 'is-valid',
+            errorClass: 'is-invalid',
+            errorPlacement: function (error, element) {
+                $(element).next().text(error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass(errorClass).removeClass(validClass).attr('required', 'required');
+                $(element).next().addClass("invalid-feedback");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass(errorClass).addClass(validClass).removeAttr('required');
+                $(element).next().text("");
+            },
+            submitHandler: function (form) {
+                var formData = new FormData(form);
+                $.ajax({
+                    url: "/api/key/add-key",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        Swal.fire({
+                            title: "Chúc mừng!",
+                            text: "Khóa đã được cập nhập",
+                            icon: "success"
+                        });
+                        if (response && response.data) {
+                            getKeyList();
+                            loadDataToTable();
+                            updateCurrentKey();
+                        }
+                        form.reset();
+                        addKeyModal.modal('hide');
+                        return true;
+                    },
+                    error: function (xhr, status, error) {
+                        let errorMessage = xhr.responseJSON?.message || "Khóa không cập nhập thành công!";
+                        if (errorMessage === "Private key file is invalid or corrupted!") {
+                            errorMessage = "File khóa không hợp lệ hoặc bị hỏng, vui lòng thử lại.";
+                        }
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: errorMessage,
+                            icon: "error"
+                        });
+                    },
+                });
+                return false;
+            }
+        });
 
     // Hàm cập nhật Khóa hiện tại
-    function updateCurrentKey(newKey) {
-        if (newKey) {
+    function updateCurrentKey() {
+        if (keyListCustomer.length > 0) {
+            console.log(keyListCustomer[0])
             $("#alertWarning").hide();
-            $("#hasKey").val(newKey)
-            $("#currentKey").val(newKey); // Cập nhật textarea Khóa hiện tại
+            $("#hasKey").val(true)
+            $("#currentKey").val(keyListCustomer[0].publicKey); // Cập nhật textarea Khóa hiện tại
+            $("#createdDate").val(keyListCustomer[0].createAt);
         } else {
             $("#alertWarning").show();
             $("#currentKey").val(""); // Xóa nếu không có khóa
@@ -134,23 +137,25 @@ $(document).ready(function () {
 
     // Lấy danh sách key
     let keyListCustomer = []
-    http({
-        url: "/api/key",
-        type: 'GET',
-    }).then((response) => {
-        const keyList = response.data;
-        if (keyList && keyList.length > 0) {
-            keyListCustomer = keyList
-            loadDataToTable();
-        }
-    });
+    function getKeyList() {
+        http({
+            url: "/api/key",
+            type: 'GET',
+        }).then((response) => {
+            const keyList = response.data;
+            if (keyList && keyList.length > 0) {
+                keyListCustomer = keyList
+                loadDataToTable();
+            }
+        });
+    }
 
+    getKeyList();
     // Load danh sách key vào UI
     function loadDataToTable() {
         // Cập nhật currentKeyId
-        var currentKeyId = $('#currentKeyId');
-        currentKeyId.val(keyListCustomer[0].id);
         const table = $('#keyList tbody');
+        updateCurrentKey();
         table.empty();
         // console.log(keyListCustomer);
         const htmls = keyListCustomer.map(function (key) {
@@ -178,7 +183,6 @@ $(document).ready(function () {
 
         // Tìm thông tin khóa trong danh sách keyListCustomer
         const keyDetail = keyListCustomer.find(key => key.id === keyId);
-
         if (keyDetail) {
             // Load thông tin vào modal
             const modalBody = $('#detailKeyModal .modal-body');
