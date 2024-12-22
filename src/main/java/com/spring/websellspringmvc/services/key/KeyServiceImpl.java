@@ -25,7 +25,9 @@ public class KeyServiceImpl implements KeyServices {
 
     @Override
     public List<KeyResponse> getKeys(int userId) {
-        return keyMapper.toKeyResponseList(keyDAO.getKeys(userId));
+        List<Key> keys = keyDAO.getKeys(userId);
+
+        return keyMapper.toKeyResponseList(keys);
     }
 
     public void insertKey(String publicKey, int userId) {

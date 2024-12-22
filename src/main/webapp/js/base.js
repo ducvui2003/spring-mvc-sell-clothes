@@ -170,6 +170,22 @@ export const formatDate = (dateString) => {
     return `${day} / ${month} / ${year}`;
 }
 
+export const formatDatetime = (dateString) => {
+    const date = new Date(dateString);
+
+    // Extract the components
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const year = date.getFullYear();
+
+    // Format the date
+    const formattedDate = `${hours}:${minutes} ${day}-${month}-${year}`;
+    return formattedDate;
+}
+
+
 export const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(value);
 }

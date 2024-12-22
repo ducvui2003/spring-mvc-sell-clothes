@@ -1,4 +1,4 @@
-import {formDataToJson, http} from "../base.js";
+import {formatDatetime, formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
     const formLostKey = $("#form-report-key");
@@ -36,7 +36,10 @@ $(document).ready(function () {
     }).on('hide.bs.modal', function (event) {
         $('#reportKeyForm').trigger('reset');
     });
-
+    $.validator.addMethod("extension", function (value, element, param) {
+        var fileExtension = value.split('.').pop().toLowerCase();
+        return this.optional(element) || fileExtension === param;  // Check if the file extension is valid
+    }, "File phải có định dạng .key.");
     $.validator.addMethod(
         "singleFile",
         function (value, element) {
@@ -46,8 +49,6 @@ $(document).ready(function () {
     );
 
 // Validate update key form
-    const uploadKey = $("#uploadKey");
-    const inputNewKey = $("#inputNewKey");
     const formAddKey = $("#form-add-key");
     const addKeyModal = $("#addKeyModal");
 
@@ -57,7 +58,8 @@ $(document).ready(function () {
             inputUploadKey: {
                 required: true,
                 singleFile: true,
-                extension: "key"
+                extension: "key",
+                fileExtensionCheck: true  // Custom rule to check the extension more precisely
             }
         },
         messages: {
@@ -129,6 +131,7 @@ $(document).ready(function () {
             $("#currentKey").val(""); // Xóa nếu không có khóa
         }
     }
+
     // Lấy danh sách key
     let keyListCustomer = []
     http({
@@ -136,8 +139,7 @@ $(document).ready(function () {
         type: 'GET',
     }).then((response) => {
         const keyList = response.data;
-        console.log(keyList);
-        if(keyList && keyList.length > 0){
+        if (keyList && keyList.length > 0) {
             keyListCustomer = keyList
             loadDataToTable();
         }
@@ -145,25 +147,22 @@ $(document).ready(function () {
 
     // Load danh sách key vào UI
     function loadDataToTable() {
-        console.log("Hello");
         // Cập nhật currentKeyId
+        var currentKeyId = $('#currentKeyId');
         currentKeyId.val(keyListCustomer[0].id);
         const table = $('#keyList tbody');
         table.empty();
+        // console.log(keyListCustomer);
         const htmls = keyListCustomer.map(function (key) {
             if (key) {
                 return `<tr>
                         <td>${key.id}</td>
                         <td>${key.publicKey}</td>
                         <td>${key.createAt}</td>
-                        <td>${key.updateAt}</td>
-                        <td>${key.isDelete ? "Đã ngừng hoạt động" : "Đang hoạt động"}</td>
+                        <td>${key.isDelete ? "Đã hết hạn" : "Đang hoạt động"}</td>
                         <td>
-                            <button class="btn btn-primary btn__address-update" data-id="${key.id}" data-bs-toggle="modal" data-bs-target="#modal">
-                                 <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                           <button class="btn btn-danger btn__address-delete" data-id="${key.id}" >
-                                <i class="fa-solid fa-trash"></i>
+                            <button class="btn btn-primary btn__key_detail" data-id="${key.id}" data-bs-toggle="modal" data-bs-target="#detailKeyModal">
+                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </td>
                     </tr>`
@@ -171,8 +170,76 @@ $(document).ready(function () {
             return '';
         })
         table.html(htmls.join(''));
-        viewModal();
     }
+
+    $(document).on('click', '.btn__key_detail', function () {
+        // Lấy ID của khóa từ thuộc tính data-id
+        const keyId = $(this).data('id');
+
+        // Tìm thông tin khóa trong danh sách keyListCustomer
+        const keyDetail = keyListCustomer.find(key => key.id === keyId);
+
+        if (keyDetail) {
+            // Load thông tin vào modal
+            const modalBody = $('#detailKeyModal .modal-body');
+            modalBody.html(`
+            <div class="container my-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Thông tin chi tiết khóa</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Mã khóa (ID):</div>
+                            <div class="col-md-8">${keyDetail.id}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Public Key:</div>
+                            <div class="col-md-8">
+                                <textarea class="form-control" rows="5" readonly>${keyDetail.publicKey}</textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Mã khóa trước (Previous ID):</div>
+                            <div class="col-md-8">${keyDetail.previousId || 'N/A'}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Ngày tạo:</div>
+                            <div class="col-md-8">${keyDetail.createAt}</div>
+                        </div>
+                        ${keyDetail.isDelete ? `
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Ngày hết hạn:</div>
+                            <div class="col-md-8">${keyDetail.updateAt || 'N/A'}</div>
+                        </div>
+                        ` : ''}
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Trạng thái:</div>
+                            <div class="col-md-8">
+                                <span class="badge ${keyDetail.isDelete ? 'bg-danger' : 'bg-success'}">
+                                    ${keyDetail.isDelete ? 'Đã hết hạn' : 'Đang hoạt động'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+        } else {
+            console.error('Không tìm thấy thông tin khóa!');
+        }
+    });
+
+    $('#detailKeyModal').on('hidden.bs.modal', function () {
+        const modalBody = $(this).find('.modal-body');
+        modalBody.html('<p>Loading...</p>'); // Reset nội dung modal
+    });
+
+
+    console.log($("#createdDate").val())
+    $("#createdDate").val(formatDatetime($("#createdDate").val()));
+
+
 // Khởi tạo tất cả tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 })
