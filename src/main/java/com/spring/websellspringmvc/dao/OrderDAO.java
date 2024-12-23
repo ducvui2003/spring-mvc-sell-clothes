@@ -106,7 +106,28 @@ public interface OrderDAO {
             WHERE orders.id = :orderId
             """)
     @RegisterBeanMapper(OrderDetailResponse.class)
-    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId, @Bind("userId") int userId);
+    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId);
+
+    @SqlQuery("""
+            SELECT orders.id as orderId, 
+            order_statuses.typeStatus as status, 
+            orders.fullName, 
+            orders.phone, 
+            orders.email, 
+            orders.province, 
+            orders.district, 
+            orders.ward, 
+            orders.detail, 
+            orders.voucherId, 
+            orders.dateOrder, 
+            orders.paymentMethod as payment, 
+            orders.fee as fee,
+            orders.leadTime as leadTime 
+            FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
+            WHERE orders.id = (<getOrderByOrderDetailId>)
+            """)
+    @RegisterBeanMapper(OrderDetailResponse.class)
+    public List<OrderDetailResponse> getOrderByOrderDetailId(@BindList("orderIds") List<String> orderId);
 
     @SqlQuery("""
             SELECT 
@@ -314,4 +335,11 @@ public interface OrderDAO {
             """)
     @RegisterBeanMapper(Size.class)
     List<Size> getSizesByOrderId(@Bind("orderId") String orderId);
+
+    @SqlUpdate("""
+            UPDATE orders
+            SET signatureKey = :signatureKey
+            WHERE id = :orderId
+            """)
+    int insertSignature(@Bind("orderId") String orderId,@Bind("signatureKey") String signature);
 }

@@ -25,6 +25,7 @@ public class Order {
     String phone;
     int orderStatusId;
     int transactionStatusId;
+    String signatureKey;
     int voucherId;
     String message;
     String province;

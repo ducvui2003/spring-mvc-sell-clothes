@@ -4,10 +4,12 @@ import ch.qos.logback.core.util.Loader;
 import com.spring.websellspringmvc.controller.exception.AppException;
 import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dao.AddressDAO;
+import com.spring.websellspringmvc.dao.KeyDAO;
 import com.spring.websellspringmvc.dao.OrderDAO;
 import com.spring.websellspringmvc.dao.OrderStatusDAO;
 import com.spring.websellspringmvc.dto.request.AddressRequest;
 import com.spring.websellspringmvc.dto.request.ChangeOrderRequest;
+import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
@@ -15,6 +17,8 @@ import com.spring.websellspringmvc.models.Address;
 import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.session.SessionManager;
+import com.spring.websellspringmvc.utils.SignedOrderFile;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import lombok.AccessLevel;
@@ -26,8 +30,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -40,10 +49,14 @@ public class OrderServicesImpl implements OrderServices {
     CheckoutServices checkoutServices;
     AddressDAO addressDAO;
     Jdbi jdbi;
+    SignedOrderFile signedOrderFile;
+    KeyDAO keyDAO;
+    SessionManager sessionManager;
 
     @Override
     public List<OrderResponse> getOrder(int userId, int statusOrder) {
-        return orderDAO.getOrder(userId, statusOrder);
+        List<OrderResponse> listOrderResponse = orderDAO.getOrder(userId, statusOrder);
+        List<OrderDetailResponse> orderDetailResponses = getOrderByOrderId(listOrderResponse.stream().map(OrderResponse::getId).toList());
     }
 
     @Override
@@ -54,13 +67,24 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public OrderDetailResponse getOrderByOrderId(String orderId, int userId) {
-        Optional<OrderDetailResponse> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId, userId);
+        Optional<OrderDetailResponse> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId);
         if (orderDetailResponseDTO.isPresent()) {
             OrderDetailResponse order = orderDetailResponseDTO.get();
             List<OrderDetailItemResponse> orderDetails = getOrderDetailByOrderId(orderId);
             if (orderDetails == null) return null;
             order.setItems(orderDetails);
             return order;
+        }
+        return null;
+    }
+
+    @Override
+    public List<OrderDetailResponse> getOrderByOrderId(List<String> orderIds) {
+        for (String orderId : orderIds) {
+            OrderDetailResponse order = getOrderByOrderId(orderId, sessionManager.getUser().getId());
+            if (order != null) {
+                order.setSignatureKey(null);
+            }
         }
         return null;
     }
@@ -92,6 +116,36 @@ public class OrderServicesImpl implements OrderServices {
         jdbi.useTransaction(handle -> {
             orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
             log.info("Update order status success");
+        });
+    }
+
+    @Override
+    public void insertSignature(String orderId, String signature) {
+        jdbi.useTransaction(handle -> {
+            if (orderDAO.insertSignature(orderId, signature) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
+            log.info("Insert signature success");
+        });
+    }
+
+    @Override
+    public void updateOrdersStatus(List<OrderDetailResponse> orders) throws Exception {
+        int userId = sessionManager.getUser().getId();
+        String strPublicKey = keyDAO.getCurrentKey(userId).getPublicKey();
+        PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
+
+        jdbi.useTransaction(handle -> {
+//            for (Map.Entry<OrderDetailResponse, List<AdminOrderDetailResponse>> entry : orders.entrySet()) {
+//                if (entry.getKey().getStatus().equals(OrderStatus.VERIFYING.getDisplayName()) || entry.getKey().getStatus().equals(OrderStatus.CHANGED.getDisplayName())) {
+//                    continue;
+//                }
+//                String signatureKey = entry.getKey().getSignatureKey();
+//                if (signatureKey == null || signatureKey.isEmpty()) {
+//                    orderDAO.updateOrderStatus(entry.getKey().getOrderId(), OrderStatus.CHANGED.getValue());
+//                }
+//                String signature = signedOrderFile.hashData(entry.getKey());
+//
+//                boolean isSamming=signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
+//            }
         });
     }
 }
