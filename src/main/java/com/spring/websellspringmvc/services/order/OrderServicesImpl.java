@@ -134,18 +134,21 @@ public class OrderServicesImpl implements OrderServices {
         PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
 
         jdbi.useTransaction(handle -> {
-//            for (Map.Entry<OrderDetailResponse, List<AdminOrderDetailResponse>> entry : orders.entrySet()) {
-//                if (entry.getKey().getStatus().equals(OrderStatus.VERIFYING.getDisplayName()) || entry.getKey().getStatus().equals(OrderStatus.CHANGED.getDisplayName())) {
-//                    continue;
-//                }
-//                String signatureKey = entry.getKey().getSignatureKey();
-//                if (signatureKey == null || signatureKey.isEmpty()) {
-//                    orderDAO.updateOrderStatus(entry.getKey().getOrderId(), OrderStatus.CHANGED.getValue());
-//                }
-//                String signature = signedOrderFile.hashData(entry.getKey());
-//
-//                boolean isSamming=signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
-//            }
+            for ( OrderDetailResponse order : orders) {
+                if (order.getStatus().equals(OrderStatus.VERIFYING.getDisplayName()) || order.getStatus().equals(OrderStatus.CHANGED.getDisplayName())) {
+                    continue;
+                }
+                String signatureKey = order.getSignatureKey();
+                if (signatureKey == null || signatureKey.isEmpty()) {
+                    orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
+                }
+                String signature = signedOrderFile.hashData(order);
+
+                boolean isSimilar=signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
+                if (!isSimilar) {
+                    orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
+                }
+            }
         });
     }
 }
