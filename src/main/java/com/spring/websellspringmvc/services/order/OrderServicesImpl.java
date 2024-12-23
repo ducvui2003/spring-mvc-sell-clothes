@@ -68,14 +68,18 @@ public class OrderServicesImpl implements OrderServices {
     @Override
     public void changeOrder(String orderId, Integer userId, ChangeOrderRequest request) {
         jdbi.useTransaction(handle -> {
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
             Address address = addressDAO.getAddressById(request.getAddressId());
             if (address == null) throw new AppException(ErrorCode.NOT_VALID);
             double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
             LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
 
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
-            int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
+            OrderStatus orderStatus = OrderStatus.valueOf(orderDAO.getStatusById(orderId));
+
+            // Nếu người dùng đã xác thực thì chuyển sang trạng thái y/c xác thực lại
+            if (orderStatus == OrderStatus.PENDING)
+                orderStatus = OrderStatus.CHANGED;
+
+            int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee, orderStatus.getValue());
             log.info("row effect: {}", rowEffect);
             if (rowEffect == 0) {
                 throw new AppException(ErrorCode.UPDATE_FAILED);
@@ -86,7 +90,6 @@ public class OrderServicesImpl implements OrderServices {
     @Override
     public void updateOrderStatusVerify(String orderId, int userId) {
         jdbi.useTransaction(handle -> {
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
             orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
             log.info("Update order status success");
         });

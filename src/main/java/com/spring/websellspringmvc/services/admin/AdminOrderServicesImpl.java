@@ -142,7 +142,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
                 if (request.getTransactionStatus() != null && transactionStatusSrc != null) {
                     if (canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
-                        orderDAO.updateTransactionStatusByOrderId(orderId, request.getOrderStatus().getValue());
+                        orderDAO.updateTransactionStatusByOrderId(orderId, request.getTransactionStatus().getValue());
                     }
                 }
 

@@ -45,8 +45,21 @@ $(document).ready(function () {
                     {
                         data: "transactionStatus",
                         render: function
-                            (data) {
-                            return `${TRANSACTION_STATUS[data]}`;
+                            (data, type, row, meta) {
+                            let className = "";
+                            if (data === 'UN_PAID') {
+                                className = "bg-warning"
+                            }
+                            if (data === 'PROCESSING') {
+                                className = "bg-info"
+                            }
+                            if (data === 'PAID') {
+                                className = "bg-success"
+                            }
+                            if (data === 'CANCELLED') {
+                                className = "bg-danger"
+                            }
+                            return `<span class="badge bg-gradient ${className}"> ${TRANSACTION_STATUS[data]}</span>`;
                         }
                     },
                     {
@@ -79,12 +92,7 @@ $(document).ready(function () {
                 ],
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json'
-                }
-                ,
-                select: {
-                    style: 'multi'
-                }
-                ,
+                },
                 createdRow: function (row, data, dataIndex) {
                     if (data.orderStatus === "CANCELLED") {
                         $(row).addClass('table-danger');
@@ -96,7 +104,10 @@ $(document).ready(function () {
                         $(row).addClass('table-warning');
                     }
                     if (data.orderStatus === "CHANGED") {
-                        $(row).addClass('table-secondary');
+                        $(row).addClass('table-primary');
+                    }
+                    if (data.orderStatus === "PACKAGE") {
+                        $(row).addClass('table-info');
                     }
                 }
                 ,
@@ -247,12 +258,26 @@ $(document).ready(function () {
         function handleUpdateStatus() {
             const validationForm = {
                 submitHandler: function (form) {
-                    const id = formDataToJson(form).id;
-                    const items = getOrderItem();
-                    const transactionStatus = selectUpdateTransactionStatus.val();
-                    const orderStatus = selectUpdateOrderStatus.val();
-                    console.log(id, transactionStatus, orderStatus, items)
-                    updateStatus(id, transactionStatus, orderStatus, items);
+                    Swal.fire({
+                        ...configSweetAlert2,
+                        title: 'Cập nhập tình trạng đơn hàng',
+                        icon: "warning",
+                        html: "Bạn có chắc chắn muốn cập nhập tình trạng đơn hàng?",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        focusConfirm: true,
+                        confirmButtonText: 'Cập nhập!',
+                        cancelButtonText: 'Đóng',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const id = formDataToJson(form).id;
+                            const items = getOrderItem();
+                            const transactionStatus = selectUpdateTransactionStatus.val();
+                            const orderStatus = selectUpdateOrderStatus.val();
+                            console.log(id, transactionStatus, orderStatus, items)
+                            updateStatus(id, transactionStatus, orderStatus, items);
+                        }
+                    })
                     return false;
                 }
             }
@@ -559,6 +584,7 @@ $(document).ready(function () {
                         showCloseButton: true,
                     }).then(() => {
                         datatable.ajax.reload();
+                        modalUpdate.modal("hide");
                     });
                 else
                     Swal.fire({
