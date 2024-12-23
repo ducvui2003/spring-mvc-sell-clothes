@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderServices {
-    List<OrderResponse> getOrder(int userId, int statusOrder);
+    List<OrderResponse> getOrder(int userId, int statusOrder) throws Exception;
 
     List<OrderDetailItemResponse> getOrderDetailByOrderId(String orderId);
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum OrderStatus {
     VERIFYING(6, "Chờ xác thực"),
-    CHANGED(7, "Đơn hàng đã thay đổi chờ xác thực lại"),
+    CHANGED(7, "Đơn hàng thay đổi đang chờ xác nhận"),
     PENDING(1, "Chờ xác nhận"),
     PACKAGE(2, "Chờ đóng gói"),
     DELIVERY(3, "Đang vận chuyển"),

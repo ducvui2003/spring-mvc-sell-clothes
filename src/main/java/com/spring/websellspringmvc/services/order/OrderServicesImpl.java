@@ -34,10 +34,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -54,9 +51,11 @@ public class OrderServicesImpl implements OrderServices {
     SessionManager sessionManager;
 
     @Override
-    public List<OrderResponse> getOrder(int userId, int statusOrder) {
+    public List<OrderResponse> getOrder(int userId, int statusOrder) throws Exception {
         List<OrderResponse> listOrderResponse = orderDAO.getOrder(userId, statusOrder);
         List<OrderDetailResponse> orderDetailResponses = getOrderByOrderId(listOrderResponse.stream().map(OrderResponse::getId).toList());
+        this.updateOrdersStatus(orderDetailResponses);
+        return  orderDAO.getOrder(userId, statusOrder);
     }
 
     @Override
@@ -80,13 +79,12 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public List<OrderDetailResponse> getOrderByOrderId(List<String> orderIds) {
+        List<OrderDetailResponse> result = new ArrayList<>();
         for (String orderId : orderIds) {
             OrderDetailResponse order = getOrderByOrderId(orderId, sessionManager.getUser().getId());
-            if (order != null) {
-                order.setSignatureKey(null);
-            }
+            result.add(order);
         }
-        return null;
+        return result;
     }
 
     @Override
@@ -134,7 +132,7 @@ public class OrderServicesImpl implements OrderServices {
         PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
 
         jdbi.useTransaction(handle -> {
-            for ( OrderDetailResponse order : orders) {
+            for (OrderDetailResponse order : orders) {
                 if (order.getStatus().equals(OrderStatus.VERIFYING.getDisplayName()) || order.getStatus().equals(OrderStatus.CHANGED.getDisplayName())) {
                     continue;
                 }
@@ -144,7 +142,7 @@ public class OrderServicesImpl implements OrderServices {
                 }
                 String signature = signedOrderFile.hashData(order);
 
-                boolean isSimilar=signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
+                boolean isSimilar = signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
                 if (!isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
