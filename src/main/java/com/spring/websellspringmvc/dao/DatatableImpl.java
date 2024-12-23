@@ -26,7 +26,7 @@ public class DatatableImpl implements DatatableDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT orders.id, fullName, dateOrder, paymentMethod, order_statuses.alias AS orderStatus, transaction_statuses.alias AS transactionStatus ");
         sql.append("FROM orders JOIN order_statuses ON orders.orderStatusId = order_statuses.id JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id ");
-        sql.append("WHERE 1=1 AND orders.previousId = orders.id ");
+        sql.append("WHERE 1=1 ");
 
         Map<String, Object> params = new HashMap<>();
 
@@ -94,7 +94,7 @@ public class DatatableImpl implements DatatableDAO {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) ");
-        sql.append("FROM orders WHERE 1=1 AND orders.previousId = orders.id ");
+        sql.append("FROM orders WHERE 1=1  ");
 
         Map<String, Object> params = new HashMap<>();
 

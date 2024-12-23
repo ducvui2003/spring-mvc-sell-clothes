@@ -90,7 +90,6 @@ public interface OrderDAO {
             FROM orders 
             WHERE orders.orderStatusId = :orderStatus 
             AND orders.userId = :userId 
-            AND orders.previousId = orders.id
             """)
     @RegisterBeanMapper(OrderResponse.class)
     public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("orderStatus") int orderStatus);
@@ -140,10 +139,9 @@ public interface OrderDAO {
 
 
     @SqlUpdate("""
-            INSERT INTO orders (id, previousId, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
+            INSERT INTO orders (id, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
                                 fee, leadTime, province, district, ward, detail)
             SELECT :order.id,
-                    :order.previousId,
                    :order.userId,
                    :order.paymentMethod,
                    :order.paymentRef,
@@ -191,7 +189,7 @@ public interface OrderDAO {
             FROM orders
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
-            WHERE orders.id = :id AND orders.previousId = orders.id
+            WHERE orders.id = :id 
             """)
     @RegisterBeanMapper(AdminOrderDetailResponse.class)
     public AdminOrderDetailResponse getOrder(@Bind("id") String id);
@@ -212,12 +210,11 @@ public interface OrderDAO {
                    detail,
                    fee,
                    leadTime,
-                   createAt,
-                   previousId
+                   createAt 
             FROM orders 
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id 
-            WHERE orders.previousId = :id OR orders.id = :id
+            WHERE orders.id = :id
             ORDER BY orders.createAt DESC
             """)
     @RegisterBeanMapper(AdminOrderDetailResponse.class)
@@ -267,8 +264,7 @@ public interface OrderDAO {
             ward, 
             detail, 
             fee, 
-            leadTime,
-            previousId
+            leadTime
             )
             SELECT   UUID(),
                      o.userId,
@@ -285,10 +281,9 @@ public interface OrderDAO {
                      o.ward,
                      o.detail,
                      o.fee,
-                     o.leadTime,
-                     :orderId 
+                     o.leadTime 
             FROM orders o
-            WHERE o.id = :orderId AND o.previousId = :orderId AND o.userId = :userId
+            WHERE o.id = :orderId AND o.userId = :userId
             """)
     int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
 

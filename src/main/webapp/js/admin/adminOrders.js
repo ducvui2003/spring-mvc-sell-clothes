@@ -248,7 +248,7 @@ $(document).ready(function () {
                     const items = getOrderItem();
                     const transactionStatus = selectUpdateTransactionStatus.val();
                     const orderStatus = selectUpdateOrderStatus.val();
-                    console.log(id, transactionStatus, orderStatus,items )
+                    console.log(id, transactionStatus, orderStatus, items)
                     updateStatus(id, transactionStatus, orderStatus, items);
                     return false;
                 }
@@ -442,22 +442,42 @@ $(document).ready(function () {
                                  ${item.sizes.map(sizes => (`<option value="${sizes.id}">${sizes.nameSize}</option>`))}
                             </select>
                         </td>
-                        <td>${item.quantity}</td>
+                        <td>
+                            <div class="d-flex gap-2 align-items-center" class="quantity">
+                                <button type="button" class="btn btn-primary btn-decrease">
+                                     <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span class="badge bg-secondary fs-5"> ${item.quantity}</span>
+                                 <button type="button" class="btn btn-primary btn-increase">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
                         <td>${formatCurrency(item.price)}</td>
                     </tr>
                    `
                     ));
                     tableUpdateOrderDetail.html(html.join(""));
 
-                    handleSelect2Color();
+                    handleSelect2();
 
-                    tableUpdateOrderDetail.find('.select2-sizes').select2({
-                        width: '100%',
-                        closeOnSelect: true,
-                        minimumResultsForSearch: -1,
-                        placeholder: 'Chọn size muốn thay đổi',
-                        dropdownParent: modalUpdate,
-                    });
+                    handleQuantity();
+                }
+            });
+        }
+
+        function handleQuantity() {
+            tableUpdateOrderDetail.find(".btn-increase").on("click", function () {
+                const quantity = $(this).closest("td").find(".badge");
+                const currentQuantity = parseInt(quantity.text());
+                quantity.text(currentQuantity + 1);
+            });
+
+            tableUpdateOrderDetail.find(".btn-decrease").on("click", function () {
+                const quantity = $(this).closest("td").find(".badge");
+                const currentQuantity = parseInt(quantity.text());
+                if (currentQuantity > 1) {
+                    quantity.text(currentQuantity - 1);
                 }
             });
         }
@@ -477,7 +497,15 @@ $(document).ready(function () {
             return result;
         }
 
-        function handleSelect2Color() {
+        function handleSelect2() {
+            tableUpdateOrderDetail.find('.select2-sizes').select2({
+                width: '100%',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1,
+                placeholder: 'Chọn size muốn thay đổi',
+                dropdownParent: modalUpdate,
+            });
+
             tableUpdateOrderDetail.find('.select2-colors').select2({
                 width: '100%',
                 closeOnSelect: true,
@@ -519,7 +547,7 @@ $(document).ready(function () {
                     orderStatus: orderStatus,
                     items: items,
                 }
-            }, false).then(response => {
+            }).then(response => {
                 if (response.code === 200)
                     Swal.fire({
                         ...configSweetAlert2,
