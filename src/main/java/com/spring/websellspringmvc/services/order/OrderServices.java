@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.dto.request.ChangeOrderRequest;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
+import com.spring.websellspringmvc.models.Size;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface OrderServices {
     void changeOrder(String orderId, Integer userId, ChangeOrderRequest request);
 
     void updateOrderStatusVerify(String orderId, int userId);
+
 }

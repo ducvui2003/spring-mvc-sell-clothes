@@ -43,7 +43,7 @@ public class UploadDownloadController {
     PDFService pdfService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<?>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public ResponseEntity<ApiResponse<Boolean>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
         int userId = sessionManager.getUser().getId();
         // Retrieve order details and previous orders
         OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(orderId, userId);

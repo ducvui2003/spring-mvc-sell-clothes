@@ -1,5 +1,7 @@
 package com.spring.websellspringmvc.dto.response;
 
+import com.spring.websellspringmvc.models.Color;
+import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
 import lombok.AllArgsConstructor;
@@ -18,4 +20,5 @@ import java.util.List;
 public class StatusChangedResponse {
     List<OrderStatus> orderStatusTarget;
     List<TransactionStatus> transactionStatusTarget;
+    List<OrderDetailItemChangedResponse> items;
 }

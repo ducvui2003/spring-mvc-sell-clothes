@@ -1,5 +1,7 @@
 package com.spring.websellspringmvc.mapper;
 
+import com.spring.websellspringmvc.dto.response.OrderDetailItemChangedResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.ReviewDetailResponse;
 import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.OrderDetail;
@@ -14,5 +16,5 @@ public interface OrderMapper {
 
     ReviewDetailResponse.OrderResponse toOrderResponse(Order order);
 
-
+    OrderDetailItemChangedResponse toOrderDetailItemChangedResponse(OrderDetailItemResponse orderDetail);
 }
