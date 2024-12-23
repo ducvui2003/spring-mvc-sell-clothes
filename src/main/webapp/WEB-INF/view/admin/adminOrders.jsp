@@ -17,7 +17,7 @@
 <jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
-    <c:import url="/common/adminNavigator"/>
+    <jsp:include page="/WEB-INF/view/common/adminNavigator.jsp"/>
     <section class="content">
         <div class="container-xl">
             <div class="row">
@@ -236,51 +236,100 @@
 </div>
 
 <!--Modal update status-->
-<div id="form-update-status" class="d-none">
-    <div class="container-fluid ">
-        <div class="row">
-            <div class="col-6">
-                <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
-                <select id="orderStatus" class="orderStatus" name="orderStatus">
-                    <c:forEach var="item" items="${requestScope.orderStatus}">
-                        <option value="${item.alias}">${item.typeStatus}</option>
-                    </c:forEach>
-                </select>
+
+<div class="modal fade" id="modal-update" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <form id="form-update-status" class="modal-content " action="javascript:void(0);">
+            <input type="text" hidden="hidden" name="id" value="">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Cập nhập thông tin đơn hàng</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="col-6">
-                <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>
-                <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
-                    <c:forEach var="item"
-                               items="${requestScope.transactionStatus}">
-                        <option value="${item.alias}">${item.typeStatus}</option>
-                    </c:forEach>
-                </select>
+            <div class="modal-body" style="max-height: 80vh">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>
+                        <select id="orderStatus" class="orderStatus" name="orderStatus">
+                            <c:forEach var="item" items="${requestScope.orderStatus}">
+                                <option value="${item.alias}">${item.typeStatus}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>
+                        <select id="transactionStatus" class="transactionStatus" name="transactionStatus">
+                            <c:forEach var="item"
+                                       items="${requestScope.transactionStatus}">
+                                <option value="${item.alias}">${item.typeStatus}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <table id="table-update-order-item" class="table w-100  mt-3 table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Màu sắc</th>
+                                <th scope="col">Kích thuớc</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Gíá bán</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
             </div>
-            <div class="col-12">
-                <table class="table w-100 order-detail mt-3 table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Sản phẩm</th>
-                        <th scope="col">Màu sắc</th>
-                        <th scope="col">Kích thuớc</th>
-                        <th scope="col">Số lượng</th>
-                        <th scope="col">Gíá bán</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
+<%--<div id="form-update-status" class="d-none">--%>
+<%--    <div class="container-fluid ">--%>
+<%--        <div class="row">--%>
+<%--            <div class="col-6">--%>
+<%--                <label for="orderStatus" class="form-label">Tình trạng đơn hàng</label>--%>
+<%--                <select id="orderStatus" class="orderStatus" name="orderStatus">--%>
+<%--                    <c:forEach var="item" items="${requestScope.orderStatus}">--%>
+<%--                        <option value="${item.alias}">${item.typeStatus}</option>--%>
+<%--                    </c:forEach>--%>
+<%--                </select>--%>
+<%--            </div>--%>
+<%--            <div class="col-6">--%>
+<%--                <label for="transactionStatus" class="form-label">Tình trạng giao dịch</label>--%>
+<%--                <select id="transactionStatus" class="transactionStatus" name="transactionStatus">--%>
+<%--                    <c:forEach var="item"--%>
+<%--                               items="${requestScope.transactionStatus}">--%>
+<%--                        <option value="${item.alias}">${item.typeStatus}</option>--%>
+<%--                    </c:forEach>--%>
+<%--                </select>--%>
+<%--            </div>--%>
+<%--            <div class="col-12">--%>
+<%--                <table id="table-update-order-detail" class="table w-100  mt-3 table-striped">--%>
+<%--                    <thead>--%>
+<%--                    <tr>--%>
+<%--                        <th scope="col">#</th>--%>
+<%--                        <th scope="col">Sản phẩm</th>--%>
+<%--                        <th scope="col">Màu sắc</th>--%>
+<%--                        <th scope="col">Kích thuớc</th>--%>
+<%--                        <th scope="col">Số lượng</th>--%>
+<%--                        <th scope="col">Gíá bán</th>--%>
+<%--                    </tr>--%>
+<%--                    </thead>--%>
+<%--                    <tbody>--%>
+
+<%--                    </tbody>--%>
+<%--                </table>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</div>--%>
 
 <script type="module" src="<c:url value="/js/admin/adminOrders.js"/>"></script>
 </body>

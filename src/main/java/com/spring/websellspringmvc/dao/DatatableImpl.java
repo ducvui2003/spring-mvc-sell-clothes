@@ -33,10 +33,10 @@ public class DatatableImpl implements DatatableDAO {
         if (request.getContentSearch() != null && request.getSearchSelect() != null && !request.getContentSearch().isBlank()) {
             switch (request.getSearchSelect()) {
                 case ORDER_ID:
-                    sql.append("AND id LIKE :contentSearch ");
+                    sql.append("AND orders.id = :contentSearch ");
                     break;
                 case CUSTOMER_NAME:
-                    sql.append("AND fullName LIKE :contentSearch ");
+                    sql.append("AND orders.fullName LIKE :contentSearch ");
                     break;
             }
             params.put("contentSearch", request.getContentSearch());
@@ -94,17 +94,17 @@ public class DatatableImpl implements DatatableDAO {
         // Build the SQL query dynamically
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) ");
-        sql.append("FROM orders WHERE 1=1 AND orders.previousId = orders.id");
+        sql.append("FROM orders WHERE 1=1 AND orders.previousId = orders.id ");
 
         Map<String, Object> params = new HashMap<>();
 
         if (request.getContentSearch() != null && request.getSearchSelect() != null && !request.getContentSearch().isBlank()) {
             switch (request.getSearchSelect()) {
                 case ORDER_ID:
-                    sql.append("AND id LIKE :contentSearch ");
+                    sql.append("AND orders.id = :contentSearch ");
                     break;
                 case CUSTOMER_NAME:
-                    sql.append("AND fullName LIKE :contentSearch ");
+                    sql.append("AND orders.fullName LIKE :contentSearch ");
                     break;
             }
             params.put("contentSearch", request.getContentSearch());

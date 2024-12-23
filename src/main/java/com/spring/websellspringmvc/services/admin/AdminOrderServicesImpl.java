@@ -11,13 +11,17 @@ import com.spring.websellspringmvc.models.Order;
 import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.models.Voucher;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.services.mail.MailVerifyOrderServices;
 import com.spring.websellspringmvc.services.order.OrderServices;
+import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.StatusUtil;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +41,8 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     SizeDAO sizeDAO;
     ColorDAO colorDAO;
     OrderMapper mapper;
+    private final Jdbi jdbi;
+    private final SessionManager sessionManager;
 
     @Override
     public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) {
@@ -119,19 +125,54 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
     @Override
     public boolean changeStatus(String orderId, OrderStatusChangeRequest request) {
-        Map<String, String> status = orderDAO.getStatusById(orderId);
+        Order order = orderDAO.getOrderById(orderId);
 
-        if (status == null) return false;
+        if (order == null) return false;
+        boolean changeSuccess = jdbi.inTransaction(handle -> {
+            try {
 
-        TransactionStatus transactionStatusSrc = TransactionStatus.getByValue(Integer.parseInt(status.get("transactionStatus")));
-        OrderStatus orderStatusSrc = OrderStatus.getByValue(Integer.parseInt(status.get("orderStatus")));
+                TransactionStatus transactionStatusSrc = TransactionStatus.getByValue(order.getTransactionStatusId());
+                OrderStatus orderStatusSrc = OrderStatus.getByValue(order.getOrderStatusId());
 
-        if (canUpdateStatusByOrderId(orderStatusSrc, request.getOrderStatus())
-                && canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
-            orderDAO.updateStatusByOrderId(orderId, request.getOrderStatus().getValue(), request.getTransactionStatus().getValue());
-            return true;
+                if (request.getOrderStatus() != null && orderStatusSrc != null) {
+                    if (canUpdateStatusByOrderId(orderStatusSrc, request.getOrderStatus())) {
+                        orderDAO.updateOrderStatusByOrderId(orderId, request.getOrderStatus().getValue());
+                    }
+                }
+
+                if (request.getTransactionStatus() != null && transactionStatusSrc != null) {
+                    if (canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
+                        orderDAO.updateTransactionStatusByOrderId(orderId, request.getOrderStatus().getValue());
+                    }
+                }
+
+//        Update order detail
+                for (OrderStatusChangeRequest.OrderItemChangeRequest item : request.getItems()) {
+                    orderDAO.updateOrderDetail(item);
+                }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
+
+//        if (canUpdateStatusByOrderId(orderStatusSrc, request.getOrderStatus())
+//                && canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
+//            orderDAO.updateStatusByOrderId(orderId, request.getOrderStatus().getValue(), request.getTransactionStatus().getValue());
+//            return true;
+//        }
+
+//        Gửi email thông báo
+        if (changeSuccess) {
+            MailVerifyOrderServices mail = new MailVerifyOrderServices(order.getEmail(), orderId);
+            try {
+                mail.send();
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return false;
+        return changeSuccess;
     }
 
     @Override
@@ -144,8 +185,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         List<OrderStatus> orderStatusList = this.getOrderStatusCanChangeByOrderId(orderId);
         List<TransactionStatus> transactionStatusList = this.getTransactionStatusCanChangeByOrderId(orderId);
         List<OrderDetailItemChangedResponse> items = null;
-        List<Size> sizes = null;
-        List<Color> colors = null;
         List<OrderDetailItemResponse> orderItems = orderDAO.getOrderDetailsByOrderId(orderId);
         if (orderCanChangedOrderItems(orderStatusDao.getOrderStatus(orderId))) {
             items = this.getOrderDetailItem(orderItems);

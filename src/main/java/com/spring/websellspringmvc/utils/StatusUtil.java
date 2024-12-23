@@ -8,7 +8,7 @@ public class StatusUtil {
 
     public final static List<OrderStatus> STATUS_CAN_CHANGED_ORDER_ITEMS = List.of
             (OrderStatus.VERIFYING,
-                    OrderStatus.CHANGE,
+                    OrderStatus.CHANGED,
                     OrderStatus.PENDING,
                     OrderStatus.PACKAGE);
 }

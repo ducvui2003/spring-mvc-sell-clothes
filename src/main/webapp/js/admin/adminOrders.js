@@ -67,7 +67,13 @@ $(document).ready(function () {
                     {
                         data: "id", render:
                             function (data, type, row, meta) {
-                                return `<button type="button" class="btn btn-warning btn-update" data-id="${data}" data-order-status="${row.orderStatus}"><i class="fa-solid fa-pen"></i></button>`
+                                return `<button type="button" class="btn btn-warning btn-update" 
+                                        data-id="${data}" 
+                                        data-order-status="${row.orderStatus}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-update">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>`
                             }
                     }
                 ],
@@ -97,6 +103,7 @@ $(document).ready(function () {
                     handleFormSearch();
                     configModalFilter();
                     configModalView();
+                    configModalUpdate();
                 }
             }
         const table = $("#table");
@@ -106,19 +113,18 @@ $(document).ready(function () {
         const modalFilter = $("#modal-filter");
         const modalView = $("#modal-view")
         const tableOrderDetail = $("#table-order-detail tbody");
+        const modalUpdate = $("#modal-update")
+        const tableUpdateOrderDetail = $("#table-update-order-item tbody");
+        const selectUpdateOrderStatus = $("#orderStatus");
+        const selectUpdateTransactionStatus = $("#transactionStatus");
 
         function initEventDatatable() {
             table.find("tbody").on('click', 'button', function (e) {
                 e.stopPropagation();
-            }).on('click', 'button.btn-update', function () {
-                const id = $(this).data("id");
-                const orderStatus = $(this).data("order-status");
-                modalUpdate(id, orderStatus);
-            });
+            })
             datatable.on("select", function (e, dt, type, indexes) {
                 console.log("selected")
             })
-
         }
 
         let startDate = null;
@@ -217,6 +223,41 @@ $(document).ready(function () {
             });
         }
 
+
+        function configModalUpdate() {
+            modalUpdate.on("show.bs.modal", function (event) {
+                const button = event.relatedTarget
+                const id = $(button).data("id");
+                const orderStatus = $(button).data("order-status");
+                modalUpdate.find('input[name="id"]').val(id);
+                if (orderStatus === "VERIFYING") {
+                    alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
+                    return;
+                }
+
+                getStatusOrder(id);
+                handleUpdateStatus();
+            }).on("hidden.bs.modal", function () {
+            });
+        }
+
+        function handleUpdateStatus() {
+            const validationForm = {
+                submitHandler: function (form) {
+                    const id = formDataToJson(form).id;
+                    const items = getOrderItem();
+                    const transactionStatus = selectUpdateTransactionStatus.val();
+                    const orderStatus = selectUpdateOrderStatus.val();
+                    console.log(id, transactionStatus, orderStatus,items )
+                    updateStatus(id, transactionStatus, orderStatus, items);
+                    return false;
+                }
+            }
+
+            $("#form-update-status").validate(validationForm);
+        }
+
+
         function getDetail(id) {
             http({
                 url: '/api/admin/order/:id',
@@ -285,43 +326,51 @@ $(document).ready(function () {
             tableOrderDetail.html(htmls.join(""));
         }
 
-        function modalUpdate(id, orderStatus) {
-            const htmlContent = $("#form-update-status").html();
-            if (orderStatus === "VERIFYING") {
-                alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
-                return;
-            }
+        // function handleBeforeModalUpdate(id, orderStatus) {
+        //     const htmlContent = $("#form-update-status").html();
+        //     if (orderStatus === "VERIFYING") {
+        //         alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
+        //         return;
+        //     }
+        //
+        //     Swal.fire({
+        //         ...configSweetAlert2,
+        //         title: 'Cập nhập tình trạng đơn hàng',
+        //         icon: "warning",
+        //         html: htmlContent,
+        //         showCloseButton: true,
+        //         showCancelButton: true,
+        //         focusConfirm: true,
+        //         width: 1000,
+        //         confirmButtonText: 'Cập nhập!',
+        //         cancelButtonText: 'Đóng',
+        //         willOpen: () => {
+        //
+        //         },
+        //         didOpen() {
+        //             const modal = $(Swal.getHtmlContainer());
+        //             getStatusOrder(modal, id);
+        //         },
+        //         preConfirm: () => {
+        //             const modal = $(Swal.getHtmlContainer());
+        //             const orderStatus = updateOrderStatus.val();
+        //             const transactionStatus = updateTransactionStatus.val();
+        //             const orderDetails = getOrderItem();
+        //             return {
+        //                 orderStatusId: orderStatus,
+        //                 transactionStatusId: transactionStatus,
+        //                 items: orderDetails
+        //             };
+        //         },
+        //     }).then(result => {
+        //         if (result.isConfirmed) {
+        //             const {orderStatus, transactionStatus, items} = result.value;
+        //             updateStatus(id, orderStatus, transactionStatus, items);
+        //         }
+        //     });
+        // }
 
-            Swal.fire({
-                ...configSweetAlert2,
-                title: 'Cập nhập tình trạng đơn hàng',
-                icon: "warning",
-                html: htmlContent,
-                showCloseButton: true,
-                showCancelButton: true,
-                focusConfirm: true,
-                width: 1000,
-                confirmButtonText: 'Cập nhập!',
-                cancelButtonText: 'Đóng',
-                didOpen() {
-                    const modal = $(Swal.getHtmlContainer());
-                    configModalUpdateStatus(modal, id);
-                },
-                preConfirm: () => {
-                    const modal = $(Swal.getHtmlContainer());
-                    const orderStatus = modal.find('.orderStatus').val();
-                    const transactionStatus = modal.find('.transactionStatus').val();
-                    return {orderStatusId: orderStatus, transactionStatusId: transactionStatus};
-                },
-            }).then(result => {
-                if (result.isConfirmed) {
-                    const {orderStatus, transactionStatus} = result.value;
-                    updateStatus(id, orderStatus, transactionStatus);
-                }
-            });
-        }
-
-        function configModalUpdateStatus(modal, id) {
+        function getStatusOrder(id) {
             http({
                 url: "/api/admin/order/status-target/:orderId",
                 type: "GET",
@@ -331,13 +380,11 @@ $(document).ready(function () {
             }).then(response => {
                 const orderStatusTarget = response.data.orderStatusTarget;
                 const transactionStatusTarget = response.data.transactionStatusTarget;
-                const orderDetails = response.data.items;
-                const orderStatusSelect = modal.find(".orderStatus")
-                const transactionStatusSelect = modal.find(".transactionStatus")
-                const orderDetailTable = modal.find(".order-detail tbody");
+                const orderItems = response.data.items;
                 const listAllOrderStatus = [];
                 const listAllTransactionStatus = [];
-                orderStatusSelect.find("option").each(function () {
+
+                selectUpdateOrderStatus.find("option").each(function () {
                     const data = {
                         id: $(this).val(),
                         text: $(this).text(),
@@ -346,7 +393,7 @@ $(document).ready(function () {
                     listAllOrderStatus.push(data);
                 });
 
-                transactionStatusSelect.find("option").each(function () {
+                selectUpdateTransactionStatus.find("option").each(function () {
                     const data = {
                         id: $(this).val(),
                         text: $(this).text(),
@@ -355,36 +402,35 @@ $(document).ready(function () {
                     listAllTransactionStatus.push(data);
                 });
 
-                orderStatusSelect.empty();
-                transactionStatusSelect.empty();
+                selectUpdateOrderStatus.empty();
+                selectUpdateTransactionStatus.empty();
 
-                orderStatusSelect.select2({
+                selectUpdateOrderStatus.select2({
                     width: '100%',
                     closeOnSelect: true,
                     minimumResultsForSearch: -1,
                     allowClear: true,
                     placeholder: 'Chọn tình trạng đơn hàng',
-                    dropdownParent: $('.swal2-popup'),
+                    dropdownParent: modalUpdate,
                     data: listAllOrderStatus,
                 }).val(orderStatusTarget.id);
 
-                transactionStatusSelect.select2({
+                selectUpdateTransactionStatus.select2({
                     width: '100%',
                     closeOnSelect: true,
                     allowClear: true,
                     minimumResultsForSearch: -1,
                     placeholder: 'Chọn tình trạng giao dịch',
-                    dropdownParent: $('.swal2-popup'),
+                    dropdownParent: modalUpdate,
                     data: listAllTransactionStatus,
                 }).val(transactionStatusTarget.id);
 
-
-                orderDetailTable.empty();
-                if(orderDetails && orderDetails.length > 0) {
-                    orderDetailTable.html(orderDetails.map((item, index) => (
+                tableUpdateOrderDetail.empty();
+                if (orderItems && orderItems.length > 0) {
+                    const html = orderItems.map((item, index) => (
                         `
                     <tr>
-                        <th scope="row">${index + 1}</th>
+                        <th data-id="${item.id}" scope="row">${index + 1}</th>
                         <td>${item.name}</td>
                         <td>
                             <select class="select2-colors">
@@ -400,28 +446,44 @@ $(document).ready(function () {
                         <td>${formatCurrency(item.price)}</td>
                     </tr>
                    `
-                    )));
+                    ));
+                    tableUpdateOrderDetail.html(html.join(""));
 
-                    handleSelect2Color(orderDetailTable);
+                    handleSelect2Color();
 
-                    orderDetailTable.find('.select2-sizes').select2({
+                    tableUpdateOrderDetail.find('.select2-sizes').select2({
                         width: '100%',
                         closeOnSelect: true,
                         minimumResultsForSearch: -1,
                         placeholder: 'Chọn size muốn thay đổi',
-                        dropdownParent: $('.swal2-popup'),
+                        dropdownParent: modalUpdate,
                     });
                 }
             });
         }
 
-        function handleSelect2Color(orderDetailTable) {
-            orderDetailTable.find('.select2-colors').select2({
+        function getOrderItem() {
+            const result = [];
+            tableUpdateOrderDetail.find("tr").each(function (index, element) {
+                const orderDetail = $(element);
+                const id = orderDetail.find("th:nth-child(1)").data("id");
+                const name = orderDetail.find("td:nth-child(2)").text();
+                const colorId = orderDetail.find("td:nth-child(3) select").val();
+                const sizeId = orderDetail.find("td:nth-child(4) select").val();
+                const quantity = orderDetail.find("td:nth-child(5)").text();
+                const price = orderDetail.find("td:nth-child(6)").text();
+                result.push({id, name, colorId, sizeId, quantity, price});
+            });
+            return result;
+        }
+
+        function handleSelect2Color() {
+            tableUpdateOrderDetail.find('.select2-colors').select2({
                 width: '100%',
                 closeOnSelect: true,
                 minimumResultsForSearch: -1,
                 placeholder: 'Chọn màu sắc muốn thay đổi',
-                dropdownParent: $('.swal2-popup'),
+                dropdownParent: modalUpdate,
                 templateResult: formatOption,
                 templateSelection: formatSelection,
             });
@@ -445,7 +507,7 @@ $(document).ready(function () {
             }
         }
 
-        function updateStatus(id, orderStatus, transactionStatus) {
+        function updateStatus(id, transactionStatus, orderStatus, items) {
             http({
                 url: "/api/admin/order/status-target/:orderId",
                 type: "PUT",
@@ -455,6 +517,7 @@ $(document).ready(function () {
                 data: {
                     transactionStatus: transactionStatus,
                     orderStatus: orderStatus,
+                    items: items,
                 }
             }, false).then(response => {
                 if (response.code === 200)
