@@ -29,7 +29,7 @@ public class OrderController {
     SessionManager sessionManager;
 
     @GetMapping("/{status}")
-    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrder(@PathVariable("status") OrderStatus status) throws ServletException, IOException {
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrder(@PathVariable("status") OrderStatus status) throws Exception {
         User user = sessionManager.getUser();
         List<OrderResponse> orders = orderServices.getOrder(user.getId(), status.getValue());
         return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), "success", orders));

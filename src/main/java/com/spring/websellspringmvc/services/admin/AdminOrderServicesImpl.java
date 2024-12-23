@@ -128,9 +128,8 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         Order order = orderDAO.getOrderById(orderId);
 
         if (order == null) return false;
-        boolean changeSuccess = jdbi.inTransaction(handle -> {
+        boolean handleSendMail = jdbi.inTransaction(handle -> {
             try {
-
                 TransactionStatus transactionStatusSrc = TransactionStatus.getByValue(order.getTransactionStatusId());
                 OrderStatus orderStatusSrc = OrderStatus.getByValue(order.getOrderStatusId());
 
@@ -142,15 +141,22 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
                 if (request.getTransactionStatus() != null && transactionStatusSrc != null) {
                     if (canUpdateTransactionByOrderId(transactionStatusSrc, request.getTransactionStatus())) {
-                        orderDAO.updateTransactionStatusByOrderId(orderId, request.getOrderStatus().getValue());
+                        orderDAO.updateTransactionStatusByOrderId(orderId, request.getTransactionStatus().getValue());
                     }
                 }
 
-//        Update order detail
-                for (OrderStatusChangeRequest.OrderItemChangeRequest item : request.getItems()) {
-                    orderDAO.updateOrderDetail(item);
+                //        Update order detail
+                if (request.getItems() != null) {
+                    int rowEffect = 0;
+                    for (OrderStatusChangeRequest.OrderItemChangeRequest item : request.getItems()) {
+                        rowEffect += orderDAO.updateOrderDetail(item);
+                    }
+                    if (rowEffect != 0) {
+                        orderDAO.updateOrderStatusByOrderId(orderId, OrderStatus.CHANGED.getValue());
+                        return true;
+                    }
                 }
-                return true;
+                return false;
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
@@ -164,7 +170,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 //        }
 
 //        Gửi email thông báo
-        if (changeSuccess) {
+        if (handleSendMail) {
             MailVerifyOrderServices mail = new MailVerifyOrderServices(order.getEmail(), orderId);
             try {
                 mail.send();
@@ -172,7 +178,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
                 throw new RuntimeException(e);
             }
         }
-        return changeSuccess;
+        return handleSendMail;
     }
 
     @Override

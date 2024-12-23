@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderServices {
-    List<OrderResponse> getOrder(int userId, int statusOrder);
+    List<OrderResponse> getOrder(int userId, int statusOrder) throws Exception;
 
     List<OrderDetailItemResponse> getOrderDetailByOrderId(String orderId);
 
     OrderDetailResponse getOrderByOrderId(String orderId, int userId);
+
+    List<OrderDetailResponse> getOrderByOrderId(List<String> orderIds);
 
     void changeOrder(String orderId, Integer userId, ChangeOrderRequest request);
 

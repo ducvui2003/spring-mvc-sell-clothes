@@ -5,7 +5,6 @@ import com.spring.websellspringmvc.controller.exception.ErrorCode;
 import com.spring.websellspringmvc.dto.ApiResponse;
 import com.spring.websellspringmvc.dto.request.AddressRequest;
 import com.spring.websellspringmvc.dto.response.AddressResponse;
-import com.spring.websellspringmvc.models.Address;
 import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,7 +57,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteVoucher(@PathVariable("id") Integer addressId) {
+    public ResponseEntity<ApiResponse<?>> deleteAddress(@PathVariable("id") Integer addressId) {
         int userId = sessionManager.getUser().getId();
         addressServices.deleteAddress(addressId, userId);
         return ResponseEntity.ok(new ApiResponse<>(HttpServletResponse.SC_OK, "Delete address", null));

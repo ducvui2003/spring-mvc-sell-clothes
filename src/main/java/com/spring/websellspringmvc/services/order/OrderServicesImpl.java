@@ -34,10 +34,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -54,8 +51,11 @@ public class OrderServicesImpl implements OrderServices {
     SessionManager sessionManager;
 
     @Override
-    public List<OrderResponse> getOrder(int userId, int statusOrder) {
-        return orderDAO.getOrder(userId, statusOrder);
+    public List<OrderResponse> getOrder(int userId, int statusOrder) throws Exception {
+        List<OrderResponse> listOrderResponse = orderDAO.getOrder(userId, statusOrder);
+        List<OrderDetailResponse> orderDetailResponses = getOrderByOrderId(listOrderResponse.stream().map(OrderResponse::getId).toList());
+        this.updateOrdersStatus(orderDetailResponses);
+        return  orderDAO.getOrder(userId, statusOrder);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class OrderServicesImpl implements OrderServices {
 
     @Override
     public OrderDetailResponse getOrderByOrderId(String orderId, int userId) {
-        Optional<OrderDetailResponse> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId, userId);
+        Optional<OrderDetailResponse> orderDetailResponseDTO = orderDAO.getOrderByOrderDetailId(orderId);
         if (orderDetailResponseDTO.isPresent()) {
             OrderDetailResponse order = orderDetailResponseDTO.get();
             List<OrderDetailItemResponse> orderDetails = getOrderDetailByOrderId(orderId);
@@ -78,16 +78,30 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
+    public List<OrderDetailResponse> getOrderByOrderId(List<String> orderIds) {
+        List<OrderDetailResponse> result = new ArrayList<>();
+        for (String orderId : orderIds) {
+            OrderDetailResponse order = getOrderByOrderId(orderId, sessionManager.getUser().getId());
+            result.add(order);
+        }
+        return result;
+    }
+
+    @Override
     public void changeOrder(String orderId, Integer userId, ChangeOrderRequest request) {
         jdbi.useTransaction(handle -> {
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
             Address address = addressDAO.getAddressById(request.getAddressId());
             if (address == null) throw new AppException(ErrorCode.NOT_VALID);
             double fee = checkoutServices.getFeeShipping(address.getProvinceId(), address.getDistrictId(), address.getWardId());
             LocalDateTime leadTime = checkoutServices.getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId());
 
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
-            int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee);
+            OrderStatus orderStatus = OrderStatus.valueOf(orderDAO.getStatusById(orderId));
+
+            // Nếu người dùng đã xác thực thì chuyển sang trạng thái y/c xác thực lại
+            if (orderStatus == OrderStatus.PENDING)
+                orderStatus = OrderStatus.CHANGED;
+
+            int rowEffect = orderDAO.changeInfoOrder(orderId, userId, request, leadTime, fee, orderStatus.getValue());
             log.info("row effect: {}", rowEffect);
             if (rowEffect == 0) {
                 throw new AppException(ErrorCode.UPDATE_FAILED);
@@ -98,7 +112,6 @@ public class OrderServicesImpl implements OrderServices {
     @Override
     public void updateOrderStatusVerify(String orderId, int userId) {
         jdbi.useTransaction(handle -> {
-            if (orderDAO.backupOrder(orderId, userId) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
             orderDAO.updateOrderStatus(orderId, OrderStatus.PENDING.getValue());
             log.info("Update order status success");
         });
@@ -119,7 +132,7 @@ public class OrderServicesImpl implements OrderServices {
         PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
 
         jdbi.useTransaction(handle -> {
-            for ( OrderDetailResponse order : orders) {
+            for (OrderDetailResponse order : orders) {
                 if (order.getStatus().equals(OrderStatus.VERIFYING.getDisplayName()) || order.getStatus().equals(OrderStatus.CHANGED.getDisplayName())) {
                     continue;
                 }
@@ -129,7 +142,7 @@ public class OrderServicesImpl implements OrderServices {
                 }
                 String signature = signedOrderFile.hashData(order);
 
-                boolean isSimilar=signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
+                boolean isSimilar = signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
                 if (!isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
