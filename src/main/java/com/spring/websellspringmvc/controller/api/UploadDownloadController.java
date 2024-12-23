@@ -59,7 +59,7 @@ public class UploadDownloadController {
         }
 
         // Generate signature from order details
-        String signature = signedOrderFile.hashData(orderDetailResponse);
+        String hash = signedOrderFile.hashData(orderDetailResponse);
 
         // Create temporary file from uploaded multipart file
         File tempFile = signedOrderFile.createTempFile(multipartFile);
@@ -71,11 +71,11 @@ public class UploadDownloadController {
             Key key = keyDAO.getCurrentKey(userId);
             String strPublicKey = key.getPublicKey();
             PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
-            boolean verified = signedOrderFile.verifyData(signature.getBytes(), uploadSignature, publicKey);
+            boolean verified = signedOrderFile.verifyData(hash.getBytes(), uploadSignature, publicKey);
             tempFile.delete();
             if (verified) {
                 orderServices.updateOrderStatusVerify(orderId, userId);
-                orderServices.insertSignature(orderId, signature,key.getId());
+                orderServices.insertSignature(orderId, uploadSignature, key.getId());
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.<Boolean>builder()
                                 .code(HttpStatus.OK.value())
