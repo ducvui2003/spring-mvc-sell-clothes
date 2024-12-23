@@ -46,7 +46,7 @@ public class AuthenticateServicesImpl implements AuthenticationService {
 
         String encode = Encoding.getINSTANCE().toSHA1(dto.getPassword());
         if (!user.getPasswordEncoding().equals(encode))
-            throw new AppException(ErrorView.SIGN_IN_FAILED);
+            throw new AppException(new ErrorView(ErrorView.SIGN_IN_FAILED, "user", dto));
         int quantityCart = cartDAO.getQuantityCart(user.getId());
         sessionManager.addUser(user);
         sessionManager.setQuantityCart(quantityCart);

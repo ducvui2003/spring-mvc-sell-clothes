@@ -95,6 +95,9 @@ $(document).ready(function () {
                     if (data.orderStatus === "VERIFYING") {
                         $(row).addClass('table-warning');
                     }
+                    if (data.orderStatus === "CHANGED") {
+                        $(row).addClass('table-secondary');
+                    }
                 }
                 ,
                 initComplete: function (settings, json) {
