@@ -23,7 +23,7 @@ public class AdminOrderController {
     AdminOrderServices orderServices;
 
     @PostMapping("/datatable")
-    public ResponseEntity<DatatableResponse<OrderDatatable>> datatable(@RequestBody OrderDatatableRequest requestBody) {
+    public ResponseEntity<DatatableResponse<OrderDatatable>> datatable(@RequestBody OrderDatatableRequest requestBody) throws Exception {
         DatatableResponse<OrderDatatable> response = orderServices.datatable(requestBody);
         return ResponseEntity.ok(response);
     }

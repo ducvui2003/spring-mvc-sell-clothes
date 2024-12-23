@@ -18,10 +18,12 @@ import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.services.mail.MailVerifyOrderServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.SignedOrderFile;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -119,18 +121,18 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public void insertSignature(String orderId, String signature) {
+    public void insertSignature(String orderId, String signature, String keyId) {
         jdbi.useTransaction(handle -> {
-            if (orderDAO.insertSignature(orderId, signature) == 0) throw new AppException(ErrorCode.UPDATE_FAILED);
+            if (orderDAO.insertSignature(orderId, signature, keyId) == 0)
+                throw new AppException(ErrorCode.UPDATE_FAILED);
             log.info("Insert signature success");
         });
     }
 
+
     @Override
     public void updateOrdersStatus(List<OrderDetailResponse> orders) throws Exception {
         int userId = sessionManager.getUser().getId();
-        String strPublicKey = keyDAO.getCurrentKey(userId).getPublicKey();
-        PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
 
         jdbi.useTransaction(handle -> {
             for (OrderDetailResponse order : orders) {
@@ -148,6 +150,12 @@ public class OrderServicesImpl implements OrderServices {
                 boolean isSimilar = signedOrderFile.verifyData(hash.getBytes(), signatureKey, publicKey);
                 if (!isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
+                    MailVerifyOrderServices mail = new MailVerifyOrderServices(order.getEmail(), order.getOrderId());
+                    try {
+                        mail.send();
+                    } catch (MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });

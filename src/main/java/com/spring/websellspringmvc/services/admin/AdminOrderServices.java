@@ -12,7 +12,7 @@ import com.spring.websellspringmvc.models.*;
 import java.util.List;
 
 public interface AdminOrderServices {
-    DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request);
+    DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) throws Exception;
 
     AdminOrderDetailResponse getOrderDetail(String orderId);
 

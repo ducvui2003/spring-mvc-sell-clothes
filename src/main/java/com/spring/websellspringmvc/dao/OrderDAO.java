@@ -39,22 +39,16 @@ public interface OrderDAO {
 
     @SqlUpdate("""
             UPDATE order_details od
-                                SET
-                                    colorRequired = CASE\s
-                                        WHEN colorRequired != (SELECT codeColor FROM colors WHERE id = :colorId) THEN\s
-                                            (SELECT codeColor FROM colors WHERE id = :colorId)
-                                        ELSE colorRequired\s
-                                    END,
-                                    sizeRequired = CASE\s
-                                        WHEN sizeRequired != (SELECT nameSize FROM sizes WHERE id = :sizeId) THEN\s
-                                            (SELECT nameSize FROM sizes WHERE id = :sizeId)
-                                        ELSE sizeRequired\s
-                                    END,
-                                    quantityRequired = CASE\s
-                                        WHEN quantityRequired != :quantity THEN :quantity
-                                        ELSE quantityRequired
-                                    END
-                                WHERE id = :id;
+            SET
+                colorRequired = (SELECT codeColor FROM colors WHERE id = :colorId),
+                sizeRequired = (SELECT nameSize FROM sizes WHERE id = :sizeId),
+                quantityRequired = :quantity
+            WHERE id = :id
+              AND (
+                colorRequired NOT LIKE (SELECT codeColor FROM colors WHERE id = :colorId)
+                    OR sizeRequired NOT LIKE (SELECT nameSize FROM sizes WHERE id = :sizeId)
+                    OR quantityRequired != :quantity
+                );
             """)
     public int updateOrderDetail(@BindBean OrderStatusChangeRequest.OrderItemChangeRequest orderDetails);
 
@@ -341,5 +335,5 @@ public interface OrderDAO {
                 keyUsingVerify= :keyId
             WHERE id = :orderId
             """)
-    int insertSignature(@Bind("orderId") String orderId, @Bind("signatureKey") String signature,@Bind("keyId") String keyId);
+    int insertSignature(@Bind("orderId") String orderId, @Bind("signatureKey") String signature, @Bind("keyId") String keyId);
 }
