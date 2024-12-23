@@ -99,6 +99,7 @@ public interface OrderDAO {
             orders.detail, 
             orders.voucherId, 
             orders.dateOrder, 
+            orders.signatureKey,
             orders.paymentMethod as payment, 
             orders.fee as fee,
             orders.leadTime as leadTime 

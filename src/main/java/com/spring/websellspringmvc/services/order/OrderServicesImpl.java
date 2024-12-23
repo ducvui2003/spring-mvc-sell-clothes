@@ -140,10 +140,10 @@ public class OrderServicesImpl implements OrderServices {
                 if (signatureKey == null || signatureKey.isEmpty()) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
-                String signature = signedOrderFile.hashData(order);
+                String hash = signedOrderFile.hashData(order);
 
-                boolean isSimilar = signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
-                if (!isSimilar) {
+                boolean isSimilar = signedOrderFile.verifyData(hash.getBytes(), signatureKey, publicKey);
+                if (isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
             }
