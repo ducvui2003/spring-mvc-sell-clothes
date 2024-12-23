@@ -23,6 +23,11 @@
                          data-status="VERIFYING">
                         <i class="fa-solid fa-signature me-4"></i>Chờ xác thực
                     </div>
+                    <div class=" py-3 list-group-item list-group-item-action" aria-current="true"
+                         data-status="CHANGED">
+                         <i class="fa-solid fa-bell me-4"></i>
+                        Đơn hàng đã thay đổi chờ xác thực lại
+                    </div>
                     <div class=" py-3 list-group-item list-group-item-action " aria-current="true"
                          data-status="PENDING">
                         <i class="fa-solid fa-hourglass-half me-4"></i>Chờ xác nhận
@@ -219,19 +224,6 @@
                                     <p>Vui lòng tải thông tin đơn hàng đã xác thực</p>
                                 </div>
                             </div>
-                            <%--                            <div class="col-6 flex-column  justify-content-center pe-auto">--%>
-                            <%--                                <div class="d-flex justify-content-center ">--%>
-                            <%--                                    <div class="text-center m-2 w-100">--%>
-                            <%--                                        <input id="upload-sign-info" type="text"--%>
-                            <%--                                               class="border rounded-pill p-3 m-2 container-fluid"--%>
-                            <%--                                               placeholder="Vui lòng nhập mã xác thực đơn hàng">--%>
-                            <%--                                        <button id="btn-verify" type="button" class="btn btn-primary">--%>
-                            <%--                                            Xác thực--%>
-                            <%--                                        </button>--%>
-                            <%--                                    </div>--%>
-                            <%--                                </div>--%>
-
-                            <%--                            </div>--%>
                         </div>
 
                         <hr class="border border-1 opacity-75 my-4">

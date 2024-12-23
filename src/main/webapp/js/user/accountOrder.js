@@ -29,7 +29,6 @@ $(document).ready(function () {
     handleSubmitModelChangeOrder();
 
 });
-
 function handleUploadFile() {
     var order_id = $('span#order__id').html();
     var file = $('input#upload-sign-info').prop('files')[0];
@@ -260,7 +259,7 @@ function displayBtnAddress(status) {
 }
 
 function displayVerifyBlock(status) {
-    if (status === "VERIFYING") {
+    if (status === "VERIFYING"||"CHANGED") {
         verifyBlock.show();
     } else {
         verifyBlock.hide();

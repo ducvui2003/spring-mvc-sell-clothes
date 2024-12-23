@@ -23,6 +23,7 @@ public class KeyServiceImpl implements KeyServices {
         return keyDAO.isBlockKey(userId, orderId) != 0;
     }
 
+
     @Override
     public List<KeyResponse> getKeys(int userId) {
         List<Key> keys = keyDAO.getKeys(userId);
@@ -47,6 +48,11 @@ public class KeyServiceImpl implements KeyServices {
     @Override
     public boolean setValidKey(int id, String otp) {
         return keyDAO.unblockKey(id, otp);
+    }
+
+    @Override
+    public Key getCurrentKey(int userId) {
+        return keyDAO.getCurrentKey(userId);
     }
 
     @Override
