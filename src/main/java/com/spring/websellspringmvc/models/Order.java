@@ -39,5 +39,5 @@ public class Order {
     String paymentRef;
 
     LocalDateTime createAt;
-    String previousId;
+//    String previousId;
 }

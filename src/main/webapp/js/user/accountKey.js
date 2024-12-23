@@ -207,10 +207,6 @@ $(document).ready(function () {
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-4 font-weight-bold">Mã khóa trước (Previous ID):</div>
-                            <div class="col-md-8">${keyDetail.previousId || 'N/A'}</div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col-md-4 font-weight-bold">Ngày tạo:</div>
                             <div class="col-md-8">${keyDetail.createAt}</div>
                         </div>

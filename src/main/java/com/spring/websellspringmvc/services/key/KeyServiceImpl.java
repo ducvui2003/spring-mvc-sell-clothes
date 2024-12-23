@@ -39,7 +39,7 @@ public class KeyServiceImpl implements KeyServices {
         keyToInsert.setUserId(userId);
         Key currentKeyId = keyDAO.getCurrentKey(userId);
         if (currentKeyId != null) {
-            keyToInsert.setPreviousId(currentKeyId.getId());
+//            keyToInsert.setPreviousId(currentKeyId.getId());
             keyDAO.deleteKey(userId);
         }
         keyDAO.insert(keyToInsert);

@@ -38,6 +38,6 @@ public class AdminOrderDetailResponse implements Serializable {
     double fee;
     LocalDateTime leadTime;
     LocalDateTime createAt;
-    String previousId;
+//    String previousId;
     List<OrderDetailItemResponse> items;
 }
