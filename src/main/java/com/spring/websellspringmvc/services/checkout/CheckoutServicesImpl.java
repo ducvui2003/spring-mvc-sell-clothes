@@ -103,7 +103,7 @@ public class CheckoutServicesImpl implements CheckoutServices {
             order.setLeadTime(getLeadTime(address.getProvinceId(), address.getDistrictId(), address.getWardId()));
 
             order.setId(orderId);
-            order.setPreviousId(orderId);
+//            order.setPreviousId(orderId);
             orderDAO.createOrder(order, address.getId());
             createOrderDetail(request.getCartItemId(), orderId, userId);
 
