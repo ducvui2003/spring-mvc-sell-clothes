@@ -50,6 +50,7 @@ public interface KeyDAO {
                                            ORDER BY
                                               CASE orderStatusId
                                                   WHEN 6 THEN 1
+                                                  WHEN 7 THEN 1
                                                   WHEN 1 THEN 2
                                                   WHEN 2 THEN 3
                                                   ELSE 4

@@ -16,4 +16,6 @@ public interface KeyServices {
     void insertKey(String publicKey, int userId);
 
     boolean setValidKey(int id, String otp);
+
+    Key getCurrentKey(int userId);
 }

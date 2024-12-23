@@ -2,6 +2,7 @@ package com.spring.websellspringmvc.controller.web;
 
 import com.spring.websellspringmvc.dto.response.KeyResponse;
 import com.spring.websellspringmvc.dto.response.UserInfoResponse;
+import com.spring.websellspringmvc.mapper.KeyMapper;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
 import com.spring.websellspringmvc.services.key.KeyServices;
@@ -27,7 +28,7 @@ public class UserController {
     UserServices userServices;
     SessionManager sessionManager;
     KeyServices keyServices;
-
+    KeyMapper keyMapper ;
     @GetMapping(value = {
             "/info",
             "/"
@@ -55,13 +56,14 @@ public class UserController {
     @GetMapping("/key")
     public ModelAndView getKeyPage() {
         User user = sessionManager.getUser();
-        List<KeyResponse> keys = keyServices.getKeys(user.getId());
-        boolean hasKey = !keys.isEmpty() ;
+//        List<KeyResponse> keys = keyServices.getKeys(user.getId());
+        Key key = keyServices.getCurrentKey(user.getId());
+        boolean hasKey = (key != null);
         ModelAndView mov = new ModelAndView();
         mov.setViewName(PageAddress.USER_KEY.getPage());
         mov.addObject("hasKey", hasKey);
-        mov.addObject("currentKey", !keys.isEmpty() ? keys.getFirst() : new KeyResponse());
-        System.out.println("currentKey: " + keys.getFirst().getCreateAt());
+        KeyResponse keyResponse =  key != null ? keyMapper.toKeyResponse(key) : new KeyResponse();
+        mov.addObject("currentKey",keyResponse);
         return mov;
     }
 }

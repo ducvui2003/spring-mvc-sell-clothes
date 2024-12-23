@@ -260,7 +260,7 @@ function displayBtnAddress(status) {
 }
 
 function displayVerifyBlock(status) {
-    if (status === "VERIFYING") {
+    if (status === "VERIFYING"||"CHANGED") {
         verifyBlock.show();
     } else {
         verifyBlock.hide();
