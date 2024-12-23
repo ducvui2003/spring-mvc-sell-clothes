@@ -314,7 +314,7 @@ function handleCheckCanChangeOrder(orderId) {
             orderId: orderId
         }
     }).then((response) => {
-        if (response.data) {
+        if (!response.data) {
             Swal.fire({
                 icon: 'error',
                 title: 'Khóa chưa được cập nhập',
