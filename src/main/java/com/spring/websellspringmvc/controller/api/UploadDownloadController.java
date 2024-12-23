@@ -59,7 +59,7 @@ public class UploadDownloadController {
         }
 
         // Generate signature from order details
-        String signature = signedOrderFile.hashData(orderDetailResponse, orderPrevious);
+        String signature = signedOrderFile.hashData(orderDetailResponse);
 
         // Create temporary file from uploaded multipart file
         File tempFile = signedOrderFile.createTempFile(multipartFile);
@@ -74,6 +74,7 @@ public class UploadDownloadController {
             tempFile.delete();
             if (verified) {
                 orderServices.updateOrderStatusVerify(orderId, userId);
+                orderServices.insertSignature(orderId, signature);
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.<Boolean>builder()
                                 .code(HttpStatus.OK.value())
@@ -103,17 +104,17 @@ public class UploadDownloadController {
     public void downloadFile(@RequestParam("uuid") String uuid, HttpServletResponse res) {
         int userId = sessionManager.getUser().getId();
         OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(uuid, userId);
-        List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
-        if (orderPrevious == null) {
-            return;
-        }
+//        List<AdminOrderDetailResponse> orderPrevious = adminOrderServices.getOrderPrevious(uuid);
+//        if (orderPrevious == null) {
+//            return;
+//        }
         String hash;
         try {
-            hash = signedOrderFile.hashData(orderDetailResponse, orderPrevious);
+            hash = signedOrderFile.hashData(orderDetailResponse);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        File dataFile = pdfService.createFile(orderDetailResponse, orderPrevious, hash);
+        File dataFile = pdfService.createFile(orderDetailResponse,  hash);
         byte[] file = null;
         try {
             file = (new FileInputStream(dataFile)).readAllBytes();

@@ -30,17 +30,17 @@ public class PDFServiceImpl implements PDFService {
     public byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
         try {
             String htmlTemplate = loadHtmlTemplate();
-            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
+            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse);
             return generatePdfFromHtml(filledHtml);
         } catch (Exception e) {
             throw new RuntimeException("Error creating data file: " + e.getMessage(), e);
         }
     }
     @Override
-    public File createFile( OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash) {
+    public File createFile( OrderDetailResponse detailResponse,  String hash) {
         try {
             String htmlTemplate = loadHtmlTemplate();
-            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse, orderDetailResponse);
+            String filledHtml = populateHtmlTemplate(htmlTemplate, detailResponse);
             File pdfFile = new File( detailResponse.getOrderId() + ".pdf");
             writePdfToFile(filledHtml, pdfFile);
 
@@ -106,7 +106,7 @@ public class PDFServiceImpl implements PDFService {
         }
     }
 
-    private String populateHtmlTemplate(String template, OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponses) {
+    private String populateHtmlTemplate(String template, OrderDetailResponse detailResponse) {
         List<OrderDetailItemResponse> items = detailResponse.getItems();
         double tempPrice = 0;
         for (OrderDetailItemResponse item : items) {
@@ -123,18 +123,16 @@ public class PDFServiceImpl implements PDFService {
         String discountPriceFormatted = formatVND(0);
         String shippingFeeFormatted = formatVND(detailResponse.getFee());
         String totalPriceFormatted = formatVND(detailResponse.getFee() + tempPrice);
-        String orderStatus = orderDetailResponses.getFirst().getOrderStatus() == null
-                ? ""
-                : orderDetailResponses.getFirst().getOrderStatus().getDisplayName();
+        String orderStatus = detailResponse.getStatus();
 
-        String paymentStatus = orderDetailResponses.isEmpty() || orderDetailResponses.getFirst().getTransactionStatus() == null
-                ? ""
-                : switch (orderDetailResponses.getFirst().getTransactionStatus()) {
-            case UN_PAID -> "Chưa thanh toán";
-            case PROCESSING -> "Đang xử lý";
-            case PAID -> "Đã thanh toán";
-            case ERROR -> "Lỗi giao dịch";
-        };
+//        String paymentStatus = orderDetailResponses.isEmpty() || orderDetailResponses.getFirst().getTransactionStatus() == null
+//                ? ""
+//                : switch (orderDetailResponses.getFirst().getTransactionStatus()) {
+//            case UN_PAID -> "Chưa thanh toán";
+//            case PROCESSING -> "Đang xử lý";
+//            case PAID -> "Đã thanh toán";
+//            case ERROR -> "Lỗi giao dịch";
+//        };
 
         // Thay thế các giá trị trong template
         return template
@@ -152,8 +150,8 @@ public class PDFServiceImpl implements PDFService {
                 .replace("%%DELIVERYMETHOD%%", "Giao hàng nhanh") // Placeholder
                 .replace("%%PAYMENTMETHOD%%", detailResponse.getPayment())
                 .replace("%%ITEMSBOUGHT%%", generateItemsTable(detailResponse.getItems()))
-                .replace("%%ORDERSTATUS%%", orderStatus)
-                .replace("%%PAYMENTSTATUS%%", paymentStatus);
+                .replace("%%ORDERSTATUS%%", orderStatus);
+//                .replace("%%PAYMENTSTATUS%%", paymentStatus);
     }
 
     private String generateItemsTable(List<OrderDetailItemResponse> items) {

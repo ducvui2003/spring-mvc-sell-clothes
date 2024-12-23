@@ -138,11 +138,11 @@ public class SignedOrderFile {
         }
         return false;
     }
-    public String  hashData(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse) throws NoSuchAlgorithmException {
+    public String  hashData(OrderDetailResponse detailResponse) throws NoSuchAlgorithmException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write((detailResponse.getOrderId() + "\n").getBytes());
-            bos.write((detailResponse.getStatus() + "\n").getBytes());
+//            bos.write((detailResponse.getStatus() + "\n").getBytes());
             bos.write((detailResponse.getFullName() + "\n").getBytes());
             bos.write((detailResponse.getPhone() + "\n").getBytes());
             bos.write((detailResponse.getEmail() + "\n").getBytes());
@@ -164,23 +164,6 @@ public class SignedOrderFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        for (AdminOrderDetailResponse order : orderDetailResponse) {
-            try {
-                bos.write((order.getId() + "\n").getBytes());
-                bos.write((order.getFullName() + "\n").getBytes());
-                bos.write((order.getPhone() + "\n").getBytes());
-                bos.write((order.getEmail() + "\n").getBytes());
-                bos.write((order.getProvince() + "\n").getBytes());
-                bos.write((order.getDistrict() + "\n").getBytes());
-                bos.write((order.getWard() + "\n").getBytes());
-                bos.write((order.getDetail() + "\n").getBytes());
-                bos.write((order.getPaymentMethod() + "\n").getBytes());
-                bos.write(("\n").getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(bos.toByteArray());
 
