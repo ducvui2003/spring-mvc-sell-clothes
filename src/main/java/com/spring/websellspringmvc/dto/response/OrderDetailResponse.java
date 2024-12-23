@@ -26,6 +26,7 @@ public class OrderDetailResponse implements Serializable {
     String province;
     String district;
     String signatureKey;
+    String keyUsingVerify;
     String ward;
     String detail;
     String payment;

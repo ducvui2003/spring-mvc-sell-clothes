@@ -7,9 +7,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
-import org.jdbi.v3.sqlobject.config.KeyColumn;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
-import org.jdbi.v3.sqlobject.config.ValueColumn;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -100,6 +97,7 @@ public interface OrderDAO {
             orders.voucherId, 
             orders.dateOrder, 
             orders.signatureKey,
+            orders.keyUsingVerify,
             orders.paymentMethod as payment, 
             orders.fee as fee,
             orders.leadTime as leadTime 
@@ -339,8 +337,9 @@ public interface OrderDAO {
 
     @SqlUpdate("""
             UPDATE orders
-            SET signatureKey = :signatureKey
+            SET signatureKey = :signatureKey,
+                keyUsingVerify= :keyId
             WHERE id = :orderId
             """)
-    int insertSignature(@Bind("orderId") String orderId,@Bind("signatureKey") String signature);
+    int insertSignature(@Bind("orderId") String orderId, @Bind("signatureKey") String signature,@Bind("keyId") String keyId);
 }

@@ -68,13 +68,14 @@ public class UploadDownloadController {
             // Read signature from the uploaded PDF
             String uploadSignature = pdfService.readSignature(tempFile);
             // Verify signature and update order status if valid
-            String strPublicKey = keyDAO.getCurrentKey(userId).getPublicKey();
+            Key key = keyDAO.getCurrentKey(userId);
+            String strPublicKey = key.getPublicKey();
             PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(strPublicKey)));
             boolean verified = signedOrderFile.verifyData(signature.getBytes(), uploadSignature, publicKey);
             tempFile.delete();
             if (verified) {
                 orderServices.updateOrderStatusVerify(orderId, userId);
-                orderServices.insertSignature(orderId, signature);
+                orderServices.insertSignature(orderId, signature,key.getId());
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.<Boolean>builder()
                                 .code(HttpStatus.OK.value())
