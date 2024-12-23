@@ -41,12 +41,23 @@ public interface OrderDAO {
     public int updateTransactionStatusByOrderId(@Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
 
     @SqlUpdate("""
-               UPDATE order_details od
-               SET
-                   colorRequired =(SELECT codeColor FROM colors WHERE id = :colorId),
-                   sizeRequired = (SELECT nameSize FROM sizes WHERE id = :sizeId),
-                   quantityRequired = :quantity
-               WHERE id = :id
+            UPDATE order_details od
+                                SET
+                                    colorRequired = CASE\s
+                                        WHEN colorRequired != (SELECT codeColor FROM colors WHERE id = :colorId) THEN\s
+                                            (SELECT codeColor FROM colors WHERE id = :colorId)
+                                        ELSE colorRequired\s
+                                    END,
+                                    sizeRequired = CASE\s
+                                        WHEN sizeRequired != (SELECT nameSize FROM sizes WHERE id = :sizeId) THEN\s
+                                            (SELECT nameSize FROM sizes WHERE id = :sizeId)
+                                        ELSE sizeRequired\s
+                                    END,
+                                    quantityRequired = CASE\s
+                                        WHEN quantityRequired != :quantity THEN :quantity
+                                        ELSE quantityRequired
+                                    END
+                                WHERE id = :id;
             """)
     public int updateOrderDetail(@BindBean OrderStatusChangeRequest.OrderItemChangeRequest orderDetails);
 
