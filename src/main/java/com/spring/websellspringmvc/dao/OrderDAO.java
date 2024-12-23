@@ -320,4 +320,11 @@ public interface OrderDAO {
             """)
     @RegisterBeanMapper(Size.class)
     List<Size> getSizesByOrderId(@Bind("orderId") String orderId);
+
+    @SqlUpdate("""
+            UPDATE orders
+            SET signatureKey = :signatureKey
+            WHERE id = :orderId
+            """)
+    int insertSignature(@Bind("orderId") String orderId,@Bind("signatureKey") String signature);
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public interface PDFService {
     byte[] createDataFile(OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash);
 
-    File createFile( OrderDetailResponse detailResponse, List<AdminOrderDetailResponse> orderDetailResponse, String hash);
+    File createFile( OrderDetailResponse detailResponse, String hash);
 
     File createSignedFile(File orderFile, String signature) throws IOException;
 
