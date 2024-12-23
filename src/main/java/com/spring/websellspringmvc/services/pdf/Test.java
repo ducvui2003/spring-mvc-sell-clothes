@@ -82,6 +82,7 @@ public class Test {
         // Create an instance of PDFServiceImpl
         PDFServiceImpl pdfService = new PDFServiceImpl();
 
+        File inputFile = new File("src/main/java/com/spring/websellspringmvc/services/pdf/Test.java");
 
         // Test createFile method (returns PDF file)
 //        try {
@@ -92,26 +93,23 @@ public class Test {
 //        }
 //
 //         Test createSignedFile method (sign PDF)
-//        try {
-//            File signedFile = pdfService.createSignedFile(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"), "John Doe");
-//            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
-//        } catch (Exception e) {
-//            System.err.println("Error adding signature: " + e.getMessage());
-//        }
-        String hash = pdfService.readHash(new File("D:\\d2b63ea3-98c9-4d76-93d1-6730f415aac8.pdf"));
+        try {
+            File signedFile = pdfService.createSignedFile(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Invoice_ORD123.pdf"), "John Doe");
+            System.out.println("Signed PDF File generated: " + signedFile.getAbsolutePath());
+        } catch (Exception e) {
+            System.err.println("Error adding signature: " + e.getMessage());
+        }
+////
+        String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Signed_Invoice_ORD123.pdf"));
         System.out.println("Hash: " + hash);
 //
         String signatureKey = pdfService.readSignature(new File("D:\\signed_d2b63ea3-98c9-4d76-93d1-6730f415aac8.pdf"));
         System.out.println(signatureKey);
         signatureKey = "ZDJiNjNlYTMtOThjOS00ZDc2LTkzZDEtNjczMGY0MTVhYWM4Ck1pbmggVOG6pW4KMDM1MjAzMzE5OQp0YW5kYW5taW4xQGdtYWlsLmNvbQpIxrBuZyBZw6puCkh1eeG7h24gVsSDbiBMw6JtCljDoyBMxrDGoW5nIFTDoGkKYWRhc2RhCkNPRAoKw4FvIHPGoSBtaSBTcXVhcmUgQ3Jvc3MKMlhMCiMwMDAwRkYKMgo3MDQwMDAuMApodHRwczovL3Jlcy5jbG91ZGluYXJ5LmNvbS95b3Vyc3R5bGUvaW1hZ2UvdXBsb2FkL2Nfc2NhbGUvcV9hdXRvL2ZfYXV0by92MS9wcm9kdWN0X2ltZy81Ni9wcm9kdWN0NTYuanBnCg==";
 
-//        String hash = "ZDJiNjNlYTMtOThjOS00ZDc2LTkzZDEtNjczMGY0MTVhYWM4Ck1pbmggVOG6pW4KMDM1MjAzMzE5OQp0YW5kYW5taW4xQGdtYWlsLmNvbQpIxrBuZyBZw6puCkh1eeG7h24gVsSDbiBMw6JtCljDoyBMxrDGoW5nIFTDoGkKYWRhc2RhCkNPRAoKw4FvIHPGoSBtaSBTcXVhcmUgQ3Jvc3MKMlhMCiMwMDAwRkYKMgo3MDQwMDAuMApodHRwczovL3Jlcy5jbG91ZGluYXJ5LmNvbS95b3Vyc3R5bGUvaW1hZ2UvdXBsb2FkL2Nfc2NhbGUvcV9hdXRvL2ZfYXV0by92MS9wcm9kdWN0X2ltZy81Ni9wcm9kdWN0NTYuanBnCg==";
-//        String signatureKey = "ZDJiNjNlYTMtOThjOS00ZDc2LTkzZDEtNjczMGY0MTVhYWM4Ck1pbmggVOG6pW4KMDM1MjAzMzE5OQp0YW5kYW5taW4xQGdtYWlsLmNvbQpIxrBuZyBZw6puCkh1eeG7h24gVsSDbiBMw6JtCljDoyBMxrDGoW5nIFTDoGkKYWRhc2RhCkNPRAoKw4FvIHPGoSBtaSBTcXVhcmUgQ3Jvc3MKMlhMCiMwMDAwRkYKMgo3MDQwMDAuMApodHRwczovL3Jlcy5jbG91ZGluYXJ5LmNvbS95b3Vyc3R5bGUvaW1hZ2UvdXBsb2FkL2Nfc2NhbGUvcV9hdXRvL2ZfYXV0by92MS9wcm9kdWN0X2ltZy81Ni9wcm9kdWN0NTYuanBnCg==";
-        String key = "MIIBuDCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUAl2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoDgYUAAoGBAO49hgTLO3yCzglkrWwmBDJcB+cTKIFsD2pI2eGHQUbXpSVU4DiCHPfBZ3TUxH+64ERuw+2dRrsyg9qFACupuEPuiOT/AR2HZ28i/ITHHv4YkQELPU/O6ub5KR0b0v6EsQFX7JtvXTqPQTZIBlNZEdH9SI0rZYxklX4cSf3F8Nf9";
-        PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key)));
-        SignedOrderFile signedOrderFile = new SignedOrderFile();
-        boolean isSimilar = signedOrderFile.verifyData(hash.getBytes(), signatureKey, publicKey);
-        System.out.println(isSimilar);
+        String signature = pdfService.readSignature(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Signed_Invoice_ORD123.pdf"));
+        System.out.println("signature: " + signature);
+
         // Ghi dữ liệu vào metadata của file signed_Invoice_ORD123.pdf
 //        createPdf();
     }
