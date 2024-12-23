@@ -18,10 +18,12 @@ import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.services.mail.MailVerifyOrderServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.SignedOrderFile;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -127,6 +129,7 @@ public class OrderServicesImpl implements OrderServices {
         });
     }
 
+
     @Override
     public void updateOrdersStatus(List<OrderDetailResponse> orders) throws Exception {
         int userId = sessionManager.getUser().getId();
@@ -147,6 +150,12 @@ public class OrderServicesImpl implements OrderServices {
                 boolean isSimilar = signedOrderFile.verifyData(hash.getBytes(), signatureKey, publicKey);
                 if (!isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
+                    MailVerifyOrderServices mail = new MailVerifyOrderServices(order.getEmail(), order.getOrderId());
+                    try {
+                        mail.send();
+                    } catch (MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });

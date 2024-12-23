@@ -45,11 +45,14 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     private final SessionManager sessionManager;
 
     @Override
-    public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) {
-        List<OrderDatatable> products = datatableDAO.datatable(request);
+    public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) throws Exception {
+        List<OrderDatatable> data = datatableDAO.datatable(request);
+        List<OrderDetailResponse> orderDetailResponses = orderServices.getOrderByOrderId(data.stream().map(OrderDatatable::getId).toList());
+        orderServices.updateOrdersStatus(orderDetailResponses);
+        data = datatableDAO.datatable(request);
         long total = datatableDAO.count(request);
         return DatatableResponse.<OrderDatatable>builder()
-                .data(products)
+                .data(data)
                 .recordsTotal(total)
                 .recordsFiltered(total)
                 .draw(request.getDraw())
@@ -168,16 +171,6 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 //            orderDAO.updateStatusByOrderId(orderId, request.getOrderStatus().getValue(), request.getTransactionStatus().getValue());
 //            return true;
 //        }
-
-//        Gửi email thông báo
-        if (handleSendMail) {
-            MailVerifyOrderServices mail = new MailVerifyOrderServices(order.getEmail(), orderId);
-            try {
-                mail.send();
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-        }
         return handleSendMail;
     }
 

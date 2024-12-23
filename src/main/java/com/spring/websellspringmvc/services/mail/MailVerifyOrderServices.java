@@ -37,7 +37,7 @@ public class MailVerifyOrderServices {
 //        To
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailTo, false));
 //        Subject
-        String subjectMess = "Quên mật khấu";
+        String subjectMess = "Yêu cầu xác nhận lại đơn hàng đã thay đổi";
         message.setSubject(subjectMess);
 //        Set no reply
         message.setReplyTo(null);
