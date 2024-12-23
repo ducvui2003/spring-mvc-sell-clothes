@@ -207,6 +207,7 @@ function loadDataModal(order, orderId) {
     loadAddress(address)
     loadContact(order);
     loadPrice(order);
+    displayVerifyBlock(order.status);
 }
 
 function addEventViewDetail() {
@@ -259,7 +260,7 @@ function displayBtnAddress(status) {
 }
 
 function displayVerifyBlock(status) {
-    if (status === "VERIFYING"||"CHANGED") {
+    if (status === "VERIFYING"|| status === "CHANGED") {
         verifyBlock.show();
     } else {
         verifyBlock.hide();

@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class Key {
     String id;
     String publicKey;
-    String previousId;
     int userId;
     LocalDateTime createAt;
     LocalDateTime updateAt;

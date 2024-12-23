@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class KeyResponse {
     String id;
     String publicKey;
-    String previousId;
+//    String previousId;
     int userId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     LocalDateTime createAt;
