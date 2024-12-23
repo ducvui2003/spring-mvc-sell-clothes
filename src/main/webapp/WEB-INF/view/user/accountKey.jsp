@@ -46,7 +46,8 @@
                         <div class="mb-3">
                             <label class="small mb-1" for="createdDate">Ngày tạo</label>
                             <input class="form-control" name="createdDate" id="createdDate" type="text"
-                                   value="${requestScope.currentKey.createAt}" disabled>
+                                   value="${requestScope.currentKey.createAt}"
+                                   disabled>
                         </div>
                         <div class="d-flex justify-content-start">
                             <button class="btn btn-primary me-3" type="button" data-bs-toggle="modal"
@@ -178,7 +179,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-<%--                <h5 class="modal-title">Thông tin chi tiết khóa</h5>--%>
+                <%--                <h5 class="modal-title">Thông tin chi tiết khóa</h5>--%>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

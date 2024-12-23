@@ -199,9 +199,9 @@ public interface OrderDAO {
                 o.ward = a.wardName,
                 o.detail = a.detail,
                 o.fee = :fee,
-                o.leadTime = :leadTime
-                o.orderStatusId = 6
-            WHERE o.id = :orderId AND o.userId = :userId;
+                o.leadTime = :leadTime,
+                o.orderStatusId = 7
+            WHERE o.id = :orderId AND o.userId = :userId
             """)
     int changeInfoOrder(
             @Bind("orderId") String orderId,

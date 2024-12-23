@@ -74,7 +74,7 @@ public class UploadDownloadController {
             tempFile.delete();
             if (verified) {
                 orderServices.updateOrderStatusVerify(orderId, userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.<Boolean>builder()
                                 .code(HttpStatus.OK.value())
                                 .message("Valid signature")

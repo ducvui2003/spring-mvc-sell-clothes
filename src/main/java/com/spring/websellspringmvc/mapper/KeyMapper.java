@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper
 public interface KeyMapper {
     KeyMapper INSTANCE = Mappers.getMapper(KeyMapper.class);
+    
     KeyResponse toKeyResponse(Key key);
     List<KeyResponse> toKeyResponseList(List<Key> keys);
 }
