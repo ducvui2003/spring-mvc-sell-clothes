@@ -4,6 +4,7 @@ import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.Size;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -34,4 +35,7 @@ public interface SizeDAO {
 
     @SqlQuery("SELECT * FROM sizes WHERE productId = :productId")
     public List<Size> getListSizeByProductId(@Bind("productId") int productId);
+
+    @SqlQuery("SELECT * FROM sizes WHERE productId IN (<productId>)")
+    public List<Size> getListSizeByProductId(@BindList("productId") List<Integer> productId);
 }

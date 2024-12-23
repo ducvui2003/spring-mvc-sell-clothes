@@ -65,7 +65,7 @@ function handleUploadFile() {
     }).catch((error) => {
         Swal.fire({
             icon: 'error',
-            title: 'Vui lon upload file đã ký',
+            title: 'Vui lòng upload file đã ký',
             showConfirmButton: false,
             target: document.querySelector("#modal"),
             timer: 1500
@@ -351,12 +351,7 @@ function handleSubmitModelChangeOrder() {
                         }
                     }).then((response) => {
                         if (response.code === 200) {
-                            updateAddressInModal({
-                                province: province,
-                                district: district,
-                                ward: ward,
-                                detail: detail
-                            });
+                            deleteRowTable(orderId);
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Đã thay đổi địa chỉ cho đơn hàng thành công',

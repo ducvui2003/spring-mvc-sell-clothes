@@ -1,18 +1,18 @@
 package com.spring.websellspringmvc.services.admin;
 
-import com.spring.websellspringmvc.dao.DatatableDAO;
-import com.spring.websellspringmvc.dao.OrderDAO;
-import com.spring.websellspringmvc.dao.OrderStatusDAO;
-import com.spring.websellspringmvc.dao.TransactionStatusDAO;
+import com.spring.websellspringmvc.dao.*;
 import com.spring.websellspringmvc.dto.request.OrderStatusChangeRequest;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
-import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
-import com.spring.websellspringmvc.dto.response.DatatableResponse;
-import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
+import com.spring.websellspringmvc.dto.response.*;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
+import com.spring.websellspringmvc.mapper.OrderMapper;
+import com.spring.websellspringmvc.models.Color;
 import com.spring.websellspringmvc.models.Order;
+import com.spring.websellspringmvc.models.Size;
 import com.spring.websellspringmvc.models.Voucher;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
+import com.spring.websellspringmvc.services.order.OrderServices;
+import com.spring.websellspringmvc.utils.StatusUtil;
 import com.spring.websellspringmvc.utils.constraint.ImagePath;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
@@ -33,8 +33,10 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
     TransactionStatusDAO transactionStatusDao;
     CloudinaryUploadServices cloudinaryUploadServices;
     DatatableDAO datatableDAO;
-    OrderStatusDAO orderStatusDAO;
-    TransactionStatusDAO transactionStatusDAO;
+    OrderServices orderServices;
+    SizeDAO sizeDAO;
+    ColorDAO colorDAO;
+    OrderMapper mapper;
 
     @Override
     public DatatableResponse<OrderDatatable> datatable(OrderDatatableRequest request) {
@@ -76,7 +78,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
     @Override
     public List<OrderStatus> getOrderStatusCanChangeByOrderId(String orderId) {
-        OrderStatus orderStatus = orderStatusDAO.getOrderStatus(orderId);
+        OrderStatus orderStatus = orderStatusDao.getOrderStatus(orderId);
         if (orderStatus == null) return null;
         List<OrderStatus> orderStatusCanChange = new ArrayList<>();
         switch (orderStatus) {
@@ -101,7 +103,7 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
 
     @Override
     public List<TransactionStatus> getTransactionStatusCanChangeByOrderId(String orderId) {
-        TransactionStatus transactionStatus = transactionStatusDAO.getTransactionStatus(orderId);
+        TransactionStatus transactionStatus = transactionStatusDao.getTransactionStatus(orderId);
         if (transactionStatus == null) return null;
         List<TransactionStatus> transactionStatusCanChange = new ArrayList<>();
         switch (transactionStatus) {
@@ -131,6 +133,49 @@ public class AdminOrderServicesImpl implements AdminOrderServices {
         }
         return false;
     }
+
+    @Override
+    public List<OrderDetailItemResponse> getOrderDetailItems(String orderId) {
+        return orderServices.getOrderDetailByOrderId(orderId);
+    }
+
+    @Override
+    public StatusChangedResponse getStatusCanChanged(String orderId) {
+        List<OrderStatus> orderStatusList = this.getOrderStatusCanChangeByOrderId(orderId);
+        List<TransactionStatus> transactionStatusList = this.getTransactionStatusCanChangeByOrderId(orderId);
+        List<OrderDetailItemChangedResponse> items = null;
+        List<Size> sizes = null;
+        List<Color> colors = null;
+        List<OrderDetailItemResponse> orderItems = orderDAO.getOrderDetailsByOrderId(orderId);
+        if (orderCanChangedOrderItems(orderStatusDao.getOrderStatus(orderId))) {
+            items = this.getOrderDetailItem(orderItems);
+        }
+        return StatusChangedResponse.builder()
+                .orderStatusTarget(orderStatusList)
+                .transactionStatusTarget(transactionStatusList)
+                .items(items)
+                .build();
+    }
+
+
+    List<OrderDetailItemChangedResponse> getOrderDetailItem(List<OrderDetailItemResponse> orderDetailItem) {
+        List<OrderDetailItemChangedResponse> response = new ArrayList<>();
+        List<Integer> productId = orderDetailItem.stream().map(OrderDetailItemResponse::getProductId).toList();
+        List<Size> sizes = sizeDAO.getListSizeByProductId(productId);
+        List<Color> colors = colorDAO.getListColorByProductId(productId);
+        for (OrderDetailItemResponse item : orderDetailItem) {
+            OrderDetailItemChangedResponse itemNew = mapper.toOrderDetailItemChangedResponse(item);
+            itemNew.setSizes(sizes.stream().filter(size -> size.getProductId() == item.getProductId()).toList());
+            itemNew.setColors(colors.stream().filter(color -> color.getProductId() == item.getProductId()).toList());
+            response.add(itemNew);
+        }
+        return response;
+    }
+
+    private boolean orderCanChangedOrderItems(OrderStatus orderStatus) {
+        return StatusUtil.STATUS_CAN_CHANGED_ORDER_ITEMS.contains(orderStatus);
+    }
+
 
     private boolean canUpdateStatusByOrderId(OrderStatus src, OrderStatus target) {
         List<OrderStatus> orderStatusCanChange = new ArrayList<>();

@@ -5,9 +5,7 @@ import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
-import com.spring.websellspringmvc.models.Order;
-import com.spring.websellspringmvc.models.OrderDetail;
-import com.spring.websellspringmvc.models.Voucher;
+import com.spring.websellspringmvc.models.*;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -82,6 +80,7 @@ public interface OrderDAO {
     @SqlQuery("""
             SELECT 
             order_details.productName AS name, 
+            order_details.productId AS productId,
             order_details.quantityRequired AS quantity, 
             order_details.sizeRequired AS size, 
             order_details.colorRequired AS color, 
@@ -209,7 +208,7 @@ public interface OrderDAO {
             @BindBean("request") ChangeOrderRequest request,
             @Bind("leadTime") LocalDateTime leadTime,
             @Bind("fee") double fee
-            );
+    );
 
     @SqlUpdate("""
             INSERT INTO orders (
@@ -268,4 +267,22 @@ public interface OrderDAO {
              fee=:orderDetail.fee)
             """)
     boolean[] verifyHistory(@BindBean("orderDetail") List<AdminOrderDetailResponse> orderDetail);
+
+    @SqlQuery("""
+            SELECT colors.*
+            FROM order_details JOIN products ON order_details.productId = products.id
+            JOIN colors ON products.id = colors.productId
+            WHERE order_details.orderId = :orderId
+            """)
+    @RegisterBeanMapper(Color.class)
+    List<Color> getColorsByOrderId(@Bind("orderId") String orderId);
+
+    @SqlQuery("""
+            SELECT sizes.*
+            FROM order_details JOIN products ON order_details.productId = products.id
+            JOIN sizes ON products.id = sizes.productId
+            WHERE order_details.orderId = :orderId
+            """)
+    @RegisterBeanMapper(Size.class)
+    List<Size> getSizesByOrderId(@Bind("orderId") String orderId);
 }

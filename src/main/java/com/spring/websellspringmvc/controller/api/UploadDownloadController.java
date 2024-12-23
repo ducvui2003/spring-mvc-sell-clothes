@@ -43,7 +43,7 @@ public class UploadDownloadController {
     PDFService pdfService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<?>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public ResponseEntity<ApiResponse<Boolean>> upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("orderId") String orderId) throws NoSuchAlgorithmException, InvalidKeySpecException {
         int userId = sessionManager.getUser().getId();
         // Retrieve order details and previous orders
         OrderDetailResponse orderDetailResponse = orderServices.getOrderByOrderId(orderId, userId);
@@ -74,7 +74,7 @@ public class UploadDownloadController {
             tempFile.delete();
             if (verified) {
                 orderServices.updateOrderStatusVerify(orderId, userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.<Boolean>builder()
                                 .code(HttpStatus.OK.value())
                                 .message("Valid signature")

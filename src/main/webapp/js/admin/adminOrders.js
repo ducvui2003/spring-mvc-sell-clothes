@@ -300,6 +300,7 @@ $(document).ready(function () {
                 showCloseButton: true,
                 showCancelButton: true,
                 focusConfirm: true,
+                width: 1000,
                 confirmButtonText: 'Cập nhập!',
                 cancelButtonText: 'Đóng',
                 didOpen() {
@@ -330,8 +331,10 @@ $(document).ready(function () {
             }).then(response => {
                 const orderStatusTarget = response.data.orderStatusTarget;
                 const transactionStatusTarget = response.data.transactionStatusTarget;
+                const orderDetails = response.data.items;
                 const orderStatusSelect = modal.find(".orderStatus")
                 const transactionStatusSelect = modal.find(".transactionStatus")
+                const orderDetailTable = modal.find(".order-detail tbody");
                 const listAllOrderStatus = [];
                 const listAllTransactionStatus = [];
                 orderStatusSelect.find("option").each(function () {
@@ -374,7 +377,72 @@ $(document).ready(function () {
                     dropdownParent: $('.swal2-popup'),
                     data: listAllTransactionStatus,
                 }).val(transactionStatusTarget.id);
+
+
+                orderDetailTable.empty();
+                if(orderDetails && orderDetails.length > 0) {
+                    orderDetailTable.html(orderDetails.map((item, index) => (
+                        `
+                    <tr>
+                        <th scope="row">${index + 1}</th>
+                        <td>${item.name}</td>
+                        <td>
+                            <select class="select2-colors">
+                                 ${item.colors.map(color => (`<option value="${color.id}" data-code="${color.codeColor}">${color.codeColor}</option>`))}
+                            </select>
+                        </td>
+                        <td>
+                              <select class="select2-sizes">
+                                 ${item.sizes.map(sizes => (`<option value="${sizes.id}">${sizes.nameSize}</option>`))}
+                            </select>
+                        </td>
+                        <td>${item.quantity}</td>
+                        <td>${formatCurrency(item.price)}</td>
+                    </tr>
+                   `
+                    )));
+
+                    handleSelect2Color(orderDetailTable);
+
+                    orderDetailTable.find('.select2-sizes').select2({
+                        width: '100%',
+                        closeOnSelect: true,
+                        minimumResultsForSearch: -1,
+                        placeholder: 'Chọn size muốn thay đổi',
+                        dropdownParent: $('.swal2-popup'),
+                    });
+                }
             });
+        }
+
+        function handleSelect2Color(orderDetailTable) {
+            orderDetailTable.find('.select2-colors').select2({
+                width: '100%',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1,
+                placeholder: 'Chọn màu sắc muốn thay đổi',
+                dropdownParent: $('.swal2-popup'),
+                templateResult: formatOption,
+                templateSelection: formatSelection,
+            });
+
+            function formatOption(option) {
+                if (!option.id) {
+                    return option.text;
+                }
+
+                const color = $(option.element).data("code");
+                return $(
+                    `<span style="background-color:${color} " ">${option.text}</span>`
+                );
+            }
+
+            function formatSelection(option) {
+                const color = $(option.element).data("code");
+                return $(
+                    `<span style="background-color:${color} " ">${option.text}</span>`
+                );
+            }
         }
 
         function updateStatus(id, orderStatus, transactionStatus) {

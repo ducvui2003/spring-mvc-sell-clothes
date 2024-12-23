@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.dto.request.OrderStatusChangeRequest;
 import com.spring.websellspringmvc.dto.request.datatable.OrderDatatableRequest;
 import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
+import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.StatusChangedResponse;
 import com.spring.websellspringmvc.dto.response.datatable.OrderDatatable;
 import com.spring.websellspringmvc.services.admin.AdminOrderServices;
@@ -42,14 +43,11 @@ public class AdminOrderController {
 
     @GetMapping("/status-target/{orderId}")
     public ResponseEntity<ApiResponse<StatusChangedResponse>> getStatusTarget(@PathVariable("orderId") String orderId) {
-        List<OrderStatus> orderStatusList = orderServices.getOrderStatusCanChangeByOrderId(orderId);
-        List<TransactionStatus> transactionStatusList = orderServices.getTransactionStatusCanChangeByOrderId(orderId);
+        StatusChangedResponse data = orderServices.getStatusCanChanged(orderId);
+
         return ResponseEntity.ok(ApiResponse.<StatusChangedResponse>builder()
                 .message("Get status target success")
-                .data(StatusChangedResponse.builder()
-                        .orderStatusTarget(orderStatusList)
-                        .transactionStatusTarget(transactionStatusList)
-                        .build())
+                .data(data)
                 .build());
     }
 

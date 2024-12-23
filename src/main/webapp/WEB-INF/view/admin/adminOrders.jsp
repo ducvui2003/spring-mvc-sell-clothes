@@ -8,8 +8,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-        <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
-        <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
+    <link rel="stylesheet" href="<c:url value="/assets/css/admin/admin.css"/>">
+    <link rel="stylesheet" href="<c:url value="/assets/css/admin/adminOrders.css"/>">
     <title>Quản lý đơn hàng</title>
 </head>
 <body>
@@ -218,7 +218,7 @@
                                 <th class="table__head">Màu sắc</th>
                                 <th class="table__head">Kích thuớc</th>
                                 <th class="table__head">Số lượng</th>
-                                <th class="table__head">Gíá may</th>
+                                <th class="table__head">Gíá bán</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -255,6 +255,28 @@
                         <option value="${item.alias}">${item.typeStatus}</option>
                     </c:forEach>
                 </select>
+            </div>
+            <div class="col-12">
+                <table class="table w-100 order-detail mt-3 table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Sản phẩm</th>
+                        <th scope="col">Màu sắc</th>
+                        <th scope="col">Kích thuớc</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Gíá bán</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
