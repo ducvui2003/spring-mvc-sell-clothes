@@ -19,6 +19,9 @@ public interface KeyDAO {
     @GetGeneratedKeys
     Long insert(@BindBean Key key);
 
+    @SqlQuery("""
+            SELECT * FROM `keys` WHERE id = :id""")
+    Key getKeyById(@Bind("id") String id);
 
     @SqlQuery("""
             SELECT id as id, publicKey as publicKey, userId as userId, createAt as createAt, updateAt as updateAt, deleted as deleted FROM `keys` WHERE userId = :userId ORDER BY createAt DESC""")

@@ -14,6 +14,7 @@ import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.Address;
+import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.services.address.AddressServices;
 import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
@@ -55,7 +56,7 @@ public class OrderServicesImpl implements OrderServices {
         List<OrderResponse> listOrderResponse = orderDAO.getOrder(userId, statusOrder);
         List<OrderDetailResponse> orderDetailResponses = getOrderByOrderId(listOrderResponse.stream().map(OrderResponse::getId).toList());
         this.updateOrdersStatus(orderDetailResponses);
-        return  orderDAO.getOrder(userId, statusOrder);
+        return orderDAO.getOrder(userId, statusOrder);
     }
 
     @Override
@@ -140,9 +141,11 @@ public class OrderServicesImpl implements OrderServices {
                 if (signatureKey == null || signatureKey.isEmpty()) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
-                String signature = signedOrderFile.hashData(order);
+                String hash = signedOrderFile.hashData(order);
+                Key key = keyDAO.getKeyById(order.getKeyUsingVerify());
+                PublicKey publicKey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key.getPublicKey())));
 
-                boolean isSimilar = signedOrderFile.verifyData(signature.getBytes(), signatureKey, publicKey);
+                boolean isSimilar = signedOrderFile.verifyData(hash.getBytes(), signatureKey, publicKey);
                 if (!isSimilar) {
                     orderDAO.updateOrderStatus(order.getOrderId(), OrderStatus.CHANGED.getValue());
                 }
