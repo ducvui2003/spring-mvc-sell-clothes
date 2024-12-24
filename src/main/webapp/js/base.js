@@ -274,6 +274,7 @@ export const ORDER_STATUS = {
     COMPLETED: "Giao hàng thành công ",
     CANCELLED: "Giao hàng thất bại ",
     VERIFYING: "Đang xác nhận",
+    CHANGED: "Đơn hàng thay đổi đang chờ xác nhận"
 }
 
 export const TRANSACTION_STATUS = {

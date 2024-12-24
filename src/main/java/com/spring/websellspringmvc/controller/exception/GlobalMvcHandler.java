@@ -42,6 +42,4 @@ public class GlobalMvcHandler {
         model.addAllObjects(ex.getErrorView().getAttributes());
         return model;
     }
-
-
 }

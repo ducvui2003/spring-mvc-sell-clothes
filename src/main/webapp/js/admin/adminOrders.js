@@ -45,8 +45,21 @@ $(document).ready(function () {
                     {
                         data: "transactionStatus",
                         render: function
-                            (data) {
-                            return `${TRANSACTION_STATUS[data]}`;
+                            (data, type, row, meta) {
+                            let className = "";
+                            if (data === 'UN_PAID') {
+                                className = "bg-warning"
+                            }
+                            if (data === 'PROCESSING') {
+                                className = "bg-info"
+                            }
+                            if (data === 'PAID') {
+                                className = "bg-success"
+                            }
+                            if (data === 'CANCELLED') {
+                                className = "bg-danger"
+                            }
+                            return `<span class="badge bg-gradient ${className}"> ${TRANSACTION_STATUS[data]}</span>`;
                         }
                     },
                     {
@@ -67,18 +80,19 @@ $(document).ready(function () {
                     {
                         data: "id", render:
                             function (data, type, row, meta) {
-                                return `<button type="button" class="btn btn-warning btn-update" data-id="${data}" data-order-status="${row.orderStatus}"><i class="fa-solid fa-pen"></i></button>`
+                                return `<button type="button" class="btn btn-warning btn-update" 
+                                        data-id="${data}" 
+                                        data-order-status="${row.orderStatus}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-update">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>`
                             }
                     }
                 ],
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json'
-                }
-                ,
-                select: {
-                    style: 'multi'
-                }
-                ,
+                },
                 createdRow: function (row, data, dataIndex) {
                     if (data.orderStatus === "CANCELLED") {
                         $(row).addClass('table-danger');
@@ -89,6 +103,12 @@ $(document).ready(function () {
                     if (data.orderStatus === "VERIFYING") {
                         $(row).addClass('table-warning');
                     }
+                    if (data.orderStatus === "CHANGED") {
+                        $(row).addClass('table-primary');
+                    }
+                    if (data.orderStatus === "PACKAGE") {
+                        $(row).addClass('table-info');
+                    }
                 }
                 ,
                 initComplete: function (settings, json) {
@@ -97,6 +117,7 @@ $(document).ready(function () {
                     handleFormSearch();
                     configModalFilter();
                     configModalView();
+                    configModalUpdate();
                 }
             }
         const table = $("#table");
@@ -106,19 +127,18 @@ $(document).ready(function () {
         const modalFilter = $("#modal-filter");
         const modalView = $("#modal-view")
         const tableOrderDetail = $("#table-order-detail tbody");
+        const modalUpdate = $("#modal-update")
+        const tableUpdateOrderDetail = $("#table-update-order-item tbody");
+        const selectUpdateOrderStatus = $("#orderStatus");
+        const selectUpdateTransactionStatus = $("#transactionStatus");
 
         function initEventDatatable() {
             table.find("tbody").on('click', 'button', function (e) {
                 e.stopPropagation();
-            }).on('click', 'button.btn-update', function () {
-                const id = $(this).data("id");
-                const orderStatus = $(this).data("order-status");
-                modalUpdate(id, orderStatus);
-            });
+            })
             datatable.on("select", function (e, dt, type, indexes) {
                 console.log("selected")
             })
-
         }
 
         let startDate = null;
@@ -217,6 +237,55 @@ $(document).ready(function () {
             });
         }
 
+
+        function configModalUpdate() {
+            modalUpdate.on("show.bs.modal", function (event) {
+                const button = event.relatedTarget
+                const id = $(button).data("id");
+                const orderStatus = $(button).data("order-status");
+                modalUpdate.find('input[name="id"]').val(id);
+                if (orderStatus === "VERIFYING") {
+                    alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
+                    return;
+                }
+
+                getStatusOrder(id);
+                handleUpdateStatus();
+            }).on("hidden.bs.modal", function () {
+            });
+        }
+
+        function handleUpdateStatus() {
+            const validationForm = {
+                submitHandler: function (form) {
+                    Swal.fire({
+                        ...configSweetAlert2,
+                        title: 'Cập nhập tình trạng đơn hàng',
+                        icon: "warning",
+                        html: "Bạn có chắc chắn muốn cập nhập tình trạng đơn hàng?",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        focusConfirm: true,
+                        confirmButtonText: 'Cập nhập!',
+                        cancelButtonText: 'Đóng',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const id = formDataToJson(form).id;
+                            const items = getOrderItem();
+                            const transactionStatus = selectUpdateTransactionStatus.val();
+                            const orderStatus = selectUpdateOrderStatus.val();
+                            console.log(id, transactionStatus, orderStatus, items)
+                            updateStatus(id, transactionStatus, orderStatus, items);
+                        }
+                    })
+                    return false;
+                }
+            }
+
+            $("#form-update-status").validate(validationForm);
+        }
+
+
         function getDetail(id) {
             http({
                 url: '/api/admin/order/:id',
@@ -285,42 +354,51 @@ $(document).ready(function () {
             tableOrderDetail.html(htmls.join(""));
         }
 
-        function modalUpdate(id, orderStatus) {
-            const htmlContent = $("#form-update-status").html();
-            if (orderStatus === "VERIFYING") {
-                alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
-                return;
-            }
+        // function handleBeforeModalUpdate(id, orderStatus) {
+        //     const htmlContent = $("#form-update-status").html();
+        //     if (orderStatus === "VERIFYING") {
+        //         alert("Đơn hàng của người dùng chưa xác nhận chũ ký", "warning");
+        //         return;
+        //     }
+        //
+        //     Swal.fire({
+        //         ...configSweetAlert2,
+        //         title: 'Cập nhập tình trạng đơn hàng',
+        //         icon: "warning",
+        //         html: htmlContent,
+        //         showCloseButton: true,
+        //         showCancelButton: true,
+        //         focusConfirm: true,
+        //         width: 1000,
+        //         confirmButtonText: 'Cập nhập!',
+        //         cancelButtonText: 'Đóng',
+        //         willOpen: () => {
+        //
+        //         },
+        //         didOpen() {
+        //             const modal = $(Swal.getHtmlContainer());
+        //             getStatusOrder(modal, id);
+        //         },
+        //         preConfirm: () => {
+        //             const modal = $(Swal.getHtmlContainer());
+        //             const orderStatus = updateOrderStatus.val();
+        //             const transactionStatus = updateTransactionStatus.val();
+        //             const orderDetails = getOrderItem();
+        //             return {
+        //                 orderStatusId: orderStatus,
+        //                 transactionStatusId: transactionStatus,
+        //                 items: orderDetails
+        //             };
+        //         },
+        //     }).then(result => {
+        //         if (result.isConfirmed) {
+        //             const {orderStatus, transactionStatus, items} = result.value;
+        //             updateStatus(id, orderStatus, transactionStatus, items);
+        //         }
+        //     });
+        // }
 
-            Swal.fire({
-                ...configSweetAlert2,
-                title: 'Cập nhập tình trạng đơn hàng',
-                icon: "warning",
-                html: htmlContent,
-                showCloseButton: true,
-                showCancelButton: true,
-                focusConfirm: true,
-                confirmButtonText: 'Cập nhập!',
-                cancelButtonText: 'Đóng',
-                didOpen() {
-                    const modal = $(Swal.getHtmlContainer());
-                    configModalUpdateStatus(modal, id);
-                },
-                preConfirm: () => {
-                    const modal = $(Swal.getHtmlContainer());
-                    const orderStatus = modal.find('.orderStatus').val();
-                    const transactionStatus = modal.find('.transactionStatus').val();
-                    return {orderStatusId: orderStatus, transactionStatusId: transactionStatus};
-                },
-            }).then(result => {
-                if (result.isConfirmed) {
-                    const {orderStatus, transactionStatus} = result.value;
-                    updateStatus(id, orderStatus, transactionStatus);
-                }
-            });
-        }
-
-        function configModalUpdateStatus(modal, id) {
+        function getStatusOrder(id) {
             http({
                 url: "/api/admin/order/status-target/:orderId",
                 type: "GET",
@@ -330,11 +408,11 @@ $(document).ready(function () {
             }).then(response => {
                 const orderStatusTarget = response.data.orderStatusTarget;
                 const transactionStatusTarget = response.data.transactionStatusTarget;
-                const orderStatusSelect = modal.find(".orderStatus")
-                const transactionStatusSelect = modal.find(".transactionStatus")
+                const orderItems = response.data.items;
                 const listAllOrderStatus = [];
                 const listAllTransactionStatus = [];
-                orderStatusSelect.find("option").each(function () {
+
+                selectUpdateOrderStatus.find("option").each(function () {
                     const data = {
                         id: $(this).val(),
                         text: $(this).text(),
@@ -343,7 +421,7 @@ $(document).ready(function () {
                     listAllOrderStatus.push(data);
                 });
 
-                transactionStatusSelect.find("option").each(function () {
+                selectUpdateTransactionStatus.find("option").each(function () {
                     const data = {
                         id: $(this).val(),
                         text: $(this).text(),
@@ -352,32 +430,140 @@ $(document).ready(function () {
                     listAllTransactionStatus.push(data);
                 });
 
-                orderStatusSelect.empty();
-                transactionStatusSelect.empty();
+                selectUpdateOrderStatus.empty();
+                selectUpdateTransactionStatus.empty();
 
-                orderStatusSelect.select2({
+                selectUpdateOrderStatus.select2({
                     width: '100%',
                     closeOnSelect: true,
                     minimumResultsForSearch: -1,
                     allowClear: true,
                     placeholder: 'Chọn tình trạng đơn hàng',
-                    dropdownParent: $('.swal2-popup'),
+                    dropdownParent: modalUpdate,
                     data: listAllOrderStatus,
                 }).val(orderStatusTarget.id);
 
-                transactionStatusSelect.select2({
+                selectUpdateTransactionStatus.select2({
                     width: '100%',
                     closeOnSelect: true,
                     allowClear: true,
                     minimumResultsForSearch: -1,
                     placeholder: 'Chọn tình trạng giao dịch',
-                    dropdownParent: $('.swal2-popup'),
+                    dropdownParent: modalUpdate,
                     data: listAllTransactionStatus,
                 }).val(transactionStatusTarget.id);
+
+                tableUpdateOrderDetail.empty();
+                if (orderItems && orderItems.length > 0) {
+                    const html = orderItems.map((item, index) => (
+                        `
+                    <tr>
+                        <th data-id="${item.id}" scope="row">${index + 1}</th>
+                        <td>${item.name}</td>
+                        <td>
+                            <select class="select2-colors">
+                                 ${item.colors.map(color => (`<option value="${color.id}" data-code="${color.codeColor}">${color.codeColor}</option>`))}
+                            </select>
+                        </td>
+                        <td>
+                              <select class="select2-sizes">
+                                 ${item.sizes.map(sizes => (`<option value="${sizes.id}">${sizes.nameSize}</option>`))}
+                            </select>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 align-items-center" class="quantity">
+                                <button type="button" class="btn btn-primary btn-decrease">
+                                     <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span class="badge bg-secondary fs-5"> ${item.quantity}</span>
+                                 <button type="button" class="btn btn-primary btn-increase">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td>${formatCurrency(item.price)}</td>
+                    </tr>
+                   `
+                    ));
+                    tableUpdateOrderDetail.html(html.join(""));
+
+                    handleSelect2();
+
+                    handleQuantity();
+                }
             });
         }
 
-        function updateStatus(id, orderStatus, transactionStatus) {
+        function handleQuantity() {
+            tableUpdateOrderDetail.find(".btn-increase").on("click", function () {
+                const quantity = $(this).closest("td").find(".badge");
+                const currentQuantity = parseInt(quantity.text());
+                quantity.text(currentQuantity + 1);
+            });
+
+            tableUpdateOrderDetail.find(".btn-decrease").on("click", function () {
+                const quantity = $(this).closest("td").find(".badge");
+                const currentQuantity = parseInt(quantity.text());
+                if (currentQuantity > 1) {
+                    quantity.text(currentQuantity - 1);
+                }
+            });
+        }
+
+        function getOrderItem() {
+            const result = [];
+            tableUpdateOrderDetail.find("tr").each(function (index, element) {
+                const orderDetail = $(element);
+                const id = orderDetail.find("th:nth-child(1)").data("id");
+                const name = orderDetail.find("td:nth-child(2)").text();
+                const colorId = orderDetail.find("td:nth-child(3) select").val();
+                const sizeId = orderDetail.find("td:nth-child(4) select").val();
+                const quantity = orderDetail.find("td:nth-child(5)").text();
+                const price = orderDetail.find("td:nth-child(6)").text();
+                result.push({id, name, colorId, sizeId, quantity, price});
+            });
+            return result;
+        }
+
+        function handleSelect2() {
+            tableUpdateOrderDetail.find('.select2-sizes').select2({
+                width: '100%',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1,
+                placeholder: 'Chọn size muốn thay đổi',
+                dropdownParent: modalUpdate,
+            });
+
+            tableUpdateOrderDetail.find('.select2-colors').select2({
+                width: '100%',
+                closeOnSelect: true,
+                minimumResultsForSearch: -1,
+                placeholder: 'Chọn màu sắc muốn thay đổi',
+                dropdownParent: modalUpdate,
+                templateResult: formatOption,
+                templateSelection: formatSelection,
+            });
+
+            function formatOption(option) {
+                if (!option.id) {
+                    return option.text;
+                }
+
+                const color = $(option.element).data("code");
+                return $(
+                    `<span style="background-color:${color} " ">${option.text}</span>`
+                );
+            }
+
+            function formatSelection(option) {
+                const color = $(option.element).data("code");
+                return $(
+                    `<span style="background-color:${color} " ">${option.text}</span>`
+                );
+            }
+        }
+
+        function updateStatus(id, transactionStatus, orderStatus, items) {
             http({
                 url: "/api/admin/order/status-target/:orderId",
                 type: "PUT",
@@ -387,8 +573,9 @@ $(document).ready(function () {
                 data: {
                     transactionStatus: transactionStatus,
                     orderStatus: orderStatus,
+                    items: items,
                 }
-            }, false).then(response => {
+            }).then(response => {
                 if (response.code === 200)
                     Swal.fire({
                         ...configSweetAlert2,
@@ -397,6 +584,7 @@ $(document).ready(function () {
                         showCloseButton: true,
                     }).then(() => {
                         datatable.ajax.reload();
+                        modalUpdate.modal("hide");
                     });
                 else
                     Swal.fire({

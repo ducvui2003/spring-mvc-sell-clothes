@@ -29,7 +29,6 @@ $(document).ready(function () {
     handleSubmitModelChangeOrder();
 
 });
-
 function handleUploadFile() {
     var order_id = $('span#order__id').html();
     var file = $('input#upload-sign-info').prop('files')[0];
@@ -65,7 +64,7 @@ function handleUploadFile() {
     }).catch((error) => {
         Swal.fire({
             icon: 'error',
-            title: 'Vui lon upload file đã ký',
+            title: 'Vui lòng upload file đã ký',
             showConfirmButton: false,
             target: document.querySelector("#modal"),
             timer: 1500
@@ -260,7 +259,8 @@ function displayBtnAddress(status) {
 }
 
 function displayVerifyBlock(status) {
-    if (status === "VERIFYING") {
+    console.log(status)
+    if (status === "VERIFYING"|| status === "CHANGED") {
         verifyBlock.show();
     } else {
         verifyBlock.hide();
@@ -314,7 +314,7 @@ function handleCheckCanChangeOrder(orderId) {
             orderId: orderId
         }
     }).then((response) => {
-        if (response.data) {
+        if (!response.data) {
             Swal.fire({
                 icon: 'error',
                 title: 'Khóa chưa được cập nhập',
@@ -351,12 +351,7 @@ function handleSubmitModelChangeOrder() {
                         }
                     }).then((response) => {
                         if (response.code === 200) {
-                            updateAddressInModal({
-                                province: province,
-                                district: district,
-                                ward: ward,
-                                detail: detail
-                            });
+                            deleteRowTable(orderId);
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Đã thay đổi địa chỉ cho đơn hàng thành công',

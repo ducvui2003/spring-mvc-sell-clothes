@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebFilter(urlPatterns = {"/signIn", "/signUp", "/public/auth/signIn.jsp"})
+//@WebFilter(urlPatterns = {"/signIn", "/signUp", "/public/auth/signIn.jsp"})
 public class ReCaptchaFilter implements Filter {
     private static final String SECRET_KEY = "6LdSQu4pAAAAAP2wrQoDMwNVcga07MxOl9VN4D29";
     private static final String RECAPTCHA_VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";

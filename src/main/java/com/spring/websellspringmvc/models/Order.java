@@ -25,6 +25,7 @@ public class Order {
     String phone;
     int orderStatusId;
     int transactionStatusId;
+    String signatureKey;
     int voucherId;
     String message;
     String province;
@@ -39,5 +40,5 @@ public class Order {
     String paymentRef;
 
     LocalDateTime createAt;
-    String previousId;
+//    String previousId;
 }

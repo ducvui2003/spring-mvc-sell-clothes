@@ -1,21 +1,21 @@
 import {formatDatetime, formDataToJson, http} from "../base.js";
 
 $(document).ready(function () {
-    const formLostKey = $("#form-report-key");
-    formLostKey.on('submit', function (event) {
-        event.preventDefault();
-        const form = formDataToJson(this);
-        http({
-            url: "/api/key/verify-otp",
-            method: "PUT",
-            data: form,
-        }).then(response => {
-
-        }).catch(error => {
-
-        })
-
-    });
+    // const formLostKey = $("#form-report-key");
+    // formLostKey.on('submit', function (event) {
+    //     event.preventDefault();
+    //     const form = formDataToJson(this);
+    //     http({
+    //         url: "/api/key/verify-otp",
+    //         method: "PUT",
+    //         data: form,
+    //     }).then(response => {
+    //
+    //     }).catch(error => {
+    //
+    //     })
+    //
+    // });
 
 
     const lostKeyButton = $('#reportKeyModal');
@@ -30,6 +30,9 @@ $(document).ready(function () {
                 text: 'Vui lòng kiểm tra email để nhận mã OTP',
                 icon: 'info',
                 confirmButtonText: 'Đồng ý'
+            }).then(() => {
+                $('#currentKey').val("")
+                $('#createdDate').val("")
             })
         })
 
@@ -155,7 +158,7 @@ $(document).ready(function () {
     function loadDataToTable() {
         // Cập nhật currentKeyId
         const table = $('#keyList tbody');
-        updateCurrentKey();
+        // updateCurrentKey();
         table.empty();
         // console.log(keyListCustomer);
         const htmls = keyListCustomer.map(function (key) {
@@ -204,10 +207,6 @@ $(document).ready(function () {
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-4 font-weight-bold">Mã khóa trước (Previous ID):</div>
-                            <div class="col-md-8">${keyDetail.previousId || 'N/A'}</div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col-md-4 font-weight-bold">Ngày tạo:</div>
                             <div class="col-md-8">${keyDetail.createAt}</div>
                         </div>
@@ -240,8 +239,7 @@ $(document).ready(function () {
     });
 
 
-    console.log($("#createdDate").val())
-    $("#createdDate").val(formatDatetime($("#createdDate").val()));
+    // $("#createdDate").val(formatDatetime($("#createdDate").val()));
 
 
 // Khởi tạo tất cả tooltip

@@ -15,6 +15,7 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderDetailItemResponse implements Serializable {
     Integer id;
+    Integer productId;
     String name;
     String size;
     String color;

@@ -4,6 +4,8 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.spring.websellspringmvc.dto.response.AdminOrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
+import com.spring.websellspringmvc.models.Key;
+import com.spring.websellspringmvc.utils.SignedOrderFile;
 import com.spring.websellspringmvc.utils.constraint.OrderStatus;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
@@ -17,14 +19,18 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @Slf4j
 public class Test {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, InvalidKeySpecException {
         // Create mock OrderDetailResponse
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.setOrderId("ORD123");
@@ -96,6 +102,10 @@ public class Test {
 ////
         String hash = pdfService.readHash(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Signed_Invoice_ORD123.pdf"));
         System.out.println("Hash: " + hash);
+//
+        String signatureKey = pdfService.readSignature(new File("D:\\signed_d2b63ea3-98c9-4d76-93d1-6730f415aac8.pdf"));
+        System.out.println(signatureKey);
+        signatureKey = "ZDJiNjNlYTMtOThjOS00ZDc2LTkzZDEtNjczMGY0MTVhYWM4Ck1pbmggVOG6pW4KMDM1MjAzMzE5OQp0YW5kYW5taW4xQGdtYWlsLmNvbQpIxrBuZyBZw6puCkh1eeG7h24gVsSDbiBMw6JtCljDoyBMxrDGoW5nIFTDoGkKYWRhc2RhCkNPRAoKw4FvIHPGoSBtaSBTcXVhcmUgQ3Jvc3MKMlhMCiMwMDAwRkYKMgo3MDQwMDAuMApodHRwczovL3Jlcy5jbG91ZGluYXJ5LmNvbS95b3Vyc3R5bGUvaW1hZ2UvdXBsb2FkL2Nfc2NhbGUvcV9hdXRvL2ZfYXV0by92MS9wcm9kdWN0X2ltZy81Ni9wcm9kdWN0NTYuanBnCg==";
 
         String signature = pdfService.readSignature(new File("src/main/java/com/spring/websellspringmvc/services/pdf/Signed_Invoice_ORD123.pdf"));
         System.out.println("signature: " + signature);

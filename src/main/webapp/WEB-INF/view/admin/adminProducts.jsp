@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="/adminLink"/>
+    <jsp:include page="/WEB-INF/view/common/adminLink.jsp"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
@@ -44,7 +44,7 @@
 </head>
 <body>
 <!--Header-->
-<c:import url="/header"/>
+<jsp:include page="/WEB-INF/view/common/header.jsp"/>
 <main id="main">
     <!--Navigate-->
     <c:import url="/common/adminNavigator"/>
