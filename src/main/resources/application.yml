@@ -4,13 +4,13 @@ spring:
   profiles:
     default: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: jdbc:mysql://localhost:3306/your_style
-    username: root
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/your_style}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: password
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   session:
     store-type: jdbc
     jdbc:
