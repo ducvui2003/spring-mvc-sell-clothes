@@ -7,110 +7,111 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class PathProperties {
-    private static PathProperties INSTANCE;
-    private String pathProductWeb;
-    private String pathAvatarUserWeb;
-    private String pathCategoryWeb;
-    private String pathParameterWeb;
-    List<String> pathAdmin;
-    List<String> pathMod;
-    List<String> pathGuest;
-    List<String> preventAll;
-    private PathProperties() {
-        Properties properties = new Properties();
-        InputStream inputStream = PathProperties.class.getClassLoader().getResourceAsStream("path.properties");
-        try {
-            properties.load(inputStream);
-            pathProductWeb = properties.getProperty("path.product.webapp");
-            pathAvatarUserWeb = properties.getProperty("path.user.webapp");
+  private static PathProperties INSTANCE;
+  private String pathProductWeb;
+  private String pathAvatarUserWeb;
+  private String pathCategoryWeb;
+  private String pathParameterWeb;
+  List<String> pathAdmin;
+  List<String> pathMod;
+  List<String> pathGuest;
+  List<String> preventAll;
 
-            pathCategoryWeb = properties.getProperty("path.category.webapp");
-            pathParameterWeb = properties.getProperty("path.parameter.webapp");
-            pathAdmin = readList(properties, "path.admin");
-            pathMod = readList(properties, "path.mod");
-            pathGuest = readList(properties, "path.guest");
-            preventAll = readList(properties, "path.prevent.all");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+  private PathProperties() {
+    Properties properties = new Properties();
+    InputStream inputStream =
+        PathProperties.class.getClassLoader().getResourceAsStream("path.properties");
+    try {
+      properties.load(inputStream);
+      pathProductWeb = properties.getProperty("path.product.webapp");
+      pathAvatarUserWeb = properties.getProperty("path.user.webapp");
 
-    public static PathProperties getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new PathProperties();
-        return INSTANCE;
+      pathCategoryWeb = properties.getProperty("path.category.webapp");
+      pathParameterWeb = properties.getProperty("path.parameter.webapp");
+      pathAdmin = readList(properties, "path.admin");
+      pathMod = readList(properties, "path.mod");
+      pathGuest = readList(properties, "path.guest");
+      preventAll = readList(properties, "path.prevent.all");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public String getPathProductWeb() {
-        return pathProductWeb;
-    }
+  public static PathProperties getINSTANCE() {
+    if (INSTANCE == null) INSTANCE = new PathProperties();
+    return INSTANCE;
+  }
 
-    public void setPathProductWeb(String pathProductWeb) {
-        this.pathProductWeb = pathProductWeb;
-    }
+  public String getPathProductWeb() {
+    return pathProductWeb;
+  }
 
-    public String getPathCategoryWeb() {
-        return pathCategoryWeb;
-    }
+  public void setPathProductWeb(String pathProductWeb) {
+    this.pathProductWeb = pathProductWeb;
+  }
 
-    public void setPathCategoryWeb(String pathCategoryWeb) {
-        this.pathCategoryWeb = pathCategoryWeb;
-    }
+  public String getPathCategoryWeb() {
+    return pathCategoryWeb;
+  }
 
-    public String getPathParameterWeb() {
-        return pathParameterWeb;
-    }
+  public void setPathCategoryWeb(String pathCategoryWeb) {
+    this.pathCategoryWeb = pathCategoryWeb;
+  }
 
-    public void setPathParameterWeb(String pathParameterWeb) {
-        this.pathParameterWeb = pathParameterWeb;
-    }
+  public String getPathParameterWeb() {
+    return pathParameterWeb;
+  }
 
-    public List<String> getPathAdmin() {
-        return pathAdmin;
-    }
+  public void setPathParameterWeb(String pathParameterWeb) {
+    this.pathParameterWeb = pathParameterWeb;
+  }
 
-    public void setPathAdmin(List<String> pathAdmin) {
-        this.pathAdmin = pathAdmin;
-    }
+  public List<String> getPathAdmin() {
+    return pathAdmin;
+  }
 
-    private List<String> readList(Properties properties, String key) {
-        List<String> list = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(properties.getProperty(key), ", ");
-        while (tokenizer.hasMoreTokens()) {
-            list.add(tokenizer.nextToken());
-        }
-        return list;
-    }
+  public void setPathAdmin(List<String> pathAdmin) {
+    this.pathAdmin = pathAdmin;
+  }
 
-    public List<String> getPathMod() {
-        return pathMod;
+  private List<String> readList(Properties properties, String key) {
+    List<String> list = new ArrayList<>();
+    StringTokenizer tokenizer = new StringTokenizer(properties.getProperty(key), ", ");
+    while (tokenizer.hasMoreTokens()) {
+      list.add(tokenizer.nextToken());
     }
+    return list;
+  }
 
-    public void setPathMod(List<String> pathMod) {
-        this.pathMod = pathMod;
-    }
+  public List<String> getPathMod() {
+    return pathMod;
+  }
 
-    public List<String> getPathGuest() {
-        return pathGuest;
-    }
+  public void setPathMod(List<String> pathMod) {
+    this.pathMod = pathMod;
+  }
 
-    public void setPathGuest(List<String> pathGuest) {
-        this.pathGuest = pathGuest;
-    }
+  public List<String> getPathGuest() {
+    return pathGuest;
+  }
 
-    public String getPathAvatarUserWeb() {
-        return pathAvatarUserWeb;
-    }
+  public void setPathGuest(List<String> pathGuest) {
+    this.pathGuest = pathGuest;
+  }
 
-    public void setPathAvatarUserWeb(String pathAvatarUserWeb) {
-        this.pathAvatarUserWeb = pathAvatarUserWeb;
-    }
+  public String getPathAvatarUserWeb() {
+    return pathAvatarUserWeb;
+  }
 
-    public List<String> getPreventAll() {
-        return preventAll;
-    }
+  public void setPathAvatarUserWeb(String pathAvatarUserWeb) {
+    this.pathAvatarUserWeb = pathAvatarUserWeb;
+  }
 
-    public void setPreventAll(List<String> preventAll) {
-        this.preventAll = preventAll;
-    }
+  public List<String> getPreventAll() {
+    return preventAll;
+  }
+
+  public void setPreventAll(List<String> preventAll) {
+    this.preventAll = preventAll;
+  }
 }

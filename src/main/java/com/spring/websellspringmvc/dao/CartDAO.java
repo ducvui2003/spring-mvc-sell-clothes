@@ -3,6 +3,7 @@ package com.spring.websellspringmvc.dao;
 import com.spring.websellspringmvc.dto.response.CartItemResponse;
 import com.spring.websellspringmvc.models.CartItem;
 import com.spring.websellspringmvc.models.OrderDetail;
+import java.util.List;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -12,14 +13,13 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 @RegisterBeanMapper(CartItem.class)
 public interface CartDAO {
-    @SqlQuery("""
-            SELECT 
-                   cart_items.id  
+  @SqlQuery(
+      """
+            SELECT
+                   cart_items.id
                    as id,
                    products.id as productId,
                    products.name          as name,
@@ -29,7 +29,7 @@ public interface CartDAO {
                    colors.codeColor       AS color,
                    sizes.nameSize         AS size,
                    cart_items.quantity    AS quantity
-            
+
             FROM cart
                      JOIN cart_items ON cart.id = cart_items.cart_id
                      JOIN products ON cart_items.product_id = products.id
@@ -42,12 +42,13 @@ public interface CartDAO {
             WHERE cart.user_id = :userId
               AND images.row_num = 1;
             """)
-    @RegisterBeanMapper(CartItemResponse.class)
-    public List<CartItemResponse> getCart(@Bind("userId") int userId);
+  @RegisterBeanMapper(CartItemResponse.class)
+  public List<CartItemResponse> getCart(@Bind("userId") int userId);
 
-    @SqlQuery("""
-            SELECT 
-                   cart_items.id  as id, 
+  @SqlQuery(
+      """
+            SELECT
+                   cart_items.id  as id,
                    products.id as productId,
                    products.name          as name,
                    images.nameImage       AS thumbnail,
@@ -56,7 +57,7 @@ public interface CartDAO {
                    colors.codeColor       AS color,
                    sizes.nameSize         AS size,
                    cart_items.quantity    AS quantity
-            
+
             FROM cart
                      JOIN cart_items ON cart.id = cart_items.cart_id
                      JOIN products ON cart_items.product_id = products.id
@@ -70,60 +71,74 @@ public interface CartDAO {
               AND cart_items.id IN (<cartItemIds>)
               AND images.row_num = 1;
             """)
-    @RegisterBeanMapper(CartItemResponse.class)
-    public List<CartItemResponse> getCart(@BindList("cartItemIds") List<Integer> listCartItemId, @Bind("userId") int userId);
+  @RegisterBeanMapper(CartItemResponse.class)
+  public List<CartItemResponse> getCart(
+      @BindList("cartItemIds") List<Integer> listCartItemId, @Bind("userId") int userId);
 
-    @SqlCall("CALL add_cart (:cartId, :productId, :sizeId, :colorId, :quantity)")
-    public void add(@BindBean CartItem cartItem);
+  @SqlCall("CALL add_cart (:cartId, :productId, :sizeId, :colorId, :quantity)")
+  public void add(@BindBean CartItem cartItem);
 
-    @SqlUpdate("""
-            UPDATE cart_items 
+  @SqlUpdate(
+      """
+            UPDATE cart_items
             JOIN cart ON cart.id = cart_items.cart_id
             SET quantity = quantity + :quantity
             WHERE cart_items.id = :cartItemId AND cart.id = :cartId
             """)
-    public int increase(@Bind("cartItemId") int cartItemId, @Bind("quantity") int quantity, @Bind("cartId") int cartId);
+  public int increase(
+      @Bind("cartItemId") int cartItemId,
+      @Bind("quantity") int quantity,
+      @Bind("cartId") int cartId);
 
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             UPDATE cart_items
             JOIN cart ON cart.id = cart_items.cart_id
             SET quantity = quantity - :quantity
             WHERE cart_items.id = :cartItemId AND cart.id = :cartId AND quantity > 1
             """)
-    public void decrease(@Bind("cartItemId") int cartItemId, @Bind("quantity") int quantity, @Bind("cartId") int cartId);
+  public void decrease(
+      @Bind("cartItemId") int cartItemId,
+      @Bind("quantity") int quantity,
+      @Bind("cartId") int cartId);
 
-    @SqlUpdate("""
-            DELETE 
-            FROM cart_items 
+  @SqlUpdate(
+      """
+            DELETE
+            FROM cart_items
             WHERE cart_items.id = :cartItemId AND cart_items.cart_id = :cartId
             """)
-    public void delete(@Bind("cartItemId") int cartItemId, @Bind("cartId") int cartId);
+  public void delete(@Bind("cartItemId") int cartItemId, @Bind("cartId") int cartId);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT id
             FROM cart
             WHERE user_id = :userId
             """)
-    public Integer getCartId(@Bind("userId") int userId);
+  public Integer getCartId(@Bind("userId") int userId);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT COUNT(*)
             FROM cart_items JOIN cart ON cart.id = cart_items.cart_id
             WHERE cart.user_id = :userId
             """)
-    public int getQuantityCart(@Bind("userId") int userId);
+  public int getQuantityCart(@Bind("userId") int userId);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT *
             FROM cart
             WHERE user_id = :userId
             AND cart.id IN (<cartItems>)
             """)
-    public CartItem getCartIdIn(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
+  public CartItem getCartIdIn(
+      @BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
 
-
-    @SqlQuery("""
-            SELECT 
+  @SqlQuery(
+      """
+            SELECT
                    c.product_id AS productId,
                    p.name AS productName,
                    s.nameSize AS sizeRequired,
@@ -137,11 +152,12 @@ public interface CartDAO {
             WHERE c.id IN (<cartItems>)
               AND cart.user_id = :userId
             """)
-    @RegisterBeanMapper(OrderDetail.class)
-    public List<OrderDetail> getOrderDetailPreparedAdded(@BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
+  @RegisterBeanMapper(OrderDetail.class)
+  public List<OrderDetail> getOrderDetailPreparedAdded(
+      @BindList("cartItems") List<Integer> cartItems, @Bind("userId") int userId);
 
-    @SqlUpdate("""
+  @SqlUpdate("""
             DELETE FROM cart_items WHERE id IN (<cartItems>)
             """)
-    public void deleteCartItemIn(@BindList("cartItems") List<Integer> cartItems);
+  public void deleteCartItemIn(@BindList("cartItems") List<Integer> cartItems);
 }

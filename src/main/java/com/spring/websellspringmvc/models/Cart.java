@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Cart {
-    Integer id;
-    Integer userId;
+  Integer id;
+  Integer userId;
 }

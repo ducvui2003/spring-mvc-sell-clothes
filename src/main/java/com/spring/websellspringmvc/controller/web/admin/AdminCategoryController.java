@@ -14,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCategoryController {
-    @GetMapping
-    public ModelAndView showCategoryPage() {
-        return new ModelAndView(PageAddress.ADMIN_CATEGORY.getPage());
-    }
+  @GetMapping
+  public ModelAndView showCategoryPage() {
+    return new ModelAndView(PageAddress.ADMIN_CATEGORY.getPage());
+  }
 }

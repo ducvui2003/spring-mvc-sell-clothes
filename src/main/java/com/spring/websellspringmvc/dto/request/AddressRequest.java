@@ -13,18 +13,21 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class AddressRequest {
-    @JsonAlias("province")
-    String provinceId;
-    @JsonAlias("district")
-    String districtId;
-    @JsonAlias("ward")
-    String wardId;
-    String detail;
-    String provinceName;
-    String districtName;
-    String wardName;
+  @JsonAlias("province")
+  String provinceId;
 
-    public String exportAddressString() {
-        return String.format("%s, %s, %s, %s", detail, wardName, districtName, wardName);
-    }
+  @JsonAlias("district")
+  String districtId;
+
+  @JsonAlias("ward")
+  String wardId;
+
+  String detail;
+  String provinceName;
+  String districtName;
+  String wardName;
+
+  public String exportAddressString() {
+    return String.format("%s, %s, %s, %s", detail, wardName, districtName, wardName);
+  }
 }

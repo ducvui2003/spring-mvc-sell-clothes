@@ -9,11 +9,11 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ReviewMapper {
-    ReviewMapper INSTANCE = Mappers.getMapper(ReviewMapper.class);
+  ReviewMapper INSTANCE = Mappers.getMapper(ReviewMapper.class);
 
-    ReviewDetailResponse.ReviewResponse toReviewResponse(Review review);
+  ReviewDetailResponse.ReviewResponse toReviewResponse(Review review);
 
-    ReviewDatatable toReviewDatatableResponse(Review review);
+  ReviewDatatable toReviewDatatableResponse(Review review);
 
-    ReviewOverallResponse toReviewOverallResponse(Review review);
+  ReviewOverallResponse toReviewOverallResponse(Review review);
 }

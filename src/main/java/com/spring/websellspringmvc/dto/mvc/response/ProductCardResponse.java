@@ -9,12 +9,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductCardResponse {
-    int id;
-    String name;
-    String description;
-    double salePrice;
-    double originalPrice;
-    String thumbnail;
-    int rating;
-    int reviewCount;
+  int id;
+  String name;
+  String description;
+  double salePrice;
+  double originalPrice;
+  String thumbnail;
+  int rating;
+  int reviewCount;
 }

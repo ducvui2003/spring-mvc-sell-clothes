@@ -11,12 +11,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FacebookUser {
-    @JsonProperty("id")
-    String id;
+  @JsonProperty("id")
+  String id;
 
-    @JsonProperty("name")
-    String name;
+  @JsonProperty("name")
+  String name;
 
-    @JsonProperty("email")
-    String email;
+  @JsonProperty("email")
+  String email;
 }

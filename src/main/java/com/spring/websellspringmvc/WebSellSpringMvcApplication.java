@@ -10,8 +10,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 @EnableFeignClients
 public class WebSellSpringMvcApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(WebSellSpringMvcApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(WebSellSpringMvcApplication.class, args);
+  }
 }

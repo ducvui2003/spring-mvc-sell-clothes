@@ -13,20 +13,20 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DashBoardController {
-    DashboardServices dashboardServices;
+  DashboardServices dashboardServices;
 
-    @GetMapping("/admin/dashboard")
-    public ModelAndView getDashBoard() {
-        ModelAndView mav = new ModelAndView(PageAddress.ADMIN_DASHBOARD.getPage());
-        int quantityUser = dashboardServices.countUser();
-        int quantityProduct = dashboardServices.countProduct();
-        int quantityOrder = dashboardServices.countOrder();
-        int quantityReview = dashboardServices.countReview();
+  @GetMapping("/admin/dashboard")
+  public ModelAndView getDashBoard() {
+    ModelAndView mav = new ModelAndView(PageAddress.ADMIN_DASHBOARD.getPage());
+    int quantityUser = dashboardServices.countUser();
+    int quantityProduct = dashboardServices.countProduct();
+    int quantityOrder = dashboardServices.countOrder();
+    int quantityReview = dashboardServices.countReview();
 
-        mav.addObject("user", quantityUser);
-        mav.addObject("product", quantityProduct);
-        mav.addObject("order", quantityOrder);
-        mav.addObject("review", quantityReview);
-        return mav;
-    }
+    mav.addObject("user", quantityUser);
+    mav.addObject("product", quantityProduct);
+    mav.addObject("order", quantityOrder);
+    mav.addObject("review", quantityReview);
+    return mav;
+  }
 }

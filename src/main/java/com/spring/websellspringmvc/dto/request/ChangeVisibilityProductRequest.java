@@ -1,7 +1,6 @@
 package com.spring.websellspringmvc.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.spring.websellspringmvc.services.state.ProductState;
 import com.spring.websellspringmvc.utils.constraint.State;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,9 +13,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ChangeVisibilityProductRequest {
-    @NotNull
-    Integer id;
-    @JsonProperty("type")
-    @NotNull
-    State state;
+  @NotNull Integer id;
+
+  @JsonProperty("type")
+  @NotNull
+  State state;
 }

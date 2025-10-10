@@ -13,9 +13,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordRequest {
-    @NotBlank(message = "Mật khẩu cũ không được để trống")
-    String currentPassword;
-    @NotBlank(message = "Mật khẩu mới không được để trống")
-    @PasswordValid(message = "Mật khẩu cần chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt")
-    String newPassword;
+  @NotBlank(message = "Mật khẩu cũ không được để trống")
+  String currentPassword;
+
+  @NotBlank(message = "Mật khẩu mới không được để trống")
+  @PasswordValid(
+      message = "Mật khẩu cần chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt")
+  String newPassword;
 }

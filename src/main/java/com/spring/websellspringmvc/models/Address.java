@@ -12,13 +12,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Address {
-    Integer id;
-    Integer userId;
-    String wardId;
-    String wardName;
-    String districtId;
-    String districtName;
-    String provinceId;
-    String provinceName;
-    String detail;
+  Integer id;
+  Integer userId;
+  String wardId;
+  String wardName;
+  String districtId;
+  String districtName;
+  String provinceId;
+  String provinceName;
+  String detail;
 }

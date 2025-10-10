@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class VisibleVoucherRequest {
-    @NotNull
-    String code;
-    @NotNull
-    VoucherState state;
+  @NotNull String code;
+  @NotNull VoucherState state;
 }

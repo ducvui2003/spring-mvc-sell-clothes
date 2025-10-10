@@ -10,13 +10,13 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @Primary
 public class CustomErrorController implements ErrorController {
-    @GetMapping("/error")
-    public ModelAndView error() {
-        return new ModelAndView(PageAddress.ERROR_404.getPage());
-    }
+  @GetMapping("/error")
+  public ModelAndView error() {
+    return new ModelAndView(PageAddress.ERROR_404.getPage());
+  }
 
-    @GetMapping("/error-404")
-    public ModelAndView notFoundPage() {
-        return new ModelAndView(PageAddress.ERROR_404.getPage());
-    }
+  @GetMapping("/error-404")
+  public ModelAndView notFoundPage() {
+    return new ModelAndView(PageAddress.ERROR_404.getPage());
+  }
 }

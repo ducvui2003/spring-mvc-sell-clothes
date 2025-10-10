@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ForgetPasswordRequest {
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không đúng định dạng")
-    String email;
+  @NotBlank(message = "Email không được để trống")
+  @Email(message = "Email không đúng định dạng")
+  String email;
 }

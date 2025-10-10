@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDatatableRequest extends DatatableRequest{
-    String name;
+public class UserDatatableRequest extends DatatableRequest {
+  String name;
 }

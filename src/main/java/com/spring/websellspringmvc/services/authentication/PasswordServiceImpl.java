@@ -13,46 +13,47 @@ import com.spring.websellspringmvc.services.mail.MailResetPasswordServices;
 import com.spring.websellspringmvc.utils.Encoding;
 import com.spring.websellspringmvc.utils.Token;
 import jakarta.mail.MessagingException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PasswordServiceImpl implements PasswordService {
-    UserDAO userDAO;
+  UserDAO userDAO;
 
-    @Override
-    public void forgetPassword(ForgetPasswordRequest dto) {
-        Optional<User> userOptional = userDAO.findById(dto.getEmail());
-        User user = userOptional.orElseThrow(() -> new AppException(ErrorCode.NOT_VALID));
-        String token = Token.generateToken();
-        Timestamp timestampExpiredToken = Token.addTime(LocalDateTime.now(), MailProperties.getDurationTokenRestPassword());
-        userDAO.updateTokenResetPassword(user.getId(), token, timestampExpiredToken);
-        try {
-            IMailServices mailServices = new MailResetPasswordServices(user.getEmail(), user.getEmail(), token);
-            mailServices.send();
-        } catch (MessagingException e) {
-            log.info("Error send mail: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
+  @Override
+  public void forgetPassword(ForgetPasswordRequest dto) {
+    Optional<User> userOptional = userDAO.findById(dto.getEmail());
+    User user = userOptional.orElseThrow(() -> new AppException(ErrorCode.NOT_VALID));
+    String token = Token.generateToken();
+    Timestamp timestampExpiredToken =
+        Token.addTime(LocalDateTime.now(), MailProperties.getDurationTokenRestPassword());
+    userDAO.updateTokenResetPassword(user.getId(), token, timestampExpiredToken);
+    try {
+      IMailServices mailServices =
+          new MailResetPasswordServices(user.getEmail(), user.getEmail(), token);
+      mailServices.send();
+    } catch (MessagingException e) {
+      log.info("Error send mail: " + e.getMessage());
+      throw new RuntimeException(e);
     }
+  }
 
-    @Override
-    public void resetPassword(ResetPasswordRequest dto) {
-        String passwordEncoding = Encoding.getINSTANCE().toSHA1(dto.getPassword());
-        Optional<User> userOptional = userDAO.findById(dto.getEmail(), true);
-        User user = userOptional.orElseThrow(() -> new AppException(ErrorView.ERROR_404));
-        if (user.getTokenResetPassword() == null) throw new AppException(ErrorView.ERROR_404);
-        userDAO.updatePasswordEncoding(user.getId(), passwordEncoding);
-        userDAO.updateTokenResetPassword(user.getId(), null, null);
-    }
+  @Override
+  public void resetPassword(ResetPasswordRequest dto) {
+    String passwordEncoding = Encoding.getINSTANCE().toSHA1(dto.getPassword());
+    Optional<User> userOptional = userDAO.findById(dto.getEmail(), true);
+    User user = userOptional.orElseThrow(() -> new AppException(ErrorView.ERROR_404));
+    if (user.getTokenResetPassword() == null) throw new AppException(ErrorView.ERROR_404);
+    userDAO.updatePasswordEncoding(user.getId(), passwordEncoding);
+    userDAO.updateTokenResetPassword(user.getId(), null, null);
+  }
 }

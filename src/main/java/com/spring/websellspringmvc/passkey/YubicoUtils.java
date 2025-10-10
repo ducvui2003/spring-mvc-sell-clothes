@@ -1,7 +1,6 @@
 package com.spring.websellspringmvc.passkey;
 
 import com.yubico.webauthn.data.ByteArray;
-
 import java.nio.ByteBuffer;
 
 public class YubicoUtils {
@@ -14,8 +13,8 @@ public class YubicoUtils {
 
   // Convert a ByteArray to Integer
   public static int toInt(ByteArray byteArray) {
-    ByteBuffer buffer = ByteBuffer.wrap(byteArray.getBytes()); // Wrap ByteArray's bytes into a ByteBuffer
+    ByteBuffer buffer =
+        ByteBuffer.wrap(byteArray.getBytes()); // Wrap ByteArray's bytes into a ByteBuffer
     return buffer.getInt(); // Read the integer from the buffer
   }
-
 }

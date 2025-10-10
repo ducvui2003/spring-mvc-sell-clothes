@@ -7,11 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Parameter {
-    int id;
-    String name;
-    double minValue;
-    double maxValue;
-    String unit;
-    int categoryId;
-    String guideImg;
+  int id;
+  String name;
+  double minValue;
+  double maxValue;
+  String unit;
+  int categoryId;
+  String guideImg;
 }

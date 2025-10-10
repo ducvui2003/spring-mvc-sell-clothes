@@ -5,6 +5,9 @@ import com.spring.websellspringmvc.models.Slider;
 import com.spring.websellspringmvc.services.ProductService;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -18,89 +21,93 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class HomeController {
-    ProductService productService;
-    CloudinaryUploadServices cloudinaryUploadServices;
+  ProductService productService;
+  CloudinaryUploadServices cloudinaryUploadServices;
 
-    @RequestMapping({"/", "/home"})
-    ModelAndView homePage() {
-        ModelAndView mav = new ModelAndView("index");
-        List<Slider> listSlideShow = productService.getListSlideShow();
-        Page<ProductCardResponse> list6NewProducts = productService.getListNewProducts(PageRequest.of(0, 6));
-        Page<ProductCardResponse> list6TrendProducts = productService.getListTrendProducts(PageRequest.of(0, 6));
+  @RequestMapping({"/", "/home"})
+  ModelAndView homePage() {
+    ModelAndView mav = new ModelAndView("index");
+    List<Slider> listSlideShow = productService.getListSlideShow();
+    Page<ProductCardResponse> list6NewProducts =
+        productService.getListNewProducts(PageRequest.of(0, 6));
+    Page<ProductCardResponse> list6TrendProducts =
+        productService.getListTrendProducts(PageRequest.of(0, 6));
 
-        Map<String, String> categorySlider = new HashMap<>();
-        categorySlider.put("Áo thun / T-Shirt", cloudinaryUploadServices.getImage("category", "T-shirt"));
-        categorySlider.put("Áo hoodie / Hoodie", cloudinaryUploadServices.getImage("category", "hoodie"));
-        categorySlider.put("Balo / Backpack", cloudinaryUploadServices.getImage("category", "backpack"));
-        categorySlider.put("Quần dài / Pants", cloudinaryUploadServices.getImage("category", "pants"));
-        categorySlider.put("Nón / Cap", cloudinaryUploadServices.getImage("category", "hat"));
+    Map<String, String> categorySlider = new HashMap<>();
+    categorySlider.put(
+        "Áo thun / T-Shirt", cloudinaryUploadServices.getImage("category", "T-shirt"));
+    categorySlider.put(
+        "Áo hoodie / Hoodie", cloudinaryUploadServices.getImage("category", "hoodie"));
+    categorySlider.put(
+        "Balo / Backpack", cloudinaryUploadServices.getImage("category", "backpack"));
+    categorySlider.put("Quần dài / Pants", cloudinaryUploadServices.getImage("category", "pants"));
+    categorySlider.put("Nón / Cap", cloudinaryUploadServices.getImage("category", "hat"));
 
-        List<String> listSlider = listSlideShow.stream().map(slider ->
-                cloudinaryUploadServices.getImage("slider/", slider.getNameImage())
-        ).toList();
+    List<String> listSlider =
+        listSlideShow.stream()
+            .map(slider -> cloudinaryUploadServices.getImage("slider/", slider.getNameImage()))
+            .toList();
 
-        Map<String, String> stepGuide = new HashMap<>();
-        stepGuide.put("1", cloudinaryUploadServices.getImage("step_guide", "choose"));
-        stepGuide.put("2", cloudinaryUploadServices.getImage("step_guide", "customize"));
-        stepGuide.put("3", cloudinaryUploadServices.getImage("step_guide", "checkout"));
-        stepGuide.put("4", cloudinaryUploadServices.getImage("step_guide", "receive"));
+    Map<String, String> stepGuide = new HashMap<>();
+    stepGuide.put("1", cloudinaryUploadServices.getImage("step_guide", "choose"));
+    stepGuide.put("2", cloudinaryUploadServices.getImage("step_guide", "customize"));
+    stepGuide.put("3", cloudinaryUploadServices.getImage("step_guide", "checkout"));
+    stepGuide.put("4", cloudinaryUploadServices.getImage("step_guide", "receive"));
 
+    mav.addObject("categorySlider", categorySlider);
+    mav.addObject("listSlider", listSlider);
+    mav.addObject("list6TrendingProducts", list6TrendProducts.getContent());
+    mav.addObject("list6NewProducts", list6NewProducts.getContent());
+    mav.addObject("stepGuide", stepGuide);
+    return mav;
+  }
 
-        mav.addObject("categorySlider", categorySlider);
-        mav.addObject("listSlider", listSlider);
-        mav.addObject("list6TrendingProducts", list6TrendProducts.getContent());
-        mav.addObject("list6NewProducts", list6NewProducts.getContent());
-        mav.addObject("stepGuide", stepGuide);
-        return mav;
-    }
+  @GetMapping("/trendingProducts")
+  ModelAndView trendingPage(@PageableDefault(page = 1, size = 10) Pageable pagable) {
+    ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_TRENDING.getPage());
+    Page<ProductCardResponse> page = productService.getListTrendProducts(pagable);
 
-    @GetMapping("/trendingProducts")
-    ModelAndView trendingPage(@PageableDefault(page = 1, size = 10) Pageable pagable) {
-        ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_TRENDING.getPage());
-        Page<ProductCardResponse> page = productService.getListTrendProducts(pagable);
+    mav.addObject("page", pagable.getPageNumber());
+    mav.addObject("totalPage", page.getTotalPages());
+    mav.addObject("content", page.getContent());
+    log.info("listProductsPerPage: {}", page.getContent());
+    return mav;
+  }
 
-        mav.addObject("page", pagable.getPageNumber());
-        mav.addObject("totalPage", page.getTotalPages());
-        mav.addObject("content", page.getContent());
-        log.info("listProductsPerPage: {}", page.getContent());
-        return mav;
-    }
+  @GetMapping("/newProducts")
+  ModelAndView newProductsPage(@RequestParam(value = "page", defaultValue = "1") int page) {
+    ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_NEW.getPage());
+    //        List<Product> listAllNewProducts = homeServices.getListNewProducts(true);
+    //        int itemsPerPage = 8;
+    //        int size = listAllNewProducts.size();
+    //        int totalPage = (size % itemsPerPage == 0 ? (size / itemsPerPage) : ((size /
+    // itemsPerPage)) + 1);
+    //
+    //        int start, end;
+    //        start = (page - 1) * itemsPerPage;
+    //        end = Math.min(page * itemsPerPage, size);
+    //        List<Product> listProductsPerPage = getListProductsPerPage(listAllNewProducts, start,
+    // end);
+    //
+    //        mav.addObject("page", page);
+    //        mav.addObject("totalPage", totalPage);
+    //        mav.addObject("listProductsPerPage", listProductsPerPage);
 
-    @GetMapping("/newProducts")
-    ModelAndView newProductsPage(@RequestParam(value = "page", defaultValue = "1") int page) {
-        ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_NEW.getPage());
-//        List<Product> listAllNewProducts = homeServices.getListNewProducts(true);
-//        int itemsPerPage = 8;
-//        int size = listAllNewProducts.size();
-//        int totalPage = (size % itemsPerPage == 0 ? (size / itemsPerPage) : ((size / itemsPerPage)) + 1);
-//
-//        int start, end;
-//        start = (page - 1) * itemsPerPage;
-//        end = Math.min(page * itemsPerPage, size);
-//        List<Product> listProductsPerPage = getListProductsPerPage(listAllNewProducts, start, end);
-//
-//        mav.addObject("page", page);
-//        mav.addObject("totalPage", totalPage);
-//        mav.addObject("listProductsPerPage", listProductsPerPage);
+    return mav;
+  }
 
-        return mav;
-    }
+  @GetMapping("/fido")
+  ModelAndView fidoPage() {
+    return new ModelAndView("fido-login");
+  }
 
-    @GetMapping("/fido")
-    ModelAndView fidoPage() {
-        return new ModelAndView("fido-login");
-    }
-    @GetMapping("/fido-register")
-    ModelAndView fidoRegisterPage() {
-        return new ModelAndView("fido-register");
-    }
+  @GetMapping("/fido-register")
+  ModelAndView fidoRegisterPage() {
+    return new ModelAndView("fido-register");
+  }
 }

@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class PaymentMethod {
-    private int id;
-    private String typePayment;
-
-
+  private int id;
+  private String typePayment;
 }

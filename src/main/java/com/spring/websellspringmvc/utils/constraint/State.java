@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum State {
-    VISIBLE(true),
-    HIDE(false);
+  VISIBLE(true),
+  HIDE(false);
 
-    private final boolean value;
+  private final boolean value;
 
-    private State(boolean value) {
-        this.value = value;
-    }
+  private State(boolean value) {
+    this.value = value;
+  }
 }

@@ -7,8 +7,8 @@ import org.jdbi.v3.core.statement.StatementContext;
 @Slf4j
 public class CustomSQLLogger implements SqlLogger {
 
-    @Override
-    public void logBeforeExecution(StatementContext context) {
-        log.info("Executing SQL: {}", context.getRenderedSql());
-    }
+  @Override
+  public void logBeforeExecution(StatementContext context) {
+    log.info("Executing SQL: {}", context.getRenderedSql());
+  }
 }

@@ -1,18 +1,18 @@
-//package com.spring.websellspringmvc.services.mail;
+// package com.spring.websellspringmvc.services.mail;
 //
-//import com.spring.websellspringmvc.properties.MailProperties;
-//import jakarta.mail.*;
-//import jakarta.mail.internet.InternetAddress;
-//import jakarta.mail.internet.MimeMessage;
+// import com.spring.websellspringmvc.properties.MailProperties;
+// import jakarta.mail.*;
+// import jakarta.mail.internet.InternetAddress;
+// import jakarta.mail.internet.MimeMessage;
 //
-//import java.io.BufferedReader;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
-//import java.nio.charset.StandardCharsets;
-//import java.util.ArrayList;
-//import java.util.List;
+// import java.io.BufferedReader;
+// import java.io.InputStream;
+// import java.io.InputStreamReader;
+// import java.nio.charset.StandardCharsets;
+// import java.util.ArrayList;
+// import java.util.List;
 //
-//public class MailPlaceOrderService implements IMailServices{
+// public class MailPlaceOrderService implements IMailServices{
 //
 //    private ShoppingCart cart;
 //
@@ -31,7 +31,8 @@
 //        Authenticator auth = new Authenticator() {
 //            @Override
 //            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(MailProperties.getEmail(), MailProperties.getPassword());
+//                return new PasswordAuthentication(MailProperties.getEmail(),
+// MailProperties.getPassword());
 //            }
 //        };
 //
@@ -61,7 +62,8 @@
 //        Session session = Session.getInstance(MailProperties.getProperties(), auth);
 //        Message message = new MimeMessage(session);
 //        message.setFrom(new InternetAddress(MailProperties.getEmail()));
-////        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailBuyer, true));
+////        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailBuyer,
+// true));
 //        String subjectMess = "ĐƠN HÀNG CỦA BẠN";
 //        message.setSubject(subjectMess);
 //        message.setReplyTo(null);
@@ -77,17 +79,30 @@
 //                }else{
 //                    trTagOpen = "<tr>";
 //                }
-//                itemsBoughtBuilder.append(trTagOpen).append("<td style='border: 1px solid #d9d9d9;text-align: center;vertical-align: middle; padding: 10px;'><div class='item__info' style='display: grid; text-align: left;'><strong>").append(cartProduct.getProduct().getName()).append("</strong>")
-//                        .append("<span class='color' style='font-size: 14px;'>Màu sắc: ").append(cartProduct.getColor().getCodeColor()).append("</span>")
-//                        .append("<span class='size' style='font-size: 14px;'>Kích thước: ").append(cartProduct.sizeRequired()).append("</span></div></td>")
-//                        .append("<td style='border: 1px solid #d9d9d9;text-align: center;vertical-align: middle; padding: 10px;'>").append(cartProduct.sewingPriceFormat()).append("</td><td style='border: 1px solid #d9d9d9;text-align: center;vertical-align: middle; padding: 10px;'>").append(cartProduct.getQuantity())
-//                        .append("</td><td style='border: 1px solid #d9d9d9;text-align: center;vertical-align: middle; padding: 10px;'>").append(cartProduct.subtotalFormat()).append("</td></tr>");
+//                itemsBoughtBuilder.append(trTagOpen).append("<td style='border: 1px solid
+// #d9d9d9;text-align: center;vertical-align: middle; padding: 10px;'><div class='item__info'
+// style='display: grid; text-align:
+// left;'><strong>").append(cartProduct.getProduct().getName()).append("</strong>")
+//                        .append("<span class='color' style='font-size: 14px;'>Màu sắc:
+// ").append(cartProduct.getColor().getCodeColor()).append("</span>")
+//                        .append("<span class='size' style='font-size: 14px;'>Kích thước:
+// ").append(cartProduct.sizeRequired()).append("</span></div></td>")
+//                        .append("<td style='border: 1px solid #d9d9d9;text-align:
+// center;vertical-align: middle; padding:
+// 10px;'>").append(cartProduct.sewingPriceFormat()).append("</td><td style='border: 1px solid
+// #d9d9d9;text-align: center;vertical-align: middle; padding:
+// 10px;'>").append(cartProduct.getQuantity())
+//                        .append("</td><td style='border: 1px solid #d9d9d9;text-align:
+// center;vertical-align: middle; padding:
+// 10px;'>").append(cartProduct.subtotalFormat()).append("</td></tr>");
 //            }
 //        }
 //
-//        InputStream inputStream = MailProperties.class.getClassLoader().getResourceAsStream("templates/templateEmailPlaceOrder.html");
+//        InputStream inputStream =
+// MailProperties.class.getClassLoader().getResourceAsStream("templates/templateEmailPlaceOrder.html");
 //        StringBuilder contentBuilder  = new StringBuilder();
-//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,
+// StandardCharsets.UTF_8));
 //        String line;
 //        while (true){
 //            try {
@@ -113,7 +128,8 @@
 ////        htmlContent = htmlContent.replace("%%TOTALPRICE%%", totalPriceFormat);
 ////        htmlContent = htmlContent.replace("%%TEMPPRICE%%", temporaryPriceFormat);
 ////        htmlContent = htmlContent.replace("%%DISCOUNTPRICE%%", discountPriceFormat);
-////        htmlContent = htmlContent.replace("%%SHIPPINGFEE%%", FormatCurrency.vietNamCurrency(shippingFee));
+////        htmlContent = htmlContent.replace("%%SHIPPINGFEE%%",
+// FormatCurrency.vietNamCurrency(shippingFee));
 ////        htmlContent = htmlContent.replace("%%DELIVERYMETHOD%%", deliveryMethod);
 ////        htmlContent = htmlContent.replace("%%PAYMENTMETHOD%%", paymentMethod);
 //
@@ -125,4 +141,4 @@
 ////    private String htmlTemplateInvoice(InputStream inputStream){
 ////
 ////    }
-//}
+// }

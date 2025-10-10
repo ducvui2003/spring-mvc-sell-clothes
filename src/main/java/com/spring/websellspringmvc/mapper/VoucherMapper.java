@@ -8,9 +8,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface VoucherMapper {
-    VoucherMapper INSTANCE = Mappers.getMapper(VoucherMapper.class);
+  VoucherMapper INSTANCE = Mappers.getMapper(VoucherMapper.class);
 
-    Voucher toVoucher(CreateVoucherRequest createVoucherRequest);
+  Voucher toVoucher(CreateVoucherRequest createVoucherRequest);
 
-    Voucher toVoucher(UpdateVoucherRequest updateVoucherRequest);
+  Voucher toVoucher(UpdateVoucherRequest updateVoucherRequest);
 }

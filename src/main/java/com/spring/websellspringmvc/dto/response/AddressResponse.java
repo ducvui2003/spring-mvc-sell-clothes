@@ -10,12 +10,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddressResponse {
-    Integer id;
-    String wardName;
-    String districtName;
-    String provinceName;
-    String wardId;
-    String districtId;
-    String provinceId;
-    String detail;
+  Integer id;
+  String wardName;
+  String districtName;
+  String provinceName;
+  String wardId;
+  String districtId;
+  String provinceId;
+  String detail;
 }

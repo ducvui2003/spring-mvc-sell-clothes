@@ -8,6 +8,7 @@ import com.spring.websellspringmvc.services.checkout.CheckoutServices;
 import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import com.spring.websellspringmvc.utils.constraint.TransactionStatus;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -18,58 +19,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CheckoutController {
-    AddressServices addressService;
-    CheckoutServices checkoutServices;
-    SessionManager sessionManager;
-    String VN_PAY_SUCCESS = "00";
-    String VN_PAY_PROCESSING = "07";
+  AddressServices addressService;
+  CheckoutServices checkoutServices;
+  SessionManager sessionManager;
+  String VN_PAY_SUCCESS = "00";
+  String VN_PAY_PROCESSING = "07";
 
-    @PostMapping("/checkout")
-    public ModelAndView checkout(@ModelAttribute("checkout") CheckoutRequest request) {
-        int userId = sessionManager.getUser().getId();
-        List<AddressResponse> addresses = addressService.getAddress(userId);
-        List<CartItemResponse> cartItems = checkoutServices.getCarts(request.getCartItemId(), userId);
-        double total = cartItems.stream().reduce(0.0, (subtotal, item) -> subtotal + item.getPrice() * item.getQuantity(), Double::sum);
-        ModelAndView mov = new ModelAndView();
-        mov.setViewName(PageAddress.CHECKOUT.getPage());
-        mov.addObject("cartItems", cartItems);
-        mov.addObject("total", total);
-        mov.addObject("addresses", addresses);
-        return mov;
+  @PostMapping("/checkout")
+  public ModelAndView checkout(@ModelAttribute("checkout") CheckoutRequest request) {
+    int userId = sessionManager.getUser().getId();
+    List<AddressResponse> addresses = addressService.getAddress(userId);
+    List<CartItemResponse> cartItems = checkoutServices.getCarts(request.getCartItemId(), userId);
+    double total =
+        cartItems.stream()
+            .reduce(
+                0.0,
+                (subtotal, item) -> subtotal + item.getPrice() * item.getQuantity(),
+                Double::sum);
+    ModelAndView mov = new ModelAndView();
+    mov.setViewName(PageAddress.CHECKOUT.getPage());
+    mov.addObject("cartItems", cartItems);
+    mov.addObject("total", total);
+    mov.addObject("addresses", addresses);
+    return mov;
+  }
+
+  @GetMapping("/checkout/vn-pay-return")
+  public ModelAndView checkout(
+      @RequestParam("vnp_ResponseCode") String responseCode,
+      @RequestParam("vnpTxnRef") String vnpTxnRef) {
+    log.info("vnp_ResponseCode: " + responseCode);
+    log.info("vnp_TxnRef: " + vnpTxnRef);
+    String status = "";
+    switch (responseCode) {
+      case VN_PAY_SUCCESS:
+        checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PAID);
+        status = "Giao dịch thành công";
+        break;
+      case VN_PAY_PROCESSING:
+        checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PROCESSING);
+        status = "Giao dịch đang được Vn Pay xử lý";
+        break;
+      default:
+        checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.ERROR);
+        status = "Giao dịch thất bại, vui lòng liên hệ Vn Pay";
+        break;
     }
-
-
-    @GetMapping("/checkout/vn-pay-return")
-    public ModelAndView checkout(@RequestParam("vnp_ResponseCode") String responseCode,
-                                 @RequestParam("vnpTxnRef") String vnpTxnRef) {
-        log.info("vnp_ResponseCode: " + responseCode);
-        log.info("vnp_TxnRef: " + vnpTxnRef);
-        String status = "";
-        switch (responseCode) {
-            case VN_PAY_SUCCESS:
-                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PAID);
-                status = "Giao dịch thành công";
-                break;
-            case VN_PAY_PROCESSING:
-                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.PROCESSING);
-                status = "Giao dịch đang được Vn Pay xử lý";
-                break;
-            default:
-                checkoutServices.updateTransactionStatusVNPay(vnpTxnRef, TransactionStatus.ERROR);
-                status = "Giao dịch thất bại, vui lòng liên hệ Vn Pay";
-                break;
-        }
-        ModelAndView mov = new ModelAndView();
-        mov.addObject("status", status);
-        mov.addObject("orderId", vnpTxnRef);
-        mov.setViewName(PageAddress.USER_ORDER_SUCCESS.getPage());
-        return mov;
-    }
+    ModelAndView mov = new ModelAndView();
+    mov.addObject("status", status);
+    mov.addObject("orderId", vnpTxnRef);
+    mov.setViewName(PageAddress.USER_ORDER_SUCCESS.getPage());
+    return mov;
+  }
 }

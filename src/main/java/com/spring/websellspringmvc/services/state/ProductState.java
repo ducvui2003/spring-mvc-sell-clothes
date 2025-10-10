@@ -4,13 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum ProductState {
-    VISIBLE("1"),
-    HIDE("0");
+  VISIBLE("1"),
+  HIDE("0");
 
-    private final String value;
+  private final String value;
 
-    private ProductState(String value) {
-        this.value = value;
-    }
-
+  private ProductState(String value) {
+    this.value = value;
+  }
 }

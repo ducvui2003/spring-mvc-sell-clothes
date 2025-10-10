@@ -20,45 +20,54 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/order")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminOrderController {
-    AdminOrderServices orderServices;
+  AdminOrderServices orderServices;
 
-    @PostMapping("/datatable")
-    public ResponseEntity<DatatableResponse<OrderDatatable>> datatable(@RequestBody OrderDatatableRequest requestBody) throws Exception {
-        DatatableResponse<OrderDatatable> response = orderServices.datatable(requestBody);
-        return ResponseEntity.ok(response);
+  @PostMapping("/datatable")
+  public ResponseEntity<DatatableResponse<OrderDatatable>> datatable(
+      @RequestBody OrderDatatableRequest requestBody) throws Exception {
+    DatatableResponse<OrderDatatable> response = orderServices.datatable(requestBody);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<ApiResponse<AdminOrderDetailResponse>> getOrder(@PathVariable String id) {
+    return ResponseEntity.ok(
+        ApiResponse.<AdminOrderDetailResponse>builder()
+            .code(HttpStatus.OK.value())
+            .message("Get order detail success")
+            .data(orderServices.getOrderDetail(id))
+            .build());
+  }
+
+  @GetMapping("/status-target/{orderId}")
+  public ResponseEntity<ApiResponse<StatusChangedResponse>> getStatusTarget(
+      @PathVariable("orderId") String orderId) {
+    StatusChangedResponse data = orderServices.getStatusCanChanged(orderId);
+
+    return ResponseEntity.ok(
+        ApiResponse.<StatusChangedResponse>builder()
+            .code(HttpStatus.OK.value())
+            .message("Get status target success")
+            .data(data)
+            .build());
+  }
+
+  @PutMapping("/status-target/{orderId}")
+  public ResponseEntity<ApiResponse<?>> changeStatus(
+      @PathVariable("orderId") String orderId, @RequestBody OrderStatusChangeRequest request) {
+    boolean changedSuccess = orderServices.changeStatus(orderId, request);
+    if (changedSuccess) {
+      return ResponseEntity.ok(
+          ApiResponse.builder()
+              .code(HttpStatus.OK.value())
+              .message("Change status success")
+              .build());
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<AdminOrderDetailResponse>> getOrder(@PathVariable String id) {
-        return ResponseEntity.ok(ApiResponse.<AdminOrderDetailResponse>builder()
-                .code(HttpStatus.OK.value())
-                .message("Get order detail success")
-                .data(orderServices.getOrderDetail(id)).build());
-    }
-
-    @GetMapping("/status-target/{orderId}")
-    public ResponseEntity<ApiResponse<StatusChangedResponse>> getStatusTarget(@PathVariable("orderId") String orderId) {
-        StatusChangedResponse data = orderServices.getStatusCanChanged(orderId);
-
-        return ResponseEntity.ok(ApiResponse.<StatusChangedResponse>builder()
-                .code(HttpStatus.OK.value())
-                .message("Get status target success")
-                .data(data)
-                .build());
-    }
-
-    @PutMapping("/status-target/{orderId}")
-    public ResponseEntity<ApiResponse<?>> changeStatus(@PathVariable("orderId") String orderId, @RequestBody OrderStatusChangeRequest request) {
-        boolean changedSuccess = orderServices.changeStatus(orderId, request);
-        if (changedSuccess) {
-            return ResponseEntity.ok(ApiResponse.builder()
-                    .code(HttpStatus.OK.value())
-                    .message("Change status success")
-                    .build());
-        }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.builder()
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(
+            ApiResponse.builder()
                 .code(HttpStatus.CONFLICT.value())
                 .message("Change status failed")
                 .build());
-    }
+  }
 }

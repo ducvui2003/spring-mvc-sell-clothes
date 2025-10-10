@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class FacebookAccessTokenResponse {
-    @JsonProperty("access_token")
-    String accessToken;
+  @JsonProperty("access_token")
+  String accessToken;
 }

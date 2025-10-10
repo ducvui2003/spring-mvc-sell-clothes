@@ -7,6 +7,9 @@ import com.spring.websellspringmvc.dto.response.OrderDetailItemResponse;
 import com.spring.websellspringmvc.dto.response.OrderDetailResponse;
 import com.spring.websellspringmvc.dto.response.OrderResponse;
 import com.spring.websellspringmvc.models.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -16,28 +19,30 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface OrderDAO {
 
-    @SqlQuery("SELECT * FROM orders WHERE id = :id")
-    @RegisterBeanMapper(Order.class)
-    public Order getOrderById(@Bind("id") String id);
+  @SqlQuery("SELECT * FROM orders WHERE id = :id")
+  @RegisterBeanMapper(Order.class)
+  public Order getOrderById(@Bind("id") String id);
 
-    @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId, transactionStatusId = :transactionStatusId WHERE id = :orderId")
-    public void updateStatusByOrderId(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId, @Bind("transactionStatusId") int transactionStatusId);
+  @SqlUpdate(
+      "UPDATE orders SET orderStatusId = :orderStatusId, transactionStatusId = :transactionStatusId WHERE id = :orderId")
+  public void updateStatusByOrderId(
+      @Bind("orderId") String orderId,
+      @Bind("orderStatusId") int orderStatusId,
+      @Bind("transactionStatusId") int transactionStatusId);
 
+  @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId WHERE id = :orderId")
+  public int updateOrderStatusByOrderId(
+      @Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
 
-    @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId WHERE id = :orderId")
-    public int updateOrderStatusByOrderId(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
+  @SqlUpdate("UPDATE orders SET transactionStatusId = :transactionStatusId WHERE id = :orderId")
+  public int updateTransactionStatusByOrderId(
+      @Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
 
-    @SqlUpdate("UPDATE orders SET transactionStatusId = :transactionStatusId WHERE id = :orderId")
-    public int updateTransactionStatusByOrderId(@Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
-
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             UPDATE order_details od
             SET
                 colorRequired = (SELECT codeColor FROM colors WHERE id = :colorId),
@@ -50,90 +55,100 @@ public interface OrderDAO {
                     OR quantityRequired != :quantity
                 );
             """)
-    public int updateOrderDetail(@BindBean OrderStatusChangeRequest.OrderItemChangeRequest orderDetails);
+  public int updateOrderDetail(
+      @BindBean OrderStatusChangeRequest.OrderItemChangeRequest orderDetails);
 
-    @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId WHERE id = :orderId")
-    void updateOrderStatus(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
+  @SqlUpdate("UPDATE orders SET orderStatusId = :orderStatusId WHERE id = :orderId")
+  void updateOrderStatus(@Bind("orderId") String orderId, @Bind("orderStatusId") int orderStatusId);
 
-    @SqlUpdate("UPDATE orders SET transactionStatusId = :transactionStatusId WHERE id = :orderId")
-    public void updateOrderTransaction(@Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
+  @SqlUpdate("UPDATE orders SET transactionStatusId = :transactionStatusId WHERE id = :orderId")
+  public void updateOrderTransaction(
+      @Bind("orderId") String orderId, @Bind("transactionStatusId") int transactionStatusId);
 
-    @SqlQuery("SELECT id, code, description, minimumPrice, discountPercent FROM vouchers WHERE id = :id")
-    public Voucher getVoucherById(@Bind("id") int id);
+  @SqlQuery(
+      "SELECT id, code, description, minimumPrice, discountPercent FROM vouchers WHERE id = :id")
+  public Voucher getVoucherById(@Bind("id") int id);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT order_statuses.alias AS value
-                FROM orders 
-                JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
+                FROM orders
+                JOIN order_statuses ON orders.orderStatusId = order_statuses.id
                 WHERE orders.id = :id
             """)
-    public String getStatusById(@Bind("id") String id);
+  public String getStatusById(@Bind("id") String id);
 
-    @SqlQuery("""
-            SELECT orders.id AS id, orders.dateOrder AS dateOrder 
-            FROM orders 
-            WHERE orders.orderStatusId = :orderStatus 
-            AND orders.userId = :userId 
+  @SqlQuery(
+      """
+            SELECT orders.id AS id, orders.dateOrder AS dateOrder
+            FROM orders
+            WHERE orders.orderStatusId = :orderStatus
+            AND orders.userId = :userId
             """)
-    @RegisterBeanMapper(OrderResponse.class)
-    public List<OrderResponse> getOrder(@Bind("userId") int userId, @Bind("orderStatus") int orderStatus);
+  @RegisterBeanMapper(OrderResponse.class)
+  public List<OrderResponse> getOrder(
+      @Bind("userId") int userId, @Bind("orderStatus") int orderStatus);
 
-    @SqlQuery("""
-            SELECT orders.id as orderId, 
-            order_statuses.typeStatus as status, 
-            orders.fullName, 
-            orders.phone, 
-            orders.email, 
-            orders.province, 
-            orders.district, 
-            orders.ward, 
-            orders.detail, 
-            orders.voucherId, 
-            orders.dateOrder, 
+  @SqlQuery(
+      """
+            SELECT orders.id as orderId,
+            order_statuses.typeStatus as status,
+            orders.fullName,
+            orders.phone,
+            orders.email,
+            orders.province,
+            orders.district,
+            orders.ward,
+            orders.detail,
+            orders.voucherId,
+            orders.dateOrder,
             orders.signatureKey,
             orders.keyUsingVerify,
-            orders.paymentMethod as payment, 
+            orders.paymentMethod as payment,
             orders.fee as fee,
-            orders.leadTime as leadTime 
-            FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
+            orders.leadTime as leadTime
+            FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id
             WHERE orders.id = :orderId
             """)
-    @RegisterBeanMapper(OrderDetailResponse.class)
-    public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId);
+  @RegisterBeanMapper(OrderDetailResponse.class)
+  public Optional<OrderDetailResponse> getOrderByOrderDetailId(@Bind("orderId") String orderId);
 
-    @SqlQuery("""
-            SELECT orders.id as orderId, 
-            order_statuses.typeStatus as status, 
-            orders.fullName, 
-            orders.phone, 
-            orders.email, 
-            orders.province, 
-            orders.district, 
-            orders.ward, 
-            orders.detail, 
-            orders.voucherId, 
-            orders.dateOrder, 
-            orders.paymentMethod as payment, 
+  @SqlQuery(
+      """
+            SELECT orders.id as orderId,
+            order_statuses.typeStatus as status,
+            orders.fullName,
+            orders.phone,
+            orders.email,
+            orders.province,
+            orders.district,
+            orders.ward,
+            orders.detail,
+            orders.voucherId,
+            orders.dateOrder,
+            orders.paymentMethod as payment,
             orders.fee as fee,
-            orders.leadTime as leadTime 
-            FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id 
+            orders.leadTime as leadTime
+            FROM orders JOIN order_statuses ON orders.orderStatusId=order_statuses.id
             WHERE orders.id = (<getOrderByOrderDetailId>)
             """)
-    @RegisterBeanMapper(OrderDetailResponse.class)
-    public List<OrderDetailResponse> getOrderByOrderDetailId(@BindList("orderIds") List<String> orderId);
+  @RegisterBeanMapper(OrderDetailResponse.class)
+  public List<OrderDetailResponse> getOrderByOrderDetailId(
+      @BindList("orderIds") List<String> orderId);
 
-    @SqlQuery("""
-            SELECT 
+  @SqlQuery(
+      """
+            SELECT
             order_details.id AS id,
             order_details.productId AS productId,
-            order_details.productName AS name, 
-            order_details.quantityRequired AS quantity, 
-            order_details.sizeRequired AS size, 
-            order_details.colorRequired AS color, 
-            order_details.price AS price, 
-            images.nameImage AS thumbnail 
+            order_details.productName AS name,
+            order_details.quantityRequired AS quantity,
+            order_details.sizeRequired AS size,
+            order_details.colorRequired AS color,
+            order_details.price AS price,
+            images.nameImage AS thumbnail
             FROM (
-                SELECT productId, MIN(images.id) AS minImageId 
+                SELECT productId, MIN(images.id) AS minImageId
                 FROM images
                 GROUP BY productId
                 ) AS minImages
@@ -141,11 +156,11 @@ public interface OrderDAO {
             JOIN order_details ON order_details.productId = images.productId
             WHERE order_details.orderId = ?
             """)
-    @RegisterBeanMapper(OrderDetailItemResponse.class)
-    public List<OrderDetailItemResponse> getOrderDetailsByOrderId(String orderId);
+  @RegisterBeanMapper(OrderDetailItemResponse.class)
+  public List<OrderDetailItemResponse> getOrderDetailsByOrderId(String orderId);
 
-
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             INSERT INTO orders (id, userId, paymentMethod, paymentRef, fullName, email, phone, orderStatusId, transactionStatusId, voucherId,
                                 fee, leadTime, province, district, ward, detail)
             SELECT :order.id,
@@ -167,17 +182,18 @@ public interface OrderDAO {
             FROM address a
             WHERE a.id = :addressId AND a.userId = :order.userId
             """)
-    public void createOrder(@BindBean("order") Order order, @Bind("addressId") int addressId);
+  public void createOrder(@BindBean("order") Order order, @Bind("addressId") int addressId);
 
-    @SqlBatch("""
+  @SqlBatch(
+      """
             INSERT INTO order_details (orderId, productId, productName, sizeRequired, colorRequired, quantityRequired, price)
             VALUES (:orderId, :orderDetail.productId, :orderDetail.productName, :orderDetail.sizeRequired, :orderDetail.colorRequired, :orderDetail.quantityRequired, :orderDetail.price)
             """)
-    public void createOrderDetails(
-            @Bind("orderId") String orderId,
-            @BindBean("orderDetail") OrderDetail... orderDetails);
+  public void createOrderDetails(
+      @Bind("orderId") String orderId, @BindBean("orderDetail") OrderDetail... orderDetails);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT orders.id                       as id,
                    dateOrder,
                    fullName,
@@ -192,16 +208,17 @@ public interface OrderDAO {
                    ward,
                    detail,
                    fee,
-                   leadTime 
+                   leadTime
             FROM orders
                      JOIN order_statuses ON orders.orderStatusId = order_statuses.id
                      JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
-            WHERE orders.id = :id 
+            WHERE orders.id = :id
             """)
-    @RegisterBeanMapper(AdminOrderDetailResponse.class)
-    public AdminOrderDetailResponse getOrder(@Bind("id") String id);
+  @RegisterBeanMapper(AdminOrderDetailResponse.class)
+  public AdminOrderDetailResponse getOrder(@Bind("id") String id);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT orders.id                       as id,
                    dateOrder,
                    fullName,
@@ -217,24 +234,27 @@ public interface OrderDAO {
                    detail,
                    fee,
                    leadTime,
-                   createAt 
-            FROM orders 
-                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id 
-                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id 
+                   createAt
+            FROM orders
+                     JOIN order_statuses ON orders.orderStatusId = order_statuses.id
+                     JOIN transaction_statuses ON orders.transactionStatusId = transaction_statuses.id
             WHERE orders.id = :id
             ORDER BY orders.createAt DESC
             """)
-    @RegisterBeanMapper(AdminOrderDetailResponse.class)
-    List<AdminOrderDetailResponse> getOrderPrevious(@Bind("id") String id);
+  @RegisterBeanMapper(AdminOrderDetailResponse.class)
+  List<AdminOrderDetailResponse> getOrderPrevious(@Bind("id") String id);
 
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             UPDATE orders
             SET orders.transactionStatusId = :transactionStatus
             WHERE orders.paymentRef = :paymentRef
             """)
-    void updateTransactionStatusVNPay(@Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
+  void updateTransactionStatusVNPay(
+      @Bind("paymentRef") String paymentRef, @Bind("transactionStatus") int value);
 
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             UPDATE orders o
             JOIN address a ON a.id = :request.addressId
             SET o.province = a.provinceName,
@@ -246,32 +266,32 @@ public interface OrderDAO {
                 o.orderStatusId = :orderStatusId
             WHERE o.id = :orderId AND o.userId = :userId
             """)
-    int changeInfoOrder(
-            @Bind("orderId") String orderId,
-            @Bind("userId") int userId,
-            @BindBean("request") ChangeOrderRequest request,
-            @Bind("leadTime") LocalDateTime leadTime,
-            @Bind("fee") double fee,
-            @Bind("orderStatusId") int orderStatus
-    );
+  int changeInfoOrder(
+      @Bind("orderId") String orderId,
+      @Bind("userId") int userId,
+      @BindBean("request") ChangeOrderRequest request,
+      @Bind("leadTime") LocalDateTime leadTime,
+      @Bind("fee") double fee,
+      @Bind("orderStatusId") int orderStatus);
 
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             INSERT INTO orders (
-            id, 
-            userId, 
-            dateOrder, 
-            paymentMethod, 
-            paymentRef, 
-            fullName, 
-            email, 
-            phone, 
-            transactionStatusId, 
-            orderStatusId, 
-            province, 
-            district, 
-            ward, 
-            detail, 
-            fee, 
+            id,
+            userId,
+            dateOrder,
+            paymentMethod,
+            paymentRef,
+            fullName,
+            email,
+            phone,
+            transactionStatusId,
+            orderStatusId,
+            province,
+            district,
+            ward,
+            detail,
+            fee,
             leadTime
             )
             SELECT   UUID(),
@@ -289,51 +309,58 @@ public interface OrderDAO {
                      o.ward,
                      o.detail,
                      o.fee,
-                     o.leadTime 
+                     o.leadTime
             FROM orders o
             WHERE o.id = :orderId AND o.userId = :userId
             """)
-    int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
+  int backupOrder(@Bind("orderId") String orderId, @Bind("userId") int userId);
 
-    @SqlBatch("""
+  @SqlBatch(
+      """
             IF EXISTS (SELECT * FROM order
-             WHERE orderId = :orderId AND 
-             fullName=:orderDetail.fullName AND 
-             email=:orderDetail.email AND 
-             phone=:orderDetail.phone AND 
-             province=:orderDetail.province AND 
-             district=:orderDetail.district AND 
-             ward=:orderDetail.ward AND 
-             detail=:orderDetail.detail AND 
-             paymentMethod=:orderDetail.paymentMethod AND 
-             voucherId=:orderDetail.voucherId AND 
+             WHERE orderId = :orderId AND
+             fullName=:orderDetail.fullName AND
+             email=:orderDetail.email AND
+             phone=:orderDetail.phone AND
+             province=:orderDetail.province AND
+             district=:orderDetail.district AND
+             ward=:orderDetail.ward AND
+             detail=:orderDetail.detail AND
+             paymentMethod=:orderDetail.paymentMethod AND
+             voucherId=:orderDetail.voucherId AND
              fee=:orderDetail.fee)
             """)
-    boolean[] verifyHistory(@BindBean("orderDetail") List<AdminOrderDetailResponse> orderDetail);
+  boolean[] verifyHistory(@BindBean("orderDetail") List<AdminOrderDetailResponse> orderDetail);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT colors.*
             FROM order_details JOIN products ON order_details.productId = products.id
             JOIN colors ON products.id = colors.productId
             WHERE order_details.orderId = :orderId
             """)
-    @RegisterBeanMapper(Color.class)
-    List<Color> getColorsByOrderId(@Bind("orderId") String orderId);
+  @RegisterBeanMapper(Color.class)
+  List<Color> getColorsByOrderId(@Bind("orderId") String orderId);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT sizes.*
             FROM order_details JOIN products ON order_details.productId = products.id
             JOIN sizes ON products.id = sizes.productId
             WHERE order_details.orderId = :orderId
             """)
-    @RegisterBeanMapper(Size.class)
-    List<Size> getSizesByOrderId(@Bind("orderId") String orderId);
+  @RegisterBeanMapper(Size.class)
+  List<Size> getSizesByOrderId(@Bind("orderId") String orderId);
 
-    @SqlUpdate("""
+  @SqlUpdate(
+      """
             UPDATE orders
             SET signatureKey = :signatureKey,
                 keyUsingVerify= :keyId
             WHERE id = :orderId
             """)
-    int insertSignature(@Bind("orderId") String orderId, @Bind("signatureKey") String signature, @Bind("keyId") String keyId);
+  int insertSignature(
+      @Bind("orderId") String orderId,
+      @Bind("signatureKey") String signature,
+      @Bind("keyId") String keyId);
 }

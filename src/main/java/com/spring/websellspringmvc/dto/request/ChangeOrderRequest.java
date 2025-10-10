@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeOrderRequest {
-    Integer addressId;
+  Integer addressId;
 }

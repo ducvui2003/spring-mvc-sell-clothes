@@ -10,50 +10,53 @@ import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 import com.spring.websellspringmvc.mapper.UserMapper;
 import com.spring.websellspringmvc.models.Key;
 import com.spring.websellspringmvc.models.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserServicesImpl implements AdminUserServices {
-    DatatableDAO datatableDAO;
-    UserDAO userDAO;
-    KeyDAO keyDAO;
-    UserMapper userMapper = UserMapper.INSTANCE;
+  DatatableDAO datatableDAO;
+  UserDAO userDAO;
+  KeyDAO keyDAO;
+  UserMapper userMapper = UserMapper.INSTANCE;
 
-    @Override
-    public DatatableResponse<UserDatatable> datatable(UserDatatableRequest request) {
-        List<UserDatatable> data = datatableDAO.datatable(request);
-        long total = datatableDAO.count(request);
-        return DatatableResponse.<UserDatatable>builder()
-                .data(data)
-                .recordsTotal(total)
-                .recordsFiltered(total)
-                .draw(request.getDraw())
-                .build();
-    }
+  @Override
+  public DatatableResponse<UserDatatable> datatable(UserDatatableRequest request) {
+    List<UserDatatable> data = datatableDAO.datatable(request);
+    long total = datatableDAO.count(request);
+    return DatatableResponse.<UserDatatable>builder()
+        .data(data)
+        .recordsTotal(total)
+        .recordsFiltered(total)
+        .draw(request.getDraw())
+        .build();
+  }
 
-    @Override
-    public AdminUserDetailResponse getDetail(int userId) {
-        User user = userDAO.findById(userId);
-        if (user == null) {
-            return null;
-        }
-        AdminUserDetailResponse response = userMapper.toAdminUserDetailResponse(user);
-        List<Key> keys = keyDAO.getAllKeys(userId);
-        response.setKeys(keys.stream().map(key -> new AdminUserDetailResponse.AdminUserKey(
-                key.getId(),
-                key.getPublicKey(),
-                key.getCreateAt(),
-                key.getCreateAt(),
-                !key.isDeleted()
-        )).toList());
-        return response;
+  @Override
+  public AdminUserDetailResponse getDetail(int userId) {
+    User user = userDAO.findById(userId);
+    if (user == null) {
+      return null;
     }
+    AdminUserDetailResponse response = userMapper.toAdminUserDetailResponse(user);
+    List<Key> keys = keyDAO.getAllKeys(userId);
+    response.setKeys(
+        keys.stream()
+            .map(
+                key ->
+                    new AdminUserDetailResponse.AdminUserKey(
+                        key.getId(),
+                        key.getPublicKey(),
+                        key.getCreateAt(),
+                        key.getCreateAt(),
+                        !key.isDeleted()))
+            .toList());
+    return response;
+  }
 }

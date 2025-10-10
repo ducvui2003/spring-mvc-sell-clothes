@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentOwner {
-    int id;
-    int paymentMethodId;
-    String ownerName;
-    String paymentPlatform;
-    String accountNumber;
-
+  int id;
+  int paymentMethodId;
+  String ownerName;
+  String paymentPlatform;
+  String accountNumber;
 }
