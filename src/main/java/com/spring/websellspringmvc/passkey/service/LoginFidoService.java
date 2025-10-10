@@ -13,58 +13,59 @@ import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import com.yubico.webauthn.exception.AssertionFailedException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class LoginFidoService {
-    UserServices userServices;
-    RelyingParty relyingParty;
-    SessionManager sessionManager;
-    CartDAO cartDAO;
+  UserServices userServices;
+  RelyingParty relyingParty;
+  SessionManager sessionManager;
+  CartDAO cartDAO;
 
-    public AssertionRequest startLogin(LoginStartRequest loginStartRequest) throws Base64UrlException {
+  public AssertionRequest startLogin(LoginStartRequest loginStartRequest)
+      throws Base64UrlException {
 
-        Optional<User> userOptional = userServices.findByEmail(loginStartRequest.getEmail(), true);
-        User user = userOptional.orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
-        if (user.getUserHandle() == null)
-            throw new AppException(ErrorCode.UNAUTHORIZED);
+    Optional<User> userOptional = userServices.findByEmail(loginStartRequest.getEmail(), true);
+    User user = userOptional.orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+    if (user.getUserHandle() == null) throw new AppException(ErrorCode.UNAUTHORIZED);
 
-        System.out.println(user.getEmail());
-        StartAssertionOptions options =
-                StartAssertionOptions.builder()
-                        .timeout(60_000)
-                        .username(loginStartRequest.getEmail())
-//                        .userHandle(ByteArray.fromBase64Url(user.getUserHandle()))
-                        .build();
-        AssertionRequest assertionRequest = this.relyingParty.startAssertion(options);
+    System.out.println(user.getEmail());
+    StartAssertionOptions options =
+        StartAssertionOptions.builder()
+            .timeout(60_000)
+            .username(loginStartRequest.getEmail())
+            //                        .userHandle(ByteArray.fromBase64Url(user.getUserHandle()))
+            .build();
+    AssertionRequest assertionRequest = this.relyingParty.startAssertion(options);
 
-        return assertionRequest;
-    }
+    return assertionRequest;
+  }
 
-    public void finishLogin(PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> loginFinishRequest, AssertionRequest assertionRequest)
-            throws AssertionFailedException {
+  public void finishLogin(
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
+          loginFinishRequest,
+      AssertionRequest assertionRequest)
+      throws AssertionFailedException {
 
-        FinishAssertionOptions options =
-                FinishAssertionOptions.builder()
-                        .request(assertionRequest)
-                        .response(loginFinishRequest)
-                        .build();
+    FinishAssertionOptions options =
+        FinishAssertionOptions.builder()
+            .request(assertionRequest)
+            .response(loginFinishRequest)
+            .build();
 
-        AssertionResult assertionResult = this.relyingParty.finishAssertion(options);
+    AssertionResult assertionResult = this.relyingParty.finishAssertion(options);
 
-        if (!assertionResult.isSuccess())
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        String email = assertionRequest.getUsername().get();
-        Optional<User> userOptional = userServices.findByEmail(email, true);
-        User user = userOptional.get();
-        int quantityCart = cartDAO.getQuantityCart(user.getId());
-        sessionManager.addUser(user);
-        sessionManager.setQuantityCart(quantityCart);
-    }
+    if (!assertionResult.isSuccess()) throw new AppException(ErrorCode.UNAUTHORIZED);
+    String email = assertionRequest.getUsername().get();
+    Optional<User> userOptional = userServices.findByEmail(email, true);
+    User user = userOptional.get();
+    int quantityCart = cartDAO.getQuantityCart(user.getId());
+    sessionManager.addUser(user);
+    sessionManager.setQuantityCart(quantityCart);
+  }
 }

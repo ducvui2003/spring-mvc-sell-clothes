@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemResponse {
-    int id;
-    int productId;
-    String name;
-    String color;
-    String size;
-    int quantity;
-    double price;
-    double salePrice;
-    String thumbnail;
+  int id;
+  int productId;
+  String name;
+  String color;
+  String size;
+  int quantity;
+  double price;
+  double salePrice;
+  String thumbnail;
 }

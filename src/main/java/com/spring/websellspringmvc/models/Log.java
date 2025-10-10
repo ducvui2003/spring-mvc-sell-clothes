@@ -1,13 +1,12 @@
 package com.spring.websellspringmvc.models;
 
+import java.sql.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,11 +15,11 @@ import java.sql.Date;
 @Builder
 @AllArgsConstructor
 public class Log {
-    private int id;
-    private String ip;
-    private String level;
-    private String resource;
-    private Date dateCreated;
-    private String previous; // json
-    private String current; // json
+  private int id;
+  private String ip;
+  private String level;
+  private String resource;
+  private Date dateCreated;
+  private String previous; // json
+  private String current; // json
 }

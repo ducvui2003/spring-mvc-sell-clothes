@@ -3,13 +3,12 @@ package com.spring.websellspringmvc.dto.request.datatable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.spring.websellspringmvc.utils.constraint.PaymentMethod;
 import com.spring.websellspringmvc.utils.constraint.SearchSelect;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,14 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDatatableRequest extends DatatableRequest {
-    SearchSelect searchSelect;
-    String contentSearch;
-    String startDate;
-    String endDate;
-    @JsonProperty("paymentMethod")
-    List<PaymentMethod> paymentMethod;
-    @JsonProperty("orderStatus")
-    List<Integer> orderStatus;
-    @JsonProperty("transactionStatus")
-    List<Integer> transactionStatus;
+  SearchSelect searchSelect;
+  String contentSearch;
+  String startDate;
+  String endDate;
+
+  @JsonProperty("paymentMethod")
+  List<PaymentMethod> paymentMethod;
+
+  @JsonProperty("orderStatus")
+  List<Integer> orderStatus;
+
+  @JsonProperty("transactionStatus")
+  List<Integer> transactionStatus;
 }

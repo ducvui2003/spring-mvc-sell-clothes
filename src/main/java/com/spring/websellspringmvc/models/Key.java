@@ -1,9 +1,8 @@
 package com.spring.websellspringmvc.models;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -12,10 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Key {
-    String id;
-    String publicKey;
-    int userId;
-    LocalDateTime createAt;
-    LocalDateTime updateAt;
-    boolean deleted;
+  String id;
+  String publicKey;
+  int userId;
+  LocalDateTime createAt;
+  LocalDateTime updateAt;
+  boolean deleted;
 }

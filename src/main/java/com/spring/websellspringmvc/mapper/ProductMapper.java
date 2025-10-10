@@ -7,20 +7,19 @@ import com.spring.websellspringmvc.dto.request.UpdateProductRequest;
 import com.spring.websellspringmvc.dto.response.ProductDetailAdminResponse;
 import com.spring.websellspringmvc.models.Product;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ProductMapper {
-    ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
+  ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    Product toProduct(CreateProductRequest request);
+  Product toProduct(CreateProductRequest request);
 
-    Product toProduct(UpdateProductRequest request);
+  Product toProduct(UpdateProductRequest request);
 
-    ProductCardResponse toProductCardResponse(Product product);
+  ProductCardResponse toProductCardResponse(Product product);
 
-    ProductDetailResponse toProductDetailResponse(Product product);
+  ProductDetailResponse toProductDetailResponse(Product product);
 
-    ProductDetailAdminResponse toProductDetailAdminResponse(Product product);
+  ProductDetailAdminResponse toProductDetailAdminResponse(Product product);
 }

@@ -12,8 +12,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ReviewOverallResponse {
-    String name;
-    String avatar;
-    String content;
-    int rating;
+  String name;
+  String avatar;
+  String content;
+  int rating;
 }

@@ -9,24 +9,27 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateCategoryRequest {
-    @NotNull
-    String nameCategory;
-    @NotNull
-    String sizeTableImage;
-    @NotNull
-    @JsonProperty("nameCategory[]")
-    String[] nameParameter;
-    @NotNull
-    @JsonProperty("unit[]")
-    String[] unit;
-    @NotNull
-    @JsonProperty("minValue[]")
-    String[] minValue;
-    @NotNull
-    @JsonProperty("maxValue[]")
-    @NotNull
-    String[] maxValue;
-    @NotNull
-    @JsonProperty("guideImg[]")
-    String[] guideImg;
+  @NotNull String nameCategory;
+  @NotNull String sizeTableImage;
+
+  @NotNull
+  @JsonProperty("nameCategory[]")
+  String[] nameParameter;
+
+  @NotNull
+  @JsonProperty("unit[]")
+  String[] unit;
+
+  @NotNull
+  @JsonProperty("minValue[]")
+  String[] minValue;
+
+  @NotNull
+  @JsonProperty("maxValue[]")
+  @NotNull
+  String[] maxValue;
+
+  @NotNull
+  @JsonProperty("guideImg[]")
+  String[] guideImg;
 }

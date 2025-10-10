@@ -10,9 +10,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DeliveryMethod {
-    Integer id;
-    String typeShipping;
-    String description;
-    double shippingFee;
-
+  Integer id;
+  String typeShipping;
+  String description;
+  double shippingFee;
 }

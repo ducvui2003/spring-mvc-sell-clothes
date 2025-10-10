@@ -11,6 +11,9 @@ import com.spring.websellspringmvc.session.SessionManager;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Controller;
@@ -19,77 +22,70 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
-
-
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewController {
-    ReviewServiceImpl reviewServiceImpl;
-    ProductCardServices productCardServices;
-    SessionManager sessionManager;
+  ReviewServiceImpl reviewServiceImpl;
+  ProductCardServices productCardServices;
+  SessionManager sessionManager;
 
-    @PostMapping("/createReview")
-    public ModelAndView createReview(@RequestParam("orderProductId") int orderProductId,
-                                     @RequestParam(value = "ratingStar", defaultValue = "5") int ratingStar,
-                                     @RequestParam("desc") String desc,
-                                     HttpServletRequest request, HttpServletResponse response
-    ) {
-        ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW_SUCCESS.getPage());
+  @PostMapping("/createReview")
+  public ModelAndView createReview(
+      @RequestParam("orderProductId") int orderProductId,
+      @RequestParam(value = "ratingStar", defaultValue = "5") int ratingStar,
+      @RequestParam("desc") String desc,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW_SUCCESS.getPage());
 
-        User user = sessionManager.getUser();
-        int userId = user.getId();
+    User user = sessionManager.getUser();
+    int userId = user.getId();
 
-        if (!reviewServiceImpl.canReview(userId, orderProductId)) {
-            throw new ResourceNotFoundException();
-        }
-        Review review = new Review();
-        review.setOrderDetailId(orderProductId);
-        review.setRatingStar(ratingStar);
-        review.setFeedback(desc);
-        review.setReviewDate(Date.valueOf(LocalDate.now()));
-        reviewServiceImpl.createReview(review);
-
-        String nameProduct = reviewServiceImpl.getNameProduct(orderProductId);
-        if (nameProduct == null)
-            throw new ResourceNotFoundException();
-
-        mav.addObject("nameProduct", nameProduct);
-        return mav;
+    if (!reviewServiceImpl.canReview(userId, orderProductId)) {
+      throw new ResourceNotFoundException();
     }
+    Review review = new Review();
+    review.setOrderDetailId(orderProductId);
+    review.setRatingStar(ratingStar);
+    review.setFeedback(desc);
+    review.setReviewDate(Date.valueOf(LocalDate.now()));
+    reviewServiceImpl.createReview(review);
 
-    @GetMapping("/review")
-    public ModelAndView reviewPage(@RequestParam("orderDetailId") int orderDetailId) {
-        ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW.getPage());
-//        Check
-        boolean listReview = reviewServiceImpl.hasReview(orderDetailId);
-        if (!listReview)
-            throw new ResourceNotFoundException();
+    String nameProduct = reviewServiceImpl.getNameProduct(orderProductId);
+    if (nameProduct == null) throw new ResourceNotFoundException();
 
+    mav.addObject("nameProduct", nameProduct);
+    return mav;
+  }
 
-        OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(orderDetailId);
+  @GetMapping("/review")
+  public ModelAndView reviewPage(@RequestParam("orderDetailId") int orderDetailId) {
+    ModelAndView mav = new ModelAndView(PageAddress.USER_REVIEW.getPage());
+    //        Check
+    boolean listReview = reviewServiceImpl.hasReview(orderDetailId);
+    if (!listReview) throw new ResourceNotFoundException();
 
-        String color = orderDetail.getColorRequired();
-        String[] sizes = readSizes(orderDetail.getSizeRequired());
-        int quantity = orderDetail.getQuantityRequired();
-        int productId = orderDetail.getProductId();
-        String nameProduct = productCardServices.getNameProductById(productId);
-        List<Parameter> listParameter = productCardServices.getParameterByIdCategory(productId);
-        mav.addObject("orderDetailId", orderDetailId);
-        mav.addObject("productId", productId);
-        mav.addObject("nameProduct", nameProduct);
-        mav.addObject("listParameter", listParameter);
-        mav.addObject("color", color);
-        mav.addObject("sizes", sizes);
-        mav.addObject("quantity", quantity);
-        return mav;
-    }
+    OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(orderDetailId);
 
-    private String[] readSizes(String sizesRequired) {
-//        Dài áo: 70 cm, Dài tay: 22 cm, Rộng gấu: 54 cm, Rộng bắp tay: 24 cm, Rộng vai: 50 cm
-        return sizesRequired.split(", ");
-    }
+    String color = orderDetail.getColorRequired();
+    String[] sizes = readSizes(orderDetail.getSizeRequired());
+    int quantity = orderDetail.getQuantityRequired();
+    int productId = orderDetail.getProductId();
+    String nameProduct = productCardServices.getNameProductById(productId);
+    List<Parameter> listParameter = productCardServices.getParameterByIdCategory(productId);
+    mav.addObject("orderDetailId", orderDetailId);
+    mav.addObject("productId", productId);
+    mav.addObject("nameProduct", nameProduct);
+    mav.addObject("listParameter", listParameter);
+    mav.addObject("color", color);
+    mav.addObject("sizes", sizes);
+    mav.addObject("quantity", quantity);
+    return mav;
+  }
+
+  private String[] readSizes(String sizesRequired) {
+    //        Dài áo: 70 cm, Dài tay: 22 cm, Rộng gấu: 54 cm, Rộng bắp tay: 24 cm, Rộng vai: 50 cm
+    return sizesRequired.split(", ");
+  }
 }

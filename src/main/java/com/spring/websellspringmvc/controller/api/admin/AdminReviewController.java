@@ -22,74 +22,81 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminReviewController {
-    AdminReviewServices adminReviewServices;
-    ReviewServiceImpl reviewServiceImpl;
+  AdminReviewServices adminReviewServices;
+  ReviewServiceImpl reviewServiceImpl;
 
-    ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
-    OrderMapper orderMapper = OrderMapper.INSTANCE;
+  ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
+  OrderMapper orderMapper = OrderMapper.INSTANCE;
 
-//    @PostMapping("/datatable")
-//    public ResponseEntity<DatatableResponse<ReviewDatatableResponse>> getDatatable(@RequestBody DatatableRequest request) {
-//        List<Review> listReview = adminReviewServices.getReviews(currentPage);
-//
-//        List<ReviewDatatableResponse> reviewResponses = new ArrayList<>();
-//        for (Review review : listReview) {
-//            int userId = -1;
-//            if (UserFactory.getUserByIdProductDetail(review.getOrderDetailId()) != null) {
-//                userId = UserFactory.getUserByIdProductDetail(review.getOrderDetailId()).getId();
-//            }
-//            ReviewDatatableResponse reviewResponse = reviewMapper.toReviewDatatableResponse(review);
-//            reviewResponse.setProductName(ProductFactory.getNameProductByIdOrderDetail(review.getOrderDetailId()));
-//            reviewResponses.add(reviewResponse);
-//        }
-//
-//        int quantityPageTotal = AdminReviewServices.getINSTANCE().getQuantityPage();
-//        ReviewDatatableController.ListReviewResponse listReviewResponse = new ReviewDatatableController.ListReviewResponse(quantityPageTotal, reviewResponses);
-//
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("quantity", quantityPageTotal);
-//        jsonObject.put("reviews", listReviewResponse);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        String jsonResponse = null;
-//        try {
-//            jsonResponse = mapper.writeValueAsString(listReviewResponse);
-//            response.getWriter().write(jsonResponse);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+  //    @PostMapping("/datatable")
+  //    public ResponseEntity<DatatableResponse<ReviewDatatableResponse>> getDatatable(@RequestBody
+  // DatatableRequest request) {
+  //        List<Review> listReview = adminReviewServices.getReviews(currentPage);
+  //
+  //        List<ReviewDatatableResponse> reviewResponses = new ArrayList<>();
+  //        for (Review review : listReview) {
+  //            int userId = -1;
+  //            if (UserFactory.getUserByIdProductDetail(review.getOrderDetailId()) != null) {
+  //                userId =
+  // UserFactory.getUserByIdProductDetail(review.getOrderDetailId()).getId();
+  //            }
+  //            ReviewDatatableResponse reviewResponse =
+  // reviewMapper.toReviewDatatableResponse(review);
+  //
+  // reviewResponse.setProductName(ProductFactory.getNameProductByIdOrderDetail(review.getOrderDetailId()));
+  //            reviewResponses.add(reviewResponse);
+  //        }
+  //
+  //        int quantityPageTotal = AdminReviewServices.getINSTANCE().getQuantityPage();
+  //        ReviewDatatableController.ListReviewResponse listReviewResponse = new
+  // ReviewDatatableController.ListReviewResponse(quantityPageTotal, reviewResponses);
+  //
+  //        JSONObject jsonObject = new JSONObject();
+  //        jsonObject.put("quantity", quantityPageTotal);
+  //        jsonObject.put("reviews", listReviewResponse);
+  //
+  //        ObjectMapper mapper = new ObjectMapper();
+  //        String jsonResponse = null;
+  //        try {
+  //            jsonResponse = mapper.writeValueAsString(listReviewResponse);
+  //            response.getWriter().write(jsonResponse);
+  //        } catch (IOException e) {
+  //            throw new RuntimeException(e);
+  //        }
+  //    }
 
-    @GetMapping("/detail")
-    public ResponseEntity<ReviewDetailResponse> getReview(@RequestParam("id") Integer reviewId) {
-        if (reviewId == null)
-            throw new ResourceNotFoundException();
-        Review review = adminReviewServices.getReview(reviewId);
-        if (review == null)
-            throw new ResourceNotFoundException();
+  @GetMapping("/detail")
+  public ResponseEntity<ReviewDetailResponse> getReview(@RequestParam("id") Integer reviewId) {
+    if (reviewId == null) throw new ResourceNotFoundException();
+    Review review = adminReviewServices.getReview(reviewId);
+    if (review == null) throw new ResourceNotFoundException();
 
-        OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(review.getOrderDetailId());
-        Order order = reviewServiceImpl.getOrder(orderDetail.getOrderId());
+    OrderDetail orderDetail = reviewServiceImpl.getOrderDetail(review.getOrderDetailId());
+    Order order = reviewServiceImpl.getOrder(orderDetail.getOrderId());
 
-        return ResponseEntity.ok(ReviewDetailResponse.builder().order(orderMapper.toOrderResponse(order))
-                .orderDetail(orderMapper.toOrderDetailResponse(orderDetail))
-                .review(reviewMapper.toReviewResponse(review)).build());
+    return ResponseEntity.ok(
+        ReviewDetailResponse.builder()
+            .order(orderMapper.toOrderResponse(order))
+            .orderDetail(orderMapper.toOrderDetailResponse(orderDetail))
+            .review(reviewMapper.toReviewResponse(review))
+            .build());
+  }
+
+  @PutMapping("/visible")
+  public ResponseEntity<?> updateVisibility(
+      @RequestParam("id") Integer reviewId, @RequestParam("type") ReviewState state) {
+    JsonObject jsonObject = new JsonObject();
+    if (reviewId == null || state == null) {
+      jsonObject.addProperty("success", false);
+      return ResponseEntity.badRequest().body(jsonObject.toString());
     }
-
-    @PutMapping("/visible")
-    public ResponseEntity<?> updateVisibility(@RequestParam("id") Integer reviewId, @RequestParam("type") ReviewState state) {
-        JsonObject jsonObject = new JsonObject();
-        if (reviewId == null || state == null) {
-            jsonObject.addProperty("success", false);
-            return ResponseEntity.badRequest().body(jsonObject.toString());
-        }
-        try {
-            //Chưa case TH nếu không tìm thấy review id
-            adminReviewServices.updateVisibility(reviewId, state);
-            jsonObject.addProperty("success", true);
-        } catch (NumberFormatException e) {
-            jsonObject.addProperty("success", false);
-        }
-        return ResponseEntity.badRequest().body(jsonObject.toString());
+    try {
+      // Chưa case TH nếu không tìm thấy review id
+      adminReviewServices.updateVisibility(reviewId, state);
+      jsonObject.addProperty("success", true);
+    } catch (NumberFormatException e) {
+      jsonObject.addProperty("success", false);
     }
+    return ResponseEntity.badRequest().body(jsonObject.toString());
+  }
 }

@@ -9,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApplyVoucherRequest {
-    @NotNull
-    String code;
-    @JsonProperty("id[]")
-    int[] id;
+  @NotNull String code;
+
+  @JsonProperty("id[]")
+  int[] id;
 }

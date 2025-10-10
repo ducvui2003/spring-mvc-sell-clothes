@@ -14,13 +14,12 @@ import org.springframework.data.domain.Pageable;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReviewFilter {
-    Pageable pageable;
-    long offset;
-    long limit;
-    int productId;
+  Pageable pageable;
+  long offset;
+  long limit;
+  int productId;
 
-    public static ReviewFilter of(Pageable pageable, int productId) {
-        return new ReviewFilter(pageable, pageable.getOffset(), pageable.getPageSize(), productId);
-    }
-
+  public static ReviewFilter of(Pageable pageable, int productId) {
+    return new ReviewFilter(pageable, pageable.getOffset(), pageable.getPageSize(), productId);
+  }
 }

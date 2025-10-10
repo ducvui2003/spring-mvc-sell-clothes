@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MoneyRange {
-    private double from;
-    private double to;
+  private double from;
+  private double to;
 }

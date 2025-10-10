@@ -6,7 +6,7 @@ import com.spring.websellspringmvc.dto.response.DatatableResponse;
 import com.spring.websellspringmvc.dto.response.datatable.UserDatatable;
 
 public interface AdminUserServices {
-    DatatableResponse<UserDatatable> datatable(UserDatatableRequest request);
+  DatatableResponse<UserDatatable> datatable(UserDatatableRequest request);
 
-    AdminUserDetailResponse getDetail(int userId);
+  AdminUserDetailResponse getDetail(int userId);
 }

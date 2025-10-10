@@ -15,9 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserController {
 
-    @GetMapping
-    public ModelAndView showUserPage() {
-        ModelAndView mav = new ModelAndView(PageAddress.ADMIN_USER.getPage());
-        return mav;
-    }
+  @GetMapping
+  public ModelAndView showUserPage() {
+    ModelAndView mav = new ModelAndView(PageAddress.ADMIN_USER.getPage());
+    return mav;
+  }
 }

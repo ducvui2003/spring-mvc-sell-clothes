@@ -12,17 +12,17 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+  UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User toUser(CreateUserRequest createUserRequest);
+  User toUser(CreateUserRequest createUserRequest);
 
-    User toUser(UpdateUserRequest updateUserRequest);
+  User toUser(UpdateUserRequest updateUserRequest);
 
-    @Mapping(target = "role", constant = "USER")
-    @Mapping(target = "birthDay", source = "dob")
-    User toUser(SignUpRequest signUpRequest);
+  @Mapping(target = "role", constant = "USER")
+  @Mapping(target = "birthDay", source = "dob")
+  User toUser(SignUpRequest signUpRequest);
 
-    UserInfoResponse toUserInfoResponse(User user);
+  UserInfoResponse toUserInfoResponse(User user);
 
-    AdminUserDetailResponse toAdminUserDetailResponse(User user);
+  AdminUserDetailResponse toAdminUserDetailResponse(User user);
 }

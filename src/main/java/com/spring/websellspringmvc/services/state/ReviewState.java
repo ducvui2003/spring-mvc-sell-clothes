@@ -1,17 +1,16 @@
 package com.spring.websellspringmvc.services.state;
 
 public enum ReviewState {
-    VISIBLE(true),
-    HIDE(false);
+  VISIBLE(true),
+  HIDE(false);
 
-    private final Boolean value;
+  private final Boolean value;
 
-    public Boolean getValue() {
-        return value;
-    }
+  public Boolean getValue() {
+    return value;
+  }
 
-    private ReviewState(Boolean value) {
-        this.value = value;
-    }
-
+  private ReviewState(Boolean value) {
+    this.value = value;
+  }
 }

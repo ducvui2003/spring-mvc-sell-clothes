@@ -4,17 +4,16 @@ import lombok.Getter;
 
 @Getter
 public class AppException extends RuntimeException {
-    private ErrorCode errorCode;
-    private ErrorView errorView;
+  private ErrorCode errorCode;
+  private ErrorView errorView;
 
+  public AppException(ErrorCode errorCode) {
+    super(errorCode.getMessage());
+    this.errorCode = errorCode;
+  }
 
-    public AppException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-    }
-
-    public AppException(ErrorView errorView) {
-        super();
-        this.errorView = errorView;
-    }
+  public AppException(ErrorView errorView) {
+    super();
+    this.errorView = errorView;
+  }
 }

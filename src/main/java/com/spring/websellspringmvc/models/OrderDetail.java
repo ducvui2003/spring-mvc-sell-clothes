@@ -9,12 +9,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 public class OrderDetail {
-    int id;
-    String orderId;
-    int productId;
-    String productName;
-    String sizeRequired;
-    String colorRequired;
-    int quantityRequired;
-    double price;
+  int id;
+  String orderId;
+  int productId;
+  String productName;
+  String sizeRequired;
+  String colorRequired;
+  int quantityRequired;
+  double price;
 }

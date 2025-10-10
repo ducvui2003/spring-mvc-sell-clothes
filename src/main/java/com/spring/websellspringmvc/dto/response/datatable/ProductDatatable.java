@@ -13,12 +13,13 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ProductDatatable {
-    int id;
-    String name;
-    String category;
-    Double originalPrice;
-    Double salePrice;
-    String quantity;
-    @JsonProperty("state")
-    boolean visibility;
+  int id;
+  String name;
+  String category;
+  Double originalPrice;
+  Double salePrice;
+  String quantity;
+
+  @JsonProperty("state")
+  boolean visibility;
 }

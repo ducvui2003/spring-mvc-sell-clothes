@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GiaoHangNhanhLeadDayResponse {
-    @JsonAlias("leadtime")
-    Integer leadTime;
+  @JsonAlias("leadtime")
+  Integer leadTime;
 }

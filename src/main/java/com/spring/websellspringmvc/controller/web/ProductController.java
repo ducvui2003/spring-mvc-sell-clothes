@@ -15,23 +15,22 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class ProductController {
-    ProductService productService;
+  ProductService productService;
 
-    @GetMapping("/product")
-    public ModelAndView filterProductBuying() {
-        return new ModelAndView(PageAddress.PRODUCT_BUYING.getPage());
+  @GetMapping("/product")
+  public ModelAndView filterProductBuying() {
+    return new ModelAndView(PageAddress.PRODUCT_BUYING.getPage());
+  }
+
+  @GetMapping("/product/{id}")
+  public ModelAndView showProductDetail(@PathVariable(value = "id") int id) {
+    ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_DETAIL.getPage());
+
+    ProductDetailResponse product = productService.getProductDetail(id);
+    if (product == null) {
+      throw new ResourceNotFoundException();
     }
-
-
-    @GetMapping("/product/{id}")
-    public ModelAndView showProductDetail(@PathVariable(value = "id") int id) {
-        ModelAndView mav = new ModelAndView(PageAddress.PRODUCT_DETAIL.getPage());
-
-        ProductDetailResponse product = productService.getProductDetail(id);
-        if (product == null) {
-            throw new ResourceNotFoundException();
-        }
-        mav.addObject("product", product);
-        return mav;
-    }
+    mav.addObject("product", product);
+    return mav;
+  }
 }

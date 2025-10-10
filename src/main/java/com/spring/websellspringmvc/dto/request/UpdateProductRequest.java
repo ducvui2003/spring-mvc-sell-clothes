@@ -11,16 +11,17 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateProductRequest extends CreateProductRequest {
-    @NotNull
-    Integer id;
-    @NotNull
-    @JsonProperty("sizeId[]")
-    Integer[] sizeId;
-    @NotNull
-    @JsonProperty("colorId[]")
-    Integer[] colorId;
-    @NotNull
-    @JsonProperty("idImageDeleted[]")
-    Integer[] idImageDeleted;
+  @NotNull Integer id;
 
+  @NotNull
+  @JsonProperty("sizeId[]")
+  Integer[] sizeId;
+
+  @NotNull
+  @JsonProperty("colorId[]")
+  Integer[] colorId;
+
+  @NotNull
+  @JsonProperty("idImageDeleted[]")
+  Integer[] idImageDeleted;
 }

@@ -15,30 +15,35 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CartController {
-    CartService cartService;
-    int DEFAULT_QUANTITY_CHANGE = 1;
+  CartService cartService;
+  int DEFAULT_QUANTITY_CHANGE = 1;
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponse<Void>> addCart(@RequestBody AddCartRequest request) {
-        cartService.create(request);
-        return ResponseEntity.ok().body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
-    }
+  @PostMapping("/add")
+  public ResponseEntity<ApiResponse<Void>> addCart(@RequestBody AddCartRequest request) {
+    cartService.create(request);
+    return ResponseEntity.ok()
+        .body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
+  }
 
-    @PostMapping("/increase/{cartItemId}")
-    public ResponseEntity<ApiResponse<Void>> increase(@PathVariable("cartItemId") Integer cartItemId) {
-        cartService.increase(cartItemId, DEFAULT_QUANTITY_CHANGE);
-        return ResponseEntity.ok().body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
-    }
+  @PostMapping("/increase/{cartItemId}")
+  public ResponseEntity<ApiResponse<Void>> increase(
+      @PathVariable("cartItemId") Integer cartItemId) {
+    cartService.increase(cartItemId, DEFAULT_QUANTITY_CHANGE);
+    return ResponseEntity.ok()
+        .body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
+  }
 
-    @PostMapping("/decrease/{cartItemId}")
-    public ResponseEntity<ApiResponse<Void>> decrease(@PathVariable("cartItemId") Integer productId) {
-        cartService.decrease(productId, DEFAULT_QUANTITY_CHANGE);
-        return ResponseEntity.ok().body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
-    }
+  @PostMapping("/decrease/{cartItemId}")
+  public ResponseEntity<ApiResponse<Void>> decrease(@PathVariable("cartItemId") Integer productId) {
+    cartService.decrease(productId, DEFAULT_QUANTITY_CHANGE);
+    return ResponseEntity.ok()
+        .body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
+  }
 
-    @DeleteMapping("/delete/{cartItemId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("cartItemId") Integer productId) {
-        cartService.delete(productId);
-        return ResponseEntity.ok().body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
-    }
+  @DeleteMapping("/delete/{cartItemId}")
+  public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("cartItemId") Integer productId) {
+    cartService.delete(productId);
+    return ResponseEntity.ok()
+        .body(ApiResponse.<Void>builder().code(HttpStatus.OK.value()).build());
+  }
 }

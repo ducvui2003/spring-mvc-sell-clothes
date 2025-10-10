@@ -1,54 +1,52 @@
 package com.spring.websellspringmvc.dao;
 
 import com.spring.websellspringmvc.dto.mvc.response.ProductCardResponse;
-import com.spring.websellspringmvc.models.Category;
 import com.spring.websellspringmvc.models.Parameter;
 import com.spring.websellspringmvc.models.Product;
 import com.spring.websellspringmvc.models.ProductFilter;
 import com.spring.websellspringmvc.utils.MoneyRange;
+import java.util.List;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
-import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Date;
-import java.util.List;
 
 @Repository
 @RegisterBeanMapper(Product.class)
 public interface ProductCardDAO {
-    @SqlQuery("SELECT id FROM products WHERE categoryId IN (<listIdCategory>)")
-    List<Product> getIdProductByCategoryId(@BindList("listIdCategory") List<String> listIdCategory);
+  @SqlQuery("SELECT id FROM products WHERE categoryId IN (<listIdCategory>)")
+  List<Product> getIdProductByCategoryId(@BindList("listIdCategory") List<String> listIdCategory);
 
-    @SqlQuery("SELECT products.id FROM products JOIN colors ON products.id = colors.productId WHERE colors.codeColor IN (<listCodeColor>)")
-    List<Product> getIdProductByColor(@BindList("listCodeColor") List<String> listCodeColor);
+  @SqlQuery(
+      "SELECT products.id FROM products JOIN colors ON products.id = colors.productId WHERE colors.codeColor IN (<listCodeColor>)")
+  List<Product> getIdProductByColor(@BindList("listCodeColor") List<String> listCodeColor);
 
-    @SqlQuery("SELECT products.id FROM products JOIN sizes ON products.id = sizes.productId WHERE sizes.nameSize IN (<listSize>)")
-    List<Product> getIdProductBySize(@Bind("listSize") List<String> listSize);
+  @SqlQuery(
+      "SELECT products.id FROM products JOIN sizes ON products.id = sizes.productId WHERE sizes.nameSize IN (<listSize>)")
+  List<Product> getIdProductBySize(@Bind("listSize") List<String> listSize);
 
-    @SqlQuery("SELECT id FROM products WHERE originalPrice BETWEEN :from AND :to")
-    List<Product> getIdProductByMoneyRange(@BindBean List<MoneyRange> moneyRangeList);
+  @SqlQuery("SELECT id FROM products WHERE originalPrice BETWEEN :from AND :to")
+  List<Product> getIdProductByMoneyRange(@BindBean List<MoneyRange> moneyRangeList);
 
-
-    @SqlQuery("""
-            SELECT parameters.name, parameters.minValue, parameters.maxValue, parameters.unit, parameters.guideImg 
-            FROM products JOIN (parameters JOIN categories ON parameters.categoryId = categories.id) ON products.categoryId = categories.id 
+  @SqlQuery(
+      """
+            SELECT parameters.name, parameters.minValue, parameters.maxValue, parameters.unit, parameters.guideImg
+            FROM products JOIN (parameters JOIN categories ON parameters.categoryId = categories.id) ON products.categoryId = categories.id
             WHERE products.id = :id
             """)
-    List<Parameter> getParametersByProductId(@Bind("id") int id);
+  List<Parameter> getParametersByProductId(@Bind("id") int id);
 
-    @SqlQuery("SELECT name FROM products WHERE id = :id")
-    List<Product> getNameProductById(@Bind("id") int id);
+  @SqlQuery("SELECT name FROM products WHERE id = :id")
+  List<Product> getNameProductById(@Bind("id") int id);
 
-    @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility FROM products")
-    List<Product> getProduct();
+  @SqlQuery("SELECT id, `name`, categoryId, originalPrice, salePrice, visibility FROM products")
+  List<Product> getProduct();
 
-    //HardCode
-    @SqlQuery(
-            """
+  // HardCode
+  @SqlQuery(
+      """
                      SELECT p.id                           AS id,
                            p.name                         AS name,
                            p.description,
@@ -68,13 +66,14 @@ public interface ProductCardDAO {
                       AND p.createAt >= DATE_SUB('2023-12-01', INTERVAL 1 MONTH)
                     GROUP BY p.id
                     LIMIT :limit OFFSET :offset;
-                    
-                    """
-    )
-    @RegisterBeanMapper(ProductCardResponse.class)
-    public List<ProductCardResponse> getListNewProducts(@Bind("limit") int limit, @Bind("offset") long offset);
 
-    @SqlQuery("""
+                    """)
+  @RegisterBeanMapper(ProductCardResponse.class)
+  public List<ProductCardResponse> getListNewProducts(
+      @Bind("limit") int limit, @Bind("offset") long offset);
+
+  @SqlQuery(
+      """
             SELECT p.id,
                    p.`name`,
                    p.`description`,
@@ -96,10 +95,12 @@ public interface ProductCardDAO {
             ORDER BY SUM(od.quantityRequired) DESC
             LIMIT :limit OFFSET :offset
             """)
-    @RegisterBeanMapper(ProductCardResponse.class)
-    public List<ProductCardResponse> getListTrendProducts(@Bind("limit") int limit, @Bind("offset") long offset);
+  @RegisterBeanMapper(ProductCardResponse.class)
+  public List<ProductCardResponse> getListTrendProducts(
+      @Bind("limit") int limit, @Bind("offset") long offset);
 
-    @SqlQuery("""
+  @SqlQuery(
+      """
             SELECT DISTINCT
                 p.id,
                 p.name,
@@ -127,6 +128,6 @@ public interface ProductCardDAO {
             GROUP BY p.id
             LIMIT :limit OFFSET :offset;
             """)
-    @RegisterBeanMapper(ProductCardResponse.class)
-    List<ProductCardResponse> filter(@BindBean ProductFilter productFilter);
+  @RegisterBeanMapper(ProductCardResponse.class)
+  List<ProductCardResponse> filter(@BindBean ProductFilter productFilter);
 }

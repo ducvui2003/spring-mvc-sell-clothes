@@ -1,9 +1,8 @@
 package com.spring.websellspringmvc.models;
 
+import java.sql.Date;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.sql.Date;
 
 @Data
 @NoArgsConstructor
@@ -11,13 +10,13 @@ import java.sql.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Voucher {
-    Integer id;
-    String code;
-    String description;
-    double minimumPrice;
-    double discountPercent;
-    Date expiryDate;
-    int availableTurns;
-    String state;
-    Date createAt;
+  Integer id;
+  String code;
+  String description;
+  double minimumPrice;
+  double discountPercent;
+  Date expiryDate;
+  int availableTurns;
+  String state;
+  Date createAt;
 }

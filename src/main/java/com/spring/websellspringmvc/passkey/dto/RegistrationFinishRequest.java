@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class RegistrationFinishRequest {
-    String name;
-    PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> request;
+  String name;
+  PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> request;
 }

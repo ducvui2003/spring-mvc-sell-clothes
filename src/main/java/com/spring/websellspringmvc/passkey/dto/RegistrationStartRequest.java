@@ -10,7 +10,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class RegistrationStartRequest {
-    String email;
-    @JsonProperty("fullName")
-    String username;
+  String email;
+
+  @JsonProperty("fullName")
+  String username;
 }

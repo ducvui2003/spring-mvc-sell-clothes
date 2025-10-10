@@ -10,11 +10,12 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface OrderMapper {
-    OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
+  OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
 
-    ReviewDetailResponse.OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail);
+  ReviewDetailResponse.OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail);
 
-    ReviewDetailResponse.OrderResponse toOrderResponse(Order order);
+  ReviewDetailResponse.OrderResponse toOrderResponse(Order order);
 
-    OrderDetailItemChangedResponse toOrderDetailItemChangedResponse(OrderDetailItemResponse orderDetail);
+  OrderDetailItemChangedResponse toOrderDetailItemChangedResponse(
+      OrderDetailItemResponse orderDetail);
 }
