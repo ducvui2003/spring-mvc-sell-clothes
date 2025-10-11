@@ -189,7 +189,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>
@@ -220,6 +220,11 @@
             <groupId>com.openhtmltopdf</groupId>
             <artifactId>openhtmltopdf-pdfbox</artifactId>
             <version>1.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>6.1.5</version>
         </dependency>
     </dependencies>
 
@@ -256,6 +261,7 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <skip>${checkstyle.skip}</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -284,6 +290,7 @@
                             <version>1.17.0</version>
                         </googleJavaFormat>
                     </java>
+                    <skip>${spotless.skip}</skip>
                 </configuration>
             </plugin>
 
@@ -319,5 +326,15 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <checkstyle.skip>true</checkstyle.skip>
+                <spotless.skip>true</spotless.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -90,9 +90,6 @@ $(document).ready(function () {
                             }
                     }
                 ],
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json'
-                },
                 createdRow: function (row, data, dataIndex) {
                     if (data.orderStatus === "CANCELLED") {
                         $(row).addClass('table-danger');

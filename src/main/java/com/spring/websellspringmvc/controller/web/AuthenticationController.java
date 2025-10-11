@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
@@ -29,23 +30,11 @@ public class AuthenticationController {
   SessionManager sessionManager;
 
   @GetMapping("/signIn")
-  public ModelAndView signInPage() {
+  public ModelAndView signInPage(@RequestParam(name = "error", required = false) String error) {
     ModelAndView mav = new ModelAndView();
     mav.setViewName(PageAddress.SIGN_IN.getPage());
     mav.addObject("user", new SignInRequest());
     return mav;
-  }
-
-  @PostMapping("/signIn")
-  public ModelAndView signIn(
-      @Valid @ModelAttribute("user") SignInRequest request, BindingResult bindingResult)
-      throws ErrorForm {
-    if (bindingResult.hasErrors()) {
-      throw new ErrorForm(bindingResult, new ErrorView(ErrorView.SIGN_IN_FAILED, "user", request));
-    }
-    authenticationService.signIn(request);
-
-    return new ModelAndView("redirect:/");
   }
 
   @GetMapping("/signUp")
@@ -74,11 +63,5 @@ public class AuthenticationController {
     log.info("username {} tokenVerify {}", username, token);
     authenticationService.verify(username, token);
     return new ModelAndView(PageAddress.VERIFY_SUCCESS.getPage()).addObject("username", username);
-  }
-
-  @GetMapping("/signOut")
-  public ModelAndView signOut() {
-    sessionManager.clearSession();
-    return new ModelAndView("redirect:/");
   }
 }

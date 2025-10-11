@@ -121,9 +121,6 @@ $(document).ready(function () {
         ],
         createdRow: function (row, data, dataIndex) {
         },
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json'
-        },
         initComplete: function (settings, json) {
             init();
         }

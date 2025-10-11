@@ -16,6 +16,7 @@
         <div class="frame">
             <article>
                 <form:form modelAttribute="form" action="/updatePassword" class="form form--forget-password" method="post">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <c:set var="email" value="${requestScope.email}" />
                     <input name="email" type="text" value="${email}" hidden="hidden">
 

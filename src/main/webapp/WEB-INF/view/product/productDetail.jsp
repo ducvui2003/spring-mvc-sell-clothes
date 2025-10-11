@@ -51,6 +51,7 @@
                     <div class="product__info">
                         <form action="/api/cart/add" method="post" id="form__product"
                               class="product__form">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             <h1 class="product__name" id="product__name">${product.name}</h1>
                             <input type="text" hidden="hidden" name="productId" value="${product.id}">
 
@@ -162,50 +163,6 @@
 
                     <!--Reviews-->
                     <div class="product__review">
-                        <%--                        <c:choose> <c:when test="${not empty requestScope.listReview}">--%>
-                        <%--                            <div class="review__list">--%>
-                        <%--                                <%for (Review review : (List<Review>) request.getAttribute("listReview")) {%><%--%>
-                        <%--                                User user = userFatory.getUserByIdProductDetail(review.getOrderDetailId());%>--%>
-                        <%--                                <article class="review">--%>
-                        <%--                                    <div class="review__avatar">--%>
-                        <%--                                        <img src="<%=CloudinaryUploadServices.getINSTANCE().getImage("user", user.getAvatar())%>"--%>
-                        <%--                                             alt="<%=user.getAvatar()%>"--%>
-                        <%--                                             loading="lazy">--%>
-                        <%--                                    </div>--%>
-                        <%--                                    <div class="review__account">--%>
-                        <%--                                        <h4 class="review__name"><%=user.getFullName()%>--%>
-                        <%--                                        </h4>--%>
-                        <%--                                        <ul class="review__stars">--%>
-                        <%--                                            <%for (int starA = 1; starA <= review.getRatingStar(); starA++) {%>--%>
-                        <%--                                            <li class="review__star review__start--archive">--%>
-                        <%--                                                        <%}%>--%>
-
-                        <%--                                                <c:if test="<%=review.getRatingStar() < 5%>"> <%for(int starB  = 1; starB <= 5- review.getRatingStar();starB++){%>--%>
-                        <%--                                            <li class="review__star "></li>--%>
-                        <%--                                            <%}%>--%>
-                        <%--                                            </c:if>--%>
-                        <%--                                            <fmt:formatDate var="reviewDate" value="<%=review.getReviewDate()%>"--%>
-                        <%--                                                            type="date"--%>
-                        <%--                                                            pattern="dd/MM/yyyy"/>--%>
-
-                        <%--                                            <span class="review__date"><%=review.getReviewDate()%></span>--%>
-                        <%--                                        </ul>--%>
-                        <%--                                        <p class="review__para line-clamp"><%=review.getFeedback()%>--%>
-                        <%--                                        </p>--%>
-                        <%--                                    </div>--%>
-                        <%--                                </article>--%>
-                        <%--                                <%}%>--%>
-                        <%--                            </div>--%>
-
-                        <%--                            <ul class="paging">--%>
-                        <%--                            </ul>--%>
-                        <%--                        </c:when>--%>
-
-                        <%--                            <c:otherwise>--%>
-                        <%--                                <p class="review__empty">--%>
-                        <%--                                    Hãy trở thành người đầu tiên đánh giá sản phẩm.--%>
-                        <%--                                </p>--%>
-                        <%--                            </c:otherwise> </c:choose>--%>
 
                     </div>
                 </div>

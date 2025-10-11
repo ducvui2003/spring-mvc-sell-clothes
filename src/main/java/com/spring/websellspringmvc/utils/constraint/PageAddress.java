@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PageAddress {
-  HOME("/index"),
+  HOME("/"),
   SIGN_IN("/auth/signIn"),
   SIGN_UP("/auth/signUp"),
   PRODUCT_TRENDING("/product/productTrending"),

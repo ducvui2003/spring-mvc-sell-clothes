@@ -18,6 +18,7 @@
                         <a href="/" class="logo"></a>
                     </span>
             <form:form method="post" class="form form--signUp" modelAttribute="user">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 <div class="row">
                     <div class="col">
                         <div class="form__block">

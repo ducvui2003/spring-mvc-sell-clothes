@@ -69,4 +69,11 @@
     gtag('js', new Date());
 
     gtag('config', 'G-8C4K8R0X5G');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader($('meta[name="_csrf_header"]').attr('content'),
+                                 $('meta[name="_csrf"]').attr('content'));
+        }
+    });
 </script>
