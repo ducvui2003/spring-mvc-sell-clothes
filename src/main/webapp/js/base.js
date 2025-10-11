@@ -177,10 +177,8 @@ export const http = ({
                 }
             }
         });
-    })
-        ;
+    });
 };
-
 
 export const formatDate = (dateString) => {
     const d = new Date(dateString);

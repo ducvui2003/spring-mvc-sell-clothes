@@ -22,7 +22,7 @@
         <div class="hero__slogan">
             <h1>Change Your Styles Now</h1>
             <p>Cùng chúng tôi tạo nên thiết kế khác biệt cho quần áo của bạn</p>
-            <a href="<c:url value="/product/productBuying" />"
+            <a href="<c:url value="/product" />"
                class="hero__button button button--hover hvr-radial-out">
                 Bắt đầu mua hàng
             </a>
@@ -84,6 +84,7 @@
                                 </span>
                                 <form action="/api/cart/add"
                                       class="action__bar" method="post">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                     <input type="hidden"
                                            name="productId"
                                            value="${product.id}">
@@ -169,6 +170,7 @@
                                 <span class="product__tag" data-style="popular">Thịnh hành</span>
                                 <form action="/api/cart/add"
                                       class="action__bar" method="post">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                     <input type="hidden"
                                            name="productId"
                                            value="${product.name}>">

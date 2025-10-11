@@ -20,6 +20,7 @@
                         có thể liên hệ thông qua các thông tin về công ty của chúng tôi</p>
                     <span class="success__notification"></span>
                     <form method="post" class="form" action="<c:url value="/contact"/>" id="contact__form">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                         <div class="form__block">
                             <label for="fullName" class="form__label">Họ và tên
                                 <span class="compulsory__mark">*</span>

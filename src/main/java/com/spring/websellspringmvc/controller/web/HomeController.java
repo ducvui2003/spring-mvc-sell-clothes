@@ -5,6 +5,7 @@ import com.spring.websellspringmvc.models.Slider;
 import com.spring.websellspringmvc.services.ProductService;
 import com.spring.websellspringmvc.services.image.CloudinaryUploadServices;
 import com.spring.websellspringmvc.utils.constraint.PageAddress;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class HomeController {
   CloudinaryUploadServices cloudinaryUploadServices;
 
   @RequestMapping({"/", "/home"})
-  ModelAndView homePage() {
+  ModelAndView homePage(Principal principal) {
     ModelAndView mav = new ModelAndView("index");
     List<Slider> listSlideShow = productService.getListSlideShow();
     Page<ProductCardResponse> list6NewProducts =

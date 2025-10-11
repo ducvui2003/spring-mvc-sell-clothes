@@ -20,6 +20,7 @@
                 <a aria-hidden="true" href="/home" class="logo"></a>
             </span>
             <form:form action="/signIn" class="form form--signUp" method="post" modelAttribute="user">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 <div class="form__block">
                     <label for="username" class="form__label">Tên đăng nhập</label>
                     <form:input path="username" id="username" name="username" type="text" class="form__input p-2"/>
@@ -41,17 +42,6 @@
                         Quên mật khẩu
                     </a>
                 </div>
-                <%--                <input type="hidden" id="recaptchaToken" name="g-recaptcha-response">--%>
-                <%--                <c:set var="errorReCaptcha" value="${requestScope.errorReCaptcha}"/>--%>
-                <%--                <c:if test="${errorReCaptcha eq 'true'}">--%>
-                <%--                    <script>--%>
-                <%--                        Swal.fire({--%>
-                <%--                            title: "Khoan đã",--%>
-                <%--                            text: "Liệu bạn có phải là con người!",--%>
-                <%--                            icon: "info"--%>
-                <%--                        });--%>
-                <%--                    </script>--%>
-                <%--                </c:if>--%>
                 <button id="form__submit" type="submit" class="form__submit button button--hover">Đăng nhập
                 </button>
                 <div class="d-flex justify-content-around mt-4">
@@ -72,34 +62,7 @@
 </main>
 <!--JS validate-->
 <script src="<c:url value="/js/validateForm.js"/>"></script>
-<script type="module" src="/js/signIn.js"></script>
-<script>
-    // Check nhập không phù hợp
-    // $("input.form__input").on({
-    //     keydown: function (e) {
-    //         if (e.which === 32)
-    //             return false;
-    //     },
-    //     change: function () {
-    //         this.value = this.value.replace(/\s/g, "");
-    //     }
-    // });
-    // grecaptcha.ready(function () {
-    //     grecaptcha.execute('6LdSQu4pAAAAAJ0LbzMt-kVSfKqzVZYQtmPo3mHD', {action: 'submit'}).then(function (token) {
-    //         document.getElementById('recaptchaToken').value = token;
-    //         var validation = new Validation({
-    //             formSelector: ".form",
-    //             formBlockClass: "form__block",
-    //             errorSelector: ".form__error",
-    //             rules: [
-    //                 Validation.isRequired("#username"),
-    //                 Validation.isRequired("#password"),
-    //             ],
-    //             submitSelector: "#form__submit",
-    //         })
-    //     });
-    // });
+<script type="module" src="<c:url value="/js/signIn.js"/>"></script>
 
-</script>
 </body>
 </html>

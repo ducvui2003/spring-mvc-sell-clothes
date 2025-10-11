@@ -69,6 +69,7 @@
                         </div>
                         <div class="col-6">
                             <form class="review__form" method="post" action="createReview">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                 <input type="text" hidden="hidden" readonly name="orderProductId" value="${requestScope.orderDetailId}">
                                 <!--Rating-->
                                 <div class="form__block">

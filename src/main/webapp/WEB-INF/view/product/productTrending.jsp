@@ -26,6 +26,7 @@
                             <img src="${item.thumbnail}" alt="">
                             <span class="product__tag">Thịnh hành</span>
                             <form class="action__bar" action="<c:url value="/api/cart/add"/>" method="post">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                 <input type="hidden" name="productId" value="${item.id}">
                                 <button type="submit" class="add__cart"><i
                                         class="fa-solid fa-cart-shopping"></i></button>

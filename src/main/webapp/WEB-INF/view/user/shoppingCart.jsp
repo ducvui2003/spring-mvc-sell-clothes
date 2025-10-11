@@ -32,9 +32,6 @@
                         <div class="discount__percent">
                             <i class="fa-solid fa-fire"></i>
                             <span>
-<%--                                <fmt:formatNumber--%>
-<%--                                        type="percent"--%>
-<%--                                        value="${voucher.discountPercent}"/>--%>
                             </span>
                         </div>
                         <div class="item__content">
@@ -75,6 +72,7 @@
         <h1 class="cart__title">Giỏ hàng</h1>
         <form:form id="form__checkout" class="cart__container row" modelAttribute="checkout" method="post"
                    action="/checkout">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <c:choose>
                 <c:when test="${requestScope.carts.size() == 0}">
                     <div class="cart__container--empty">

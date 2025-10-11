@@ -16,6 +16,7 @@
     <div class="container-xl">
         <h1 class="checkout__title">Thanh toán</h1>
         <form:form class="checkout__container row" id="form" modelAttribute="checkout">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <div class="col-6">
                 <div class="delivery__info--container">
                     <h2 class="checkout__subtitle">Thông tin giao hàng</h2>
